@@ -86,7 +86,8 @@ class APITests(unittest.TestCase):
         self.assertEqual(len(self.client.get('/api/conversations').json()['conversations']), 1)
 
     def test_booking_email_verification_create_and_tracking(self):
-        self.guest()
+        registered = self.post('register', {'name': 'Synthetic Booker', 'email': 'booker@example.com', 'password': 'Synthetic-only-passphrase!'})
+        self.assertEqual(registered.status_code, 201, registered.content)
         with core.connect(self.db) as con:
             con.execute("INSERT INTO batches VALUES('api-test-batch','api-test-hash','synthetic',0,'test','{}') ON CONFLICT(id) DO NOTHING")
             con.execute("INSERT INTO settings VALUES('active_batch','api-test-batch') ON CONFLICT(key) DO UPDATE SET value=excluded.value")
@@ -158,6 +159,16 @@ class APITests(unittest.TestCase):
         response = self.post('booking/patient', {'id': 'missing', 'token': 'forged'}, client=anonymous)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(self.post('booking/options', {'clinic_id': 'missing'}, client=anonymous).status_code, 401)
+
+    def test_guest_cannot_start_booking_or_send_verification_email(self):
+        self.guest()
+        with patch('booking_mail.send_patient_code') as sender, patch('booking.create') as create:
+            for action in ('options', 'email-code', 'email-verify', 'create'):
+                response = self.post('booking/' + action)
+                self.assertEqual(response.status_code, 403, response.content)
+                self.assertIn('user account', response.json()['error'])
+            sender.assert_not_called()
+            create.assert_not_called()
 
 if __name__ == '__main__':
     unittest.main()

@@ -226,6 +226,10 @@ class CorrectionsView(ResourceView):
         return Response({'id': ident, 'status': 'pending review'}, status=201)
 
 
+class BookingAccountOnly(AccountMemberOnly):
+    message = 'Please log in or create a user account to book an appointment.'
+
+
 class BookingView(ResourceView):
     throttle_classes = [BookingThrottle]
     serializers_by_action = {
@@ -243,7 +247,7 @@ class BookingView(ResourceView):
 
     def get_permissions(self):
         authenticated_actions = ('options', 'email-code', 'email-verify', 'create')
-        return [IsAuthenticated() if self.kwargs['action'] in authenticated_actions else AllowAny()]
+        return [BookingAccountOnly() if self.kwargs['action'] in authenticated_actions else AllowAny()]
 
     def get_throttles(self):
         classes = [BookingThrottle]
