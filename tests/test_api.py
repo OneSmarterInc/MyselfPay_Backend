@@ -170,5 +170,19 @@ class APITests(unittest.TestCase):
             sender.assert_not_called()
             create.assert_not_called()
 
+    def test_national_includes_directory_centers_from_every_state_without_exam(self):
+        self.guest()
+        with core.connect(self.db) as con:
+            con.execute("INSERT INTO batches VALUES('national-test','national-hash','synthetic',0,'test','{}')")
+            con.execute("INSERT INTO settings VALUES('active_batch','national-test') ON CONFLICT(key) DO UPDATE SET value=excluded.value")
+            for state in ('OH', 'CA', 'NY'):
+                entry = {'name': 'Synthetic ' + state, 'states': state, 'area': state, 'mri': 'Available; confirm exam', 'ct': 'Available; confirm exam'}
+                con.execute('INSERT INTO entries VALUES(?,?,?,?)', ('national-test', state, state, json.dumps(entry)))
+        result = self.post('search', {'location': 'National'}).json()
+        self.assertEqual({entry['states'] for entry in result['nearby_unpriced']}, {'OH', 'CA', 'NY'})
+        self.assertEqual(result['results_heading'], 'Imaging centers across all states')
+        priced = self.post('search', {'location': 'National', 'type': 'fixed'}).json()
+        self.assertEqual(priced['nearby_unpriced'], [])
+
 if __name__ == '__main__':
     unittest.main()
