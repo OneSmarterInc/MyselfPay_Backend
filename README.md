@@ -54,7 +54,7 @@ Guests have three chat conversations, five messages each, 500 characters per mes
 
 Set `SMTP_HOST`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, and `SMTP_PORT=587` for STARTTLS patient email verification. Without SMTP or `BOOKING_ENCRYPTION_KEY`, verification/booking returns a configuration error. SMTP credentials are server-only. SES SMTP credentials can be used after configuring the sender and recipient access in your AWS account.
 
-**Clinic notifications and clinic OTP delivery remain suppressed, as in the source.** The React UI explicitly labels this testing mode. Requests can be recorded and tracked, but are not delivered or confirmed appointments. Enabling delivery requires a separate implementation and verification. No preview code, clinic URL or notification-content endpoint is exposed by the hosted API.
+Clinic notifications and clinic OTP delivery are now implemented through TLS SMTP, guarded by `BOOKING_EMAIL_ENABLED` and a recipient allowlist. The switch remains off until you configure your server and apply the additive outbox migration. New requests use a committed outbox with idempotent submission and controlled retries. Old suppressed requests are not replayed. See [booking email setup and test center activation](docs/BOOKING_EMAIL.md). No preview code, clinic URL or notification-content endpoint is exposed by the hosted API.
 
 ## AWS deployment
 

@@ -29,6 +29,7 @@ class APITests(unittest.TestCase):
         accounts.initialize(self.db)
         with core.connect(self.db) as con:
             con.executescript((Path(core.__file__).parent / 'ops/booking-schema.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/booking-outbox.sql').read_text())
             # CI database is disposable and must never point at production.
             for table in ['booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)

@@ -1,7 +1,7 @@
 """Email-verified appointment requests with encrypted details.
 
-Patient verification emails use SMTP. Clinic notifications are suppressed and never
-queued for later delivery. Clinic recipients come from the published catalog only.
+Patient and clinic verification use SMTP. Clinic notifications use an explicit
+delivery switch and committed outbox. Recipients come from the catalog only.
 """
 from __future__ import annotations
 
@@ -25,6 +25,7 @@ from zoneinfo import ZoneInfo
 from cryptography.fernet import Fernet
 import core
 import booking_mail
+import booking_delivery
 
 ZONES = {
     'America/New_York': 'Eastern', 'America/Chicago': 'Central',
@@ -83,6 +84,7 @@ def initialize_local(path: Any) -> None:
     cipher()
     with connection(path) as con:
         con.executescript((core.ROOT / 'ops/booking-schema.sql').read_text())
+        con.executescript((core.ROOT / 'ops/booking-outbox.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:
@@ -140,7 +142,8 @@ def options(path: Any, key: str, offer_id: str = '') -> dict:
     return {
         'name': center['name'], 'location': center.get('area', ''),
         'price_text': price_text,
-        'delivery': 'suppressed', 'recipient_available': bool(appointment_email(center)),
+        'delivery': booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
+        'is_test_center': bool(center.get('is_test_center')),
         'zones': ZONES, 'periods': PERIODS,
         'today': {z: datetime.now(ZoneInfo(z)).date().isoformat() for z in ZONES},
     }
@@ -211,17 +214,21 @@ def pack(payload: dict) -> str:
 
 
 def notification(payload: dict, ident: str) -> EmailMessage:
-    """Future clinic email: patient contact details stay behind OTP verification."""
+    """Clinic request email: patient contact details stay behind OTP verification."""
     message = EmailMessage()
     message['From'] = Address('MySelfPay', addr_spec=os.environ.get('SMTP_FROM', 'info@kormic.ai'))
     if payload['recipient']:
         message['To'] = payload['recipient']
     message['Subject'] = f'New self-pay request {ident}'
+    message['Message-ID'] = f'<selfpay-{ident}@{os.environ.get("SMTP_FROM", "no-reply@example.invalid").rsplit("@", 1)[-1]}>'
     slots = '; '.join(f"{s['date']} {PERIODS[s['period']]}" for s in payload['slots'])
     exam = ' '.join(filter(None, (payload['service'], payload['exam'])))
+    contrast = {'unknown': 'Not sure — confirm with patient', 'without': 'Without contrast', 'with': 'With contrast', 'both': 'Without and with contrast'}[payload['contrast']]
     message.set_content(
         f"New self-pay request {ident}\nClinic: {payload['clinic_name']}\n"
-        f"Exam: {exam}\nPreferred times: {slots} ({ZONES[payload['timezone']]} time)\n"
+        f"Exam: {exam}\nContrast: {contrast}\nPreferred times: {slots} ({ZONES[payload['timezone']]} time)\n"
+        f"Price: {payload.get('price_text', 'Confirm directly with the patient.')}\n"
+        + ('TEST CENTER: This is a synthetic booking workflow; no medical care is provided.\n' if payload.get('is_test_center') else '') +
         'Open the secure link to review patient contact details.\n'
         f"{payload['clinic_url']}\n\n"
         'This link expires in 72 hours. A one-time code is required.\n'
@@ -233,7 +240,10 @@ def notification(payload: dict, ident: str) -> EmailMessage:
 <p style="font-size:26px;font-weight:bold">MySelf<span style="color:#b51d2b">Pay</span></p>
 <h1 style="font-size:24px">New self-pay request</h1><p>{escape(ident)}</p>
 <p><strong>Clinic:</strong> {escape(payload['clinic_name'])}</p><p><strong>Exam:</strong> {escape(exam)}</p>
+<p><strong>Contrast:</strong> {escape(contrast)}</p>
 <p><strong>Preferred times:</strong> {escape(slots)} ({escape(ZONES[payload['timezone']])} time)</p>
+<p><strong>Price:</strong> {escape(payload.get('price_text', 'Confirm directly with the patient.'))}</p>
+{'<p><strong>TEST CENTER — synthetic booking workflow. No medical care is provided.</strong></p>' if payload.get('is_test_center') else ''}
 <p><a href="{escape(payload['clinic_url'], quote=True)}" style="display:inline-block;padding:14px 22px;background:#b51d2b;color:white;text-decoration:none;border-radius:8px">Open request</a></p>
 <p>The patient's contact details open after verification. This link expires in 72 hours.</p>
 <p>This is a request, not a confirmed appointment.</p><hr style="border:0;border-top:1px solid #eceef0">
@@ -376,9 +386,11 @@ def create(path: Any, owner: str, data: dict, base_url: str) -> dict:
         if prior:
             if prior['input_hash'] != input_hash:
                 raise BookingError('This submission key was already used for different details.', 409)
-            return receipt(prior)
+            return receipt(prior, con)
         patient_email = verified_patient_email(con, owner_hash, verification_id, data.get('verification_token'))
         center = resolve_center(con, center_key)
+        if booking_delivery.mode(appointment_email(center)) == 'unavailable':
+            raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
         if con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE owner_hash=? AND created>?',
                        (owner_hash, now - 3600)).fetchone()['n'] >= 5:
@@ -390,10 +402,12 @@ def create(path: Any, owner: str, data: dict, base_url: str) -> dict:
                    'price_text': price_text,
                    'location': center.get('area', ''), 'recipient': appointment_email(center),
                    'phone_clinic': center.get('phone', ''),
+                   'is_test_center': bool(center.get('is_test_center')),
                    'patient_token': patient_token, 'clinic_token': clinic_token,
                    'clinic_url': f'{base_url}/#clinic/{ident}/{clinic_token}'}
         # Only server catalog values may become clinic routing destinations.
-        suppress(notification(payload, ident))
+        if not booking_delivery.enabled():
+            suppress(notification(payload, ident))
         con.execute('''INSERT INTO booking_requests
             (id,owner_hash,idempotency_hash,input_hash,payload,patient_hash,clinic_hash,
              status,delivery,created,link_expires) VALUES(?,?,?,?,?,?,?,'requested','suppressed',?,?)
@@ -405,12 +419,20 @@ def create(path: Any, owner: str, data: dict, base_url: str) -> dict:
         if row['input_hash'] != input_hash:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
-        return receipt(row)
+        if booking_delivery.enabled():
+            booking_delivery.enqueue(con, row['id'])
+    # SMTP runs after the booking and outbox commit, never inside the write lock.
+    if booking_delivery.enabled():
+        booking_delivery.deliver(path, row['id'])
+    with connection(path) as con:
+        return receipt(get_row(con, row['id']), con)
 
 
-def receipt(row: Any) -> dict:
+def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
-    return {'id': row['id'], 'status': row['status'], 'delivery': row['delivery'],
+    delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
+    return {'id': row['id'], 'status': row['status'], 'delivery': delivery,
+            'is_test_center': bool(p.get('is_test_center')),
             'clinic_name': p['clinic_name'], 'location': p['location'],
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],
@@ -438,7 +460,7 @@ def patient(path: Any, ident: str, token: str, *, preview: bool = False) -> dict
     with connection(path) as con:
         row = get_row(con, ident)
         authorize(row, token, 'patient_hash')
-        result = receipt(row)
+        result = receipt(row, con)
         if row['status'] not in TERMINAL and row['link_expires'] <= time.time():
             result['status'] = 'expired'
         if preview:
@@ -459,6 +481,9 @@ def issue_code(path: Any, ident: str, token: str, *, preview: bool = False) -> d
     with connection(path, write=True) as con:
         row = get_row(con, ident, lock=True)
         clinic_link(row, token)
+        recipient = unpack(row)['recipient']
+        if not preview and booking_delivery.mode(recipient) != 'enabled':
+            raise BookingError('Clinic verification email delivery is not enabled for this request.', 503)
         if row['otp_sent'] and row['otp_sent'] > now - 60:
             raise BookingError('Wait 60 seconds before requesting another code.', 429)
         # A new code does not reset the failed-attempt budget for this link.
@@ -470,7 +495,15 @@ def issue_code(path: Any, ident: str, token: str, *, preview: bool = False) -> d
         result = {'delivery': 'suppressed', 'expires_in': 600, 'resend_after': 60}
         if preview:
             result['preview_code'] = code
+    if preview:
         return result
+    try:
+        booking_mail.send_clinic_code(recipient, ident, code)
+    except booking_mail.MailUnavailable as exc:
+        with connection(path, write=True) as con:
+            con.execute('UPDATE booking_requests SET otp_hash=NULL,otp_expires=NULL WHERE id=? AND otp_sent=?', (ident, now))
+        raise BookingError(str(exc), 503) from None
+    return {'delivery': 'sent', 'expires_in': 600, 'resend_after': 60}
 
 
 def verify_code(path: Any, ident: str, token: str, code: str) -> dict:
@@ -513,9 +546,9 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
             con.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
             row = get_row(con, ident)
         p = unpack(row)
-        result = receipt(row)
+        result = receipt(row, con)
         result.pop('tracking_token')
-        result.update(first_name=p['first_name'], phone=p['phone'], expires_at=row['clinic_session_expires'])
+        result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'], expires_at=row['clinic_session_expires'])
         return result
 
 

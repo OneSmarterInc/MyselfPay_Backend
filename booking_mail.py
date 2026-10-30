@@ -1,6 +1,7 @@
-"""Patient verification mail only. Clinic delivery has no enabled transport."""
+"""TLS SMTP transport for patient verification, center requests and clinic OTPs."""
 from email.message import EmailMessage
 from email.headerregistry import Address
+from email.errors import MessageError
 import os
 import smtplib
 import ssl
@@ -8,6 +9,81 @@ import ssl
 
 class MailUnavailable(RuntimeError):
     pass
+
+
+class MailDeliveryUncertain(MailUnavailable):
+    pass
+
+
+def send_message(message, recipient):
+    host = os.environ.get('SMTP_HOST', '')
+    username = os.environ.get('SMTP_USERNAME', '')
+    password = os.environ.get('SMTP_PASSWORD', '')
+    sender = os.environ.get('SMTP_FROM', username)
+    use_ssl = os.getenv('SMTP_USE_SSL', 'false').lower() == 'true'
+    use_tls = os.getenv('SMTP_USE_TLS', 'true').lower() == 'true'
+    if not all((host, username, password, sender)):
+        raise MailUnavailable('Email delivery is not configured. Please contact support.')
+    if use_ssl == use_tls:
+        raise MailUnavailable('Configure exactly one of SMTP_USE_TLS or SMTP_USE_SSL.')
+    if not recipient or '\r' in recipient or '\n' in recipient:
+        raise MailUnavailable('A valid email recipient is required.')
+    try:
+        address = Address(os.getenv('SMTP_FROM_NAME', 'MySelfPay'), addr_spec=sender)
+        if not address.domain or not address.username:
+            raise ValueError('Sender address requires a domain.')
+        if 'From' in message:
+            message.replace_header('From', str(address))
+        else:
+            message['From'] = str(address)
+    except (ValueError, TypeError, MessageError):
+        raise MailUnavailable('Configure SMTP_FROM as a valid sender email address.') from None
+    if 'To' in message:
+        message.replace_header('To', recipient)
+    else:
+        message['To'] = recipient
+    for header in ('Bcc', 'Cc'):
+        if header in message:
+            del message[header]
+    if 'Message-ID' not in message:
+        from email.utils import make_msgid
+        message['Message-ID'] = make_msgid(domain=sender.rsplit('@', 1)[-1])
+    if 'Date' not in message:
+        from email.utils import formatdate
+        message['Date'] = formatdate(localtime=False)
+    accepted = False
+    try:
+        port = int(os.getenv('SMTP_PORT', '465' if use_ssl else '587'))
+        context = ssl.create_default_context()
+        transport = smtplib.SMTP_SSL(host, port, timeout=15, context=context) if use_ssl else smtplib.SMTP(host, port, timeout=15)
+        with transport as smtp:
+            smtp.ehlo()
+            if use_tls:
+                smtp.starttls(context=context)
+                smtp.ehlo()
+            smtp.login(username, password)
+            try:
+                refused = smtp.send_message(message, from_addr=sender, to_addrs=[recipient])
+            except (smtplib.SMTPRecipientsRefused, smtplib.SMTPSenderRefused, smtplib.SMTPDataError):
+                raise MailUnavailable('The email was rejected by the mail server.') from None
+            except (OSError, smtplib.SMTPException):
+                raise MailDeliveryUncertain('The mail server did not confirm acceptance.') from None
+            if refused:
+                raise MailUnavailable('The email recipient was rejected.')
+            accepted = True
+    except MailUnavailable:
+        raise
+    except (OSError, ValueError, smtplib.SMTPException):
+        if not accepted:
+            raise MailUnavailable('Email could not be sent. Please retry shortly.') from None
+
+
+def send_clinic_code(recipient, ident, code):
+    message = EmailMessage()
+    message['From'] = 'MySelfPay'
+    message['Subject'] = f'MySelfPay access code for request {ident}'
+    message.set_content(f'Your MySelfPay clinic access code is: {code}\n\nRequest: {ident}\nThis code expires in 10 minutes and can be used once.\nEnter it on the secure request page. Do not forward this code.\n\nMySelfPay\nPlease do not reply to this automated email.')
+    send_message(message, recipient)
 
 
 def send_patient_code(recipient: str, code: str) -> None:
@@ -44,18 +120,5 @@ def send_patient_code(recipient: str, code: str) -> None:
 <p style="font-size:14px;line-height:1.6;color:#68727a">This verifies your email only; it does not confirm an appointment. If you did not request this code, you can ignore this email.</p>
 </td></tr><tr><td style="padding:20px 32px;background:#fafafa;border-top:1px solid #eceef0;font-size:12px;line-height:1.6;color:#68727a">MySelfPay by One Smarter, Inc.<br><strong>Please do not reply to this automated email.</strong></td></tr>
 </table></td></tr></table></body></html>''', subtype='html')
-    try:
-        port = int(os.environ.get('SMTP_PORT', '587'))
-        if port != 587:
-            raise ValueError('Only STARTTLS submission on port 587 is configured.')
-        with smtplib.SMTP(host, port, timeout=15) as smtp:
-            smtp.ehlo()
-            smtp.starttls(context=ssl.create_default_context())
-            smtp.ehlo()
-            smtp.login(username, password)
-            refused = smtp.send_message(message, from_addr=sender, to_addrs=[recipient])
-            if refused:
-                raise MailUnavailable('The verification email could not be sent. Please retry.')
-    except (OSError, ValueError, smtplib.SMTPException):
-        raise MailUnavailable('The verification email could not be sent. Please retry shortly.') from None
+    send_message(message, recipient)
 

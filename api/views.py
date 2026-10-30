@@ -71,6 +71,7 @@ class HealthView(ResourceView):
             with core.connect(database()) as con:
                 con.execute('SELECT member_id FROM user_accounts LIMIT 0')
                 con.execute('SELECT id FROM booking_requests LIMIT 0')
+                con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
             return Response({'status': 'unavailable'}, status=503)

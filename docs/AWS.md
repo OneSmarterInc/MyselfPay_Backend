@@ -33,7 +33,7 @@ python manage.py check --deploy --fail-level WARNING
 Do not run migrations in every container startup. Do not enable demo seeding on production. Load the approved directory through a reviewed import/cutover process. For an existing live SelfPay/Neon database, first satisfy the source repository's change-record policy; do not run these commands until the exact migration effects are reviewed, branch-tested and approved, and a backup is verified.
 
 5. Zip the repository contents with `Dockerfile` at the archive root, excluding `.git`, `.env`, local databases and test output. Upload this source bundle to Beanstalk. Set the ALB health check path to `/api/health` with expected status 200. Django intentionally exempts this path from HTTPS redirects so private health probes work. The Docker health check uses `127.0.0.1`, which must be in `DJANGO_ALLOWED_HOSTS`.
-6. Verify `/api/health`, guest search, signup/login, CSRF rejection, sign-out, source directory counts and email verification on the deployed HTTPS domains. An empty directory is not an import success. Clinic delivery is still intentionally suppressed: the interface must continue to say so. Verify restore capability and protect the retained encryption key before any real booking use.
+6. Verify `/api/health`, guest search, signup/login, CSRF rejection, sign-out, source directory counts and email verification on the deployed HTTPS domains. An empty directory is not an import success. Clinic delivery requires the outbox migration, SMTP settings and BOOKING_EMAIL_ENABLED=true. Follow docs/BOOKING_EMAIL.md; the interface reports the actual delivery state. Verify restore capability and protect the retained encryption key before any real booking use.
 
 ## Operational notes
 
