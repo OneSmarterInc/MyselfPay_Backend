@@ -46,6 +46,10 @@ class SearchSerializer(serializers.Serializer):
     selected = serializers.ListField(child=serializers.CharField(max_length=200), max_length=3, default=list)
 
 
+class LocationSearchSerializer(SearchSerializer):
+    location = serializers.CharField(max_length=120, allow_blank=False)
+
+
 class AgentSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=2000)
     search = SearchSerializer(default=dict)

@@ -184,5 +184,15 @@ class APITests(unittest.TestCase):
         priced = self.post('search', {'location': 'National', 'type': 'fixed'}).json()
         self.assertEqual(priced['nearby_unpriced'], [])
 
+    def test_only_location_is_required_for_search(self):
+        self.guest()
+        for data in ({}, {'location':''}):
+            response = self.post('search', data)
+            self.assertEqual(response.status_code, 400)
+            self.assertIn('location', response.json()['details'])
+        for data in ({'location':'Ohio'}, {'location':'National', 'mod':'MRI'}, {'location':'Ohio', 'contrast':'without'}, {'location':'Ohio', 'body':'Knee'}, {'location':'Ohio', 'budget':500}):
+            response = self.post('search', data)
+            self.assertEqual(response.status_code, 200, response.content)
+
 if __name__ == '__main__':
     unittest.main()

@@ -14,7 +14,7 @@ from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, 
 import accounts
 import booking
 import core
-from national_results import include_national_directory
+from search_results import apply_filters
 
 
 def database():
@@ -143,10 +143,11 @@ class CatalogView(ResourceView):
 
 
 class SearchView(ResourceView):
-    serializer_class = inputs.SearchSerializer
+    serializer_class = inputs.LocationSearchSerializer
 
     def post(self, request):
-        return Response(include_national_directory(core.search(self.validated(request), database()), database()))
+        data = self.validated(request)
+        return Response(apply_filters(core.search(data, database()), database(), data['sort']))
 
 
 class GuestUsageView(ResourceView):
@@ -164,7 +165,7 @@ class AgentView(ResourceView):
                             data['search'], data.get('conversation_id'), (3, 5, 500, 30, 2000), database())
         else:
             result = core.agent(data['message'], data['search'], database())
-        return Response(include_national_directory(result, database()))
+        return Response(apply_filters(result, database(), data['search'].get('sort', 'distance')))
 
 
 class ConversationsView(ResourceView):
