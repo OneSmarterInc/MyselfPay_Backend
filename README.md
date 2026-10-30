@@ -1,8 +1,8 @@
-# MySelfPay backend — Django + PostgreSQL
+# MySelfPay backend — Django REST Framework + PostgreSQL
 
-Django 5.2 LTS API for the separately hosted [React frontend](https://github.com/OneSmarterInc/Myselfpay_Frontend). Migrated from SelfPay main commit `bf839ef9af6efde48b2666cc26e7e793a7d9bd06`.
+Django 5.2 LTS with Django REST Framework 3.18 API for the separately hosted [React frontend](https://github.com/OneSmarterInc/Myselfpay_Frontend). Migrated from SelfPay main commit `bf839ef9af6efde48b2666cc26e7e793a7d9bd06`.
 
-The existing parameterized SQL domain services are intentionally retained so search qualifications, tenant isolation, session rotation, guest quotas, encrypted booking details and one-use email verification retain their behavior. Django owns HTTP routing, configuration, security middleware, migrations, management commands and WSGI serving. This is not a Django ORM rewrite. PostgreSQL is required in production; SQLite is an optional development/test fallback.
+DRF APIView resources, serializers, custom session authentication, permission classes, shared database-backed throttles, JSON parsing/rendering and centralized exception handling own the API boundary. Explicit named URLs replace the original catch-all dispatcher. The existing parameterized SQL services retain search qualifications, tenant isolation, session rotation, guest quotas, encrypted booking details and one-use email verification. Persistence still uses those services rather than Django ORM models. PostgreSQL is required in production; SQLite is an optional development/test fallback.
 
 ## Run locally
 
@@ -30,7 +30,9 @@ For SQLite-only development, remove `DATABASE_URL` from `.env` while retaining `
 
 ## API
 
-All paths are under `/api`. Requests with a body use JSON. Cookies are HttpOnly; tokens are never stored in browser local storage. Every mutation requires the exact configured `Origin`. Authenticated mutations additionally require the `X-CSRF-Token` returned by `/guest`, `/register`, `/login` or `/me`. The API preserves SelfPay's existing session CSRF protocol instead of Django's form-cookie token; its dispatch view is explicitly exempt from the form CSRF middleware and checked by the API boundary. CORS permits only `FRONTEND_ORIGIN` with credentials.
+All paths are under `/api`. Send `Accept: application/json` and use `Content-Type: application/json` for request bodies. Cookies are HttpOnly; tokens are never stored in browser local storage. Every mutation requires the exact configured `Origin`. Authenticated mutations additionally require the `X-CSRF-Token` returned by `/guest`, `/register`, `/login` or `/me`. DRF's custom `SelfPaySessionAuthentication` verifies the existing session token and CSRF token; the origin middleware protects anonymous login/registration and capability requests as well. CORS permits only `FRONTEND_ORIGIN` with credentials. Invalid or expired sessions receive 401; signed-in guests trying to save account-only data receive 403.
+
+DRF serializers validate fields and nested booking slots before domain operations. Successful response shapes and endpoint paths remain compatible with the React app. Validation errors return `{"error":"Please check the highlighted fields.","details":{"email":["Enter a valid email address."]}}`. Other errors return `{"error":"..."}`; rate limits retain `Retry-After`. The React client converts field errors to readable messages. Authenticated `OPTIONS /api/search` describes available methods and input fields. JSON-only rendering prevents API pages from exposing request data through an HTML browsable interface.
 
 | Endpoints | Methods / use |
 | --- | --- |
@@ -65,7 +67,7 @@ python -m unittest discover -v
 python manage.py check
 ```
 
-The local suite includes Django client integration tests for account registration/login, CSRF, cookie security, cross-account isolation, patient email verification, booking idempotency and tracking. SMTP is mocked only in tests. Tests use synthetic contacts and temporary SQLite files.
+The local suite includes DRF APIClient integration tests for account registration/login, CSRF, cookie security, cross-account isolation, serializer validation, malformed JSON, media-type negotiation, method restrictions, OPTIONS metadata, shared throttles and retry headers, patient email verification, booking idempotency and tracking. SMTP is mocked only in tests. Tests use synthetic contacts and temporary SQLite files. GitHub Actions supports both push-triggered runs and manual runs from its Actions page.
 
 GitHub Actions additionally runs migrations and API tests against a fresh PostgreSQL 17 service, a production deployment settings check, and a Docker build. **`API_TEST_DATABASE_URL` and `TEST_DATABASE_URL` must only point at disposable test databases. Tests delete their data. Never use a live URL.** Local Windows verification cannot start PostgreSQL because the machine's application-control policy blocks its executable; PostgreSQL and Docker checks must pass in CI before deployment.
 

@@ -6,7 +6,7 @@ class RequestSecurityMiddleware:
     """Require explicit trusted browser origin on every state-changing request.
 
     Authenticated mutations additionally require a constant-time session CSRF
-    check in views. Origins do not substitute for authentication.
+    check in DRF session authentication. Origins do not substitute for authentication.
     """
     def __init__(self, get_response):
         self.get_response = get_response

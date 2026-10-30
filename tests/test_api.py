@@ -10,7 +10,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 os.environ.setdefault('DJANGO_DEBUG', 'true')
 import django
 django.setup()
-from django.test import Client, override_settings
+from django.test import override_settings
+from rest_framework.test import APIClient as Client
 from cryptography.fernet import Fernet
 import accounts
 import booking
@@ -31,7 +32,7 @@ class APITests(unittest.TestCase):
             # CI database is disposable and must never point at production.
             for table in ['booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
-        self.client = Client()
+        self.client = Client(enforce_csrf_checks=True)
         self.csrf = ''
 
     def tearDown(self):
@@ -58,7 +59,7 @@ class APITests(unittest.TestCase):
         self.assertTrue(self.client.cookies['selfpay_session']['httponly'])
         self.assertEqual(self.post('search', {'location': 'Ohio'}, csrf='wrong').status_code, 403)
         self.assertEqual(self.post('search', {'location': 'Ohio', 'scope': 'state'}).status_code, 200)
-        self.assertEqual(self.post('preferences', {'location': 'Ohio'}).status_code, 404)
+        self.assertEqual(self.post('preferences', {'location': 'Ohio'}).status_code, 403)
         self.assertEqual(self.post('logout').status_code, 200)
         self.assertEqual(self.client.get('/api/me').status_code, 401)
 
@@ -117,6 +118,45 @@ class APITests(unittest.TestCase):
             self.assertTrue(cookie['httponly'])
             self.assertEqual(cookie['path'], '/')
             self.assertFalse(cookie['domain'])
+
+    def test_drf_validation_media_types_and_method_contract(self):
+        self.guest()
+        response = self.post('search', {'radius': 13})
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('radius', response.json()['details'])
+        malformed = self.client.post('/api/search', '{bad json', content_type='application/json',
+                                     HTTP_ORIGIN='http://localhost:5173', HTTP_X_CSRF_TOKEN=self.csrf)
+        self.assertEqual(malformed.status_code, 400)
+        wrong_media = self.client.post('/api/search', 'location=Ohio', content_type='text/plain',
+                                       HTTP_ORIGIN='http://localhost:5173', HTTP_X_CSRF_TOKEN=self.csrf)
+        self.assertEqual(wrong_media.status_code, 415)
+        oversized = self.client.post('/api/search', json.dumps({'location': 'x' * 100001}),
+                                     content_type='application/json', HTTP_ORIGIN='http://localhost:5173',
+                                     HTTP_X_CSRF_TOKEN=self.csrf)
+        self.assertEqual(oversized.status_code, 413)
+        self.assertEqual(self.client.get('/api/search').status_code, 405)
+        self.assertEqual(self.client.get('/api/not-an-endpoint').status_code, 404)
+        self.assertEqual(self.client.get('/api/catalog', HTTP_ACCEPT='text/html').status_code, 406)
+        metadata = self.client.options('/api/search', HTTP_ACCEPT='application/json')
+        self.assertEqual(metadata.status_code, 200)
+        self.assertIn('location', metadata.json()['actions']['POST'])
+
+    def test_drf_throttling_returns_retry_after(self):
+        import time
+        with patch('api.throttles.time.time', return_value=time.time()), patch('api.throttles.GuestThrottle.limit', 1):
+            self.guest()
+            response = self.post('guest')
+        self.assertEqual(response.status_code, 429)
+        self.assertGreater(int(response['Retry-After']), 0)
+        self.assertIn('error', response.json())
+
+    def test_booking_capabilities_work_without_a_session_but_reject_forgery(self):
+        # A patient capability is independent of a browser login. Invalid
+        # capabilities are rejected by the booking service, not session auth.
+        anonymous = Client(enforce_csrf_checks=True)
+        response = self.post('booking/patient', {'id': 'missing', 'token': 'forged'}, client=anonymous)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(self.post('booking/options', {'clinic_id': 'missing'}, client=anonymous).status_code, 401)
 
 if __name__ == '__main__':
     unittest.main()

@@ -39,7 +39,16 @@ else:
     if not DEBUG:
         raise ImproperlyConfigured('Production requires PostgreSQL.')
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': DOMAIN_DATABASE}}
-INSTALLED_APPS = ['corsheaders', 'api']
+INSTALLED_APPS = ['corsheaders', 'rest_framework', 'api']
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ['api.authentication.SelfPaySessionAuthentication'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
+    'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser'],
+    'DEFAULT_RENDERER_CLASSES': ['rest_framework.renderers.JSONRenderer'],
+    'EXCEPTION_HANDLER': 'api.exceptions.api_exception_handler',
+    'UNAUTHENTICATED_USER': None,
+    'UNAUTHENTICATED_TOKEN': None,
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',

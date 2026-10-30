@@ -1,25 +1,35 @@
-"""Django HTTP boundary; framework-independent SelfPay services retain their schema."""
+"""Django REST Framework resources over the existing SelfPay domain services."""
 import hashlib
-import json
-import logging
 import secrets
 import time
 from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import RequestDataTooBig
+from rest_framework.exceptions import NotFound
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from api.authentication import AccountMemberOnly
+from api import serializers as inputs
+from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, BookingCreateThrottle
 import accounts
 import booking
 import core
 
-log = logging.getLogger(__name__)
 
 def database():
     return settings.DOMAIN_DATABASE
 
-def reply(data, status=200, token=None):
-    response = JsonResponse(data, status=status)
+
+def session_token(request):
+    return request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
+
+
+def client_ip(request):
+    return request.META.get('REMOTE_ADDR', 'unknown')
+
+
+def session_response(data, status=200, token=None):
+    response = Response(data, status=status)
     if token is not None:
         if token:
             response.set_cookie(settings.SESSION_COOKIE_NAME, token, max_age=28800,
@@ -29,178 +39,250 @@ def reply(data, status=200, token=None):
             response.delete_cookie(settings.SESSION_COOKIE_NAME, path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
     return response
 
-def payload(request):
-    if request.content_type != 'application/json':
-        raise ValueError('JSON required.')
-    if not 0 < len(request.body) <= 100000:
-        raise ValueError('Request must contain 1–100000 bytes.')
-    data = json.loads(request.body)
-    if not isinstance(data, dict):
-        raise ValueError('JSON object required.')
-    return data
 
-def allowed(key, limit):
-    key = hashlib.sha256(key.casefold().encode()).hexdigest()
-    with core.connect(database()) as con:
-        row = con.execute('INSERT INTO login_limits VALUES(?,?,1) ON CONFLICT(key,window_id) DO UPDATE SET attempts=login_limits.attempts+1 RETURNING attempts', (key, int(time.time() // 60))).fetchone()
-    return row['attempts'] <= limit
+def session_details(member):
+    return {'member': {key: value for key, value in member.items() if key != 'csrf'}, 'csrf': member['csrf']}
 
-def public_member(member):
-    return {key: value for key, value in member.items() if key != 'csrf'}
 
-@require_GET
-def health(request):
-    try:
+class ResourceView(APIView):
+    serializer_class = inputs.ObjectSerializer
+
+    def get_serializer(self, *args, **kwargs):
+        return self.serializer_class(*args, **kwargs)
+
+    def validated(self, request):
+        # Read the body once before parsing, enforcing size even when a proxy
+        # omits Content-Length. JSONParser handles malformed JSON/media types.
+        if len(request.body) > settings.DATA_UPLOAD_MAX_MEMORY_SIZE:
+            raise RequestDataTooBig()
+        if not request.body:
+            raise ValueError('Request must contain 1–100000 bytes.')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return serializer.validated_data
+
+
+class HealthView(ResourceView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            with core.connect(database()) as con:
+                con.execute('SELECT member_id FROM user_accounts LIMIT 0')
+                con.execute('SELECT id FROM booking_requests LIMIT 0')
+            return Response({'status': 'ok'})
+        except Exception:
+            return Response({'status': 'unavailable'}, status=503)
+
+
+class DirectorySummaryView(ResourceView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response(core.directory_summary(database()))
+
+
+class AuthenticationView(ResourceView):
+    permission_classes = [AllowAny]
+    action = 'login'
+    serializer_class = inputs.LoginSerializer
+
+    def post(self, request):
+        data = accounts.authenticate(database(), self.validated(request), self.action,
+                                     client_ip(request), session_token(request))
+        token = data.pop('token')
+        return session_response(data, 201 if self.action == 'register' else 200, token)
+
+
+class RegistrationView(AuthenticationView):
+    action = 'register'
+    serializer_class = inputs.RegistrationSerializer
+
+
+class GuestView(ResourceView):
+    permission_classes = [AllowAny]
+    throttle_classes = [GuestThrottle]
+
+    def post(self, request):
+        self.validated(request)
+        if request.auth and request.auth['tenant'] == 'guest':
+            return Response(session_details(request.auth))
+        data = core.guest_login(database())
+        token = data.pop('token')
+        return session_response(data, token=token)
+
+
+class PasswordView(ResourceView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        return Response({'error': 'Password recovery is not available yet.'}, status=410)
+
+
+class MeView(ResourceView):
+    def get(self, request):
+        return Response(session_details(request.auth))
+
+
+class LogoutView(ResourceView):
+    def post(self, request):
         with core.connect(database()) as con:
-            con.execute('SELECT member_id FROM user_accounts LIMIT 0')
-            con.execute('SELECT id FROM booking_requests LIMIT 0')
-        return reply({'status': 'ok'})
-    except Exception:
-        return reply({'status': 'unavailable'}, 503)
-
-@csrf_exempt  # Existing API uses a per-session X-CSRF-Token, checked below plus strict Origin middleware.
-def dispatch(request, route):
-    try:
-        return handle(request, route.rstrip('/'))
-    except RequestDataTooBig:
-        return reply({'error': 'Request too large.'}, 413)
-    except (accounts.AccountError, booking.BookingError) as exc:
-        return reply({'error': str(exc)}, exc.status)
-    except core.GuestAgentLimited as exc:
-        response = reply({'error': str(exc), 'code': 'guest_preview_limit', 'reason': exc.reason, 'retry_after': exc.retry_after}, 429)
-        if exc.retry_after:
-            response['Retry-After'] = str(exc.retry_after)
-        return response
-    except core.GuestCreationLimited as exc:
-        response = reply({'error': str(exc), 'retry_after': exc.retry_after}, 429)
-        response['Retry-After'] = str(exc.retry_after)
-        return response
-    except PermissionError:
-        return reply({'error': 'Record unavailable.'}, 404)
-    except (json.JSONDecodeError, UnicodeDecodeError, TypeError, KeyError, AttributeError):
-        return reply({'error': 'Invalid request.'}, 400)
-    except ValueError as exc:
-        return reply({'error': str(exc)}, 400)
-    except Exception:
-        # Never log request bodies, tokens, database URLs or exception values.
-        log.error('SelfPay service request failed')
-        return reply({'error': 'Service temporarily unavailable. Please retry.'}, 503)
-
-def handle(request, route):
-    method = request.method
-    if method not in ('GET', 'POST', 'DELETE'):
-        return reply({'error': 'Method not allowed.'}, 405)
-    db = database()
-    token = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
-    member = core.session(token, db)
-    ip = request.META.get('REMOTE_ADDR', 'unknown')
-    if route == 'directory-summary' and method == 'GET':
-        return reply(core.directory_summary(db))
-    if method != 'GET' and member and not secrets.compare_digest(request.headers.get('X-CSRF-Token', ''), member['csrf']):
-        return reply({'error': 'CSRF token required.'}, 403)
-    if route in ('register', 'login'):
-        if method != 'POST':
-            return reply({'error': 'Use POST.'}, 405)
-        data = accounts.authenticate(db, payload(request), route, ip, token)
-        return reply(data, 201 if route == 'register' else 200, data.pop('token'))
-    if route == 'password':
-        return reply({'error': 'Password recovery is not available yet.'}, 410)
-    if route == 'guest' and method == 'POST':
-        payload(request)
-        if not allowed('guest:' + ip, 20):
-            return reply({'error': 'Too many requests. Wait one minute.'}, 429)
-        if member and member['tenant'] == 'guest':
-            return reply({'member': public_member(member), 'csrf': member['csrf']})
-        data = core.guest_login(db)
-        return reply(data, token=data.pop('token'))
-    if route.startswith('booking/'):
-        return booking_request(request, route[8:], member, ip)
-    if not member:
-        return reply({'error': 'Sign in to your account.'}, 401)
-    if route == 'me' and method == 'GET':
-        return reply({'member': public_member(member), 'csrf': member['csrf']})
-    if route == 'logout' and method == 'POST':
-        with core.connect(db) as con:
-            key = hashlib.sha256(token.encode()).hexdigest()
+            key = hashlib.sha256(session_token(request).encode()).hexdigest()
             con.execute('DELETE FROM guest_usage WHERE session_hash=?', (key,))
             con.execute('DELETE FROM sessions WHERE token_hash=?', (key,))
-        return reply({'ok': True}, token='')
-    if route == 'catalog' and method == 'GET':
-        return reply(core.catalog(db))
-    if route == 'search' and method == 'POST':
-        return reply(core.search(payload(request), db))
-    if route == 'guest-usage' and method == 'GET':
-        return reply({'usage': core.guest_usage(token, db)})
-    if route == 'agent' and method == 'POST':
-        data = payload(request)
-        if member['tenant'] == 'guest':
-            return reply(core.guest_agent(token, ip, data.get('message'), data.get('search', {}), data.get('conversation_id'), (3, 5, 500, 30, 2000), db))
-        return reply(core.agent(data.get('message'), data.get('search', {}), db))
-    if member['tenant'] == 'guest' and (route == 'corrections' or (route.startswith('conversations') and method != 'GET')):
-        return reply({'error': 'Sign in to use saved account features.'}, 403)
-    if route == 'conversations':
-        if method == 'GET':
-            return reply({'conversations': core.history(member, db)})
-        if method == 'POST':
-            return reply(core.save_conversation(member, payload(request), db))
-    if route.startswith('conversations/') and method == 'DELETE':
-        core.delete_conversation(member, route.split('/')[-1], db)
-        return reply({'ok': True})
-    if route == 'preferences':
-        if method == 'GET':
-            return reply(core.preference(member, path=db))
-        if method == 'DELETE':
-            return reply(core.preference(member, delete=True, path=db))
-        data = payload(request)
-        if data.get('private'):
+        return session_response({'ok': True}, token='')
+
+
+class CatalogView(ResourceView):
+    def get(self, request):
+        return Response(core.catalog(database()))
+
+
+class SearchView(ResourceView):
+    serializer_class = inputs.SearchSerializer
+
+    def post(self, request):
+        return Response(core.search(self.validated(request), database()))
+
+
+class GuestUsageView(ResourceView):
+    def get(self, request):
+        return Response({'usage': core.guest_usage(session_token(request), database())})
+
+
+class AgentView(ResourceView):
+    serializer_class = inputs.AgentSerializer
+
+    def post(self, request):
+        data = self.validated(request)
+        if request.auth['tenant'] == 'guest':
+            return Response(core.guest_agent(session_token(request), client_ip(request), data['message'],
+                            data['search'], data.get('conversation_id'), (3, 5, 500, 30, 2000), database()))
+        return Response(core.agent(data['message'], data['search'], database()))
+
+
+class ConversationsView(ResourceView):
+    serializer_class = inputs.ConversationSerializer
+
+    def get_permissions(self):
+        classes = [IsAuthenticated] if self.request.method in ('GET', 'HEAD', 'OPTIONS') else [IsAuthenticated, AccountMemberOnly]
+        return [permission() for permission in classes]
+
+    def get(self, request):
+        return Response({'conversations': core.history(request.auth, database())})
+
+    def post(self, request):
+        return Response(core.save_conversation(request.auth, self.validated(request), database()))
+
+
+class ConversationDetailView(ResourceView):
+    permission_classes = [IsAuthenticated, AccountMemberOnly]
+
+    def delete(self, request, ident):
+        core.delete_conversation(request.auth, ident, database())
+        return Response({'ok': True})
+
+
+class PreferencesView(ResourceView):
+    serializer_class = inputs.PreferenceSerializer
+
+    def get_permissions(self):
+        classes = [IsAuthenticated, AccountMemberOnly] if self.request.method == 'POST' else [IsAuthenticated]
+        return [permission() for permission in classes]
+
+    def get(self, request):
+        return Response(core.preference(request.auth, path=database()))
+
+    def post(self, request):
+        data = self.validated(request)
+        if data['private']:
             raise ValueError('Private preferences cannot be saved.')
-        return reply(core.preference(member, data, path=db))
-    if route == 'corrections' and method == 'POST':
-        data = payload(request)
-        if data.get('private'):
+        return Response(core.preference(request.auth, data, path=database()))
+
+    def delete(self, request):
+        return Response(core.preference(request.auth, delete=True, path=database()))
+
+
+class CorrectionsView(ResourceView):
+    permission_classes = [IsAuthenticated, AccountMemberOnly]
+    serializer_class = inputs.CorrectionSerializer
+
+    def post(self, request):
+        data = self.validated(request)
+        if data['private']:
             raise ValueError('Exit private mode before saving a correction report.')
-        catalog = core.catalog(db)
-        offer = next((o for o in catalog['offers'] if o['id'] == data.get('offer_id')), None)
+        catalog = core.catalog(database())
+        offer = next((o for o in catalog['offers'] if o['id'] == data['offer_id']), None)
         if not offer:
             raise ValueError('Offer unavailable.')
-        description = str(data.get('description', '')).strip()
-        if not 1 <= len(description) <= 1000:
-            raise ValueError('Describe the issue in 1–1000 characters.')
         ident = secrets.token_hex(12)
-        with core.connect(db) as con:
-            con.execute('INSERT INTO corrections VALUES(?,?,?,?,?,?,?,?,?)', (ident, member['tenant'], member['id'], offer['id'], catalog['version'], str(data.get('category', 'Other'))[:80], description, time.time(), 'pending review'))
-        return reply({'id': ident, 'status': 'pending review'}, 201)
-    return reply({'error': 'Not found.'}, 404)
+        with core.connect(database()) as con:
+            con.execute('INSERT INTO corrections VALUES(?,?,?,?,?,?,?,?,?)',
+                        (ident, request.auth['tenant'], request.auth['id'], offer['id'], catalog['version'],
+                         data['category'], data['description'], time.time(), 'pending review'))
+        return Response({'id': ident, 'status': 'pending review'}, status=201)
 
-def booking_request(request, action, member, ip):
-    if request.method != 'POST':
-        return reply({'error': 'Use POST.'}, 405)
-    if not allowed('booking:' + ip, 60):
-        return reply({'error': 'Too many requests. Wait one minute.'}, 429)
-    db, data = database(), payload(request)
-    if action in ('options', 'create', 'email-code', 'email-verify'):
-        if not member:
-            return reply({'error': 'Start a guest session first.'}, 401)
+
+class BookingView(ResourceView):
+    throttle_classes = [BookingThrottle]
+    serializers_by_action = {
+        'options': inputs.BookingOptionsSerializer,
+        'email-code': inputs.PatientEmailSerializer,
+        'email-verify': inputs.PatientCodeSerializer,
+        'create': inputs.BookingCreateSerializer,
+        'patient': inputs.BookingCapabilitySerializer,
+        'code': inputs.BookingCapabilitySerializer,
+        'verify': inputs.ClinicCodeSerializer,
+        'details': inputs.ClinicSessionSerializer,
+        'status': inputs.ClinicStatusSerializer,
+        'lock': inputs.ClinicSessionSerializer,
+    }
+
+    def get_permissions(self):
+        authenticated_actions = ('options', 'email-code', 'email-verify', 'create')
+        return [IsAuthenticated() if self.kwargs['action'] in authenticated_actions else AllowAny()]
+
+    def get_throttles(self):
+        classes = [BookingThrottle]
+        if self.kwargs['action'] == 'email-code':
+            classes.append(BookingEmailThrottle)
+        elif self.kwargs['action'] == 'create':
+            classes.append(BookingCreateThrottle)
+        return [throttle() for throttle in classes]
+
+    def get_serializer(self, *args, **kwargs):
+        return self.serializers_by_action[self.kwargs['action']](*args, **kwargs)
+
+    def post(self, request, action):
+        db, data = database(), self.validated(request)
         if action == 'options':
-            return reply(booking.options(db, str(data.get('clinic_id', '')), str(data.get('offer_id', ''))))
-        if action == 'email-code':
-            if not allowed('booking-email:' + ip, 3):
-                return reply({'error': 'Too many email requests. Wait one minute.'}, 429)
-            return reply(booking.request_patient_code(db, member['id'], data.get('email')))
-        if action == 'email-verify':
-            return reply(booking.verify_patient_code(db, member['id'], data.get('verification_id'), data.get('code')))
-        if not allowed('booking-create:' + ip, 5):
-            return reply({'error': 'Request limit reached. Wait one minute.'}, 429)
-        return reply(booking.create(db, member['id'], data, settings.FRONTEND_ORIGIN), 201)
-    ident = str(data.get('id', ''))
-    if action == 'patient':
-        return reply(booking.patient(db, ident, data.get('token', '')))
-    if action == 'code':
-        return reply(booking.issue_code(db, ident, data.get('token', '')))
-    if action == 'verify':
-        return reply(booking.verify_code(db, ident, data.get('token', ''), data.get('code', '')))
-    if action in ('details', 'status'):
-        return reply(booking.clinic_details(db, ident, data.get('session', ''), data.get('status') if action == 'status' else None))
-    if action == 'lock':
-        return reply(booking.lock_session(db, ident, data.get('session', '')))
-    return reply({'error': 'Not found.'}, 404)
+            result = booking.options(db, data['clinic_id'], data['offer_id'])
+        elif action == 'email-code':
+            result = booking.request_patient_code(db, request.auth['id'], data['email'])
+        elif action == 'email-verify':
+            result = booking.verify_patient_code(db, request.auth['id'], data['verification_id'], data['code'])
+        elif action == 'create':
+            result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN)
+        elif action == 'patient':
+            result = booking.patient(db, data['id'], data['token'])
+        elif action == 'code':
+            result = booking.issue_code(db, data['id'], data['token'])
+        elif action == 'verify':
+            result = booking.verify_code(db, data['id'], data['token'], data['code'])
+        elif action in ('details', 'status'):
+            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'))
+        else:
+            result = booking.lock_session(db, data['id'], data['session'])
+        return Response(result, status=201 if action == 'create' else 200)
+
+
+class NotFoundView(ResourceView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request, **kwargs):
+        raise NotFound('Not found.')
+
+    post = delete = put = patch = get
