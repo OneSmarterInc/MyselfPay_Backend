@@ -1,0 +1,91 @@
+{
+  "Naugatuck Valley Radiology": {
+    "source_hash": "844df57402f9ac26520a2f852065c66397b988c1799f00eaf3384efe8c8df759",
+    "source": "https://www.nvranet.com/",
+    "checked": "2026-10-09",
+    "scope": "Locations only; does not establish branch-specific price applicability",
+    "locations": [
+      {
+        "city": "Waterbury",
+        "state": "CT",
+        "zip": "06708"
+      },
+      {
+        "city": "Prospect",
+        "state": "CT",
+        "zip": "06712"
+      },
+      {
+        "city": "Southbury",
+        "state": "CT",
+        "zip": "06488"
+      }
+    ]
+  },
+  "Mosaic Diagnostics": {
+    "source_hash": "249f6a6b11a127ce207caddf517872652d5d3a74c07c79a57c4f3b2d02d3c937",
+    "source": "https://mosaicdiagnostics.com/locations/",
+    "checked": "2026-10-09",
+    "scope": "Geography only. Price applicability remains governed by each offer region. Mosaic professional-services-only sites excluded; existing IHS city list preserved with La Jolla ZIP verified.",
+    "locations": [
+      {
+        "city": "The Bronx",
+        "state": "NY",
+        "zip": "10460"
+      },
+      {
+        "city": "Brooklyn",
+        "state": "NY",
+        "zip": "11204"
+      },
+      {
+        "city": "Howard Beach",
+        "state": "NY",
+        "zip": "11414"
+      },
+      {
+        "city": "Rockville Centre",
+        "state": "NY",
+        "zip": "11570"
+      }
+    ]
+  },
+  "Imaging Healthcare Specialists": {
+    "source_hash": "5025fea58016c2685d7d8d4b13a47da9d54ed96c329eb13799cdf0d269db37f3",
+    "source": "https://www.imaginghealthcare.com/locations/la-jolla/",
+    "checked": "2026-10-09",
+    "scope": "Geography only. Price applicability remains governed by each offer region. Mosaic professional-services-only sites excluded; existing IHS city list preserved with La Jolla ZIP verified.",
+    "locations": [
+      {
+        "city": "San Diego",
+        "state": "CA"
+      },
+      {
+        "city": "Chula Vista",
+        "state": "CA"
+      },
+      {
+        "city": "Encinitas",
+        "state": "CA"
+      },
+      {
+        "city": "La Jolla",
+        "state": "CA",
+        "zip": "92037"
+      },
+      {
+        "city": "National City",
+        "state": "CA"
+      },
+      {
+        "city": "Oceanside",
+        "state": "CA"
+      },
+      {
+        "city": "Poway",
+        "state": "CA"
+      }
+    ]
+  }
+}
+

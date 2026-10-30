@@ -1,0 +1,12 @@
+{
+  "source": "https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/cities/totals/sub-est2025.csv",
+  "vintage": 2025,
+  "field": "POPESTIMATE2025",
+  "summary_level": "162",
+  "description": "Census Bureau July 1, 2025 incorporated-place population estimates",
+  "downloaded": "2026-10-14",
+  "rows": 19461,
+  "source_sha256": "e3508f5201465913476d4ddf91740f191f7977c9f2614a2a7e30b5fd22027934",
+  "derived_sha256": "53d770a90d92b3d37c30ec672faf8d9a7462164190338dabbe7fa91d1c5dc0cd"
+}
+

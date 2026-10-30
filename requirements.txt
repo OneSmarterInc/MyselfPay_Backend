@@ -1,0 +1,8 @@
+Django>=5.2,<5.3
+django-cors-headers>=4.9,<5
+dj-database-url>=3,<4
+gunicorn>=23,<24
+psycopg[binary]>=3.2,<4
+cryptography>=46,<51
+python-dotenv>=1.2,<2
+tzdata>=2025.2
