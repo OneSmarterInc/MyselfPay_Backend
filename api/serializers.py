@@ -28,9 +28,13 @@ class RegistrationSerializer(LoginSerializer):
         return value
 
 
-class BudgetField(serializers.FloatField):
+class BudgetField(serializers.IntegerField):
     def to_internal_value(self, data):
-        return super().to_internal_value(0 if data == '' or data is None else data)
+        import re
+        value = '0' if data == '' or data is None else str(data).strip()
+        if not re.fullmatch(r'[0-9]{1,6}', value):
+            raise serializers.ValidationError('Enter up to 6 digits for the budget, or leave it blank.')
+        return super().to_internal_value(value)
 
 
 class SearchSerializer(serializers.Serializer):
@@ -40,7 +44,7 @@ class SearchSerializer(serializers.Serializer):
     mod = serializers.ChoiceField(choices=('', 'MRI', 'CT'), default='')
     body = serializers.CharField(max_length=100, allow_blank=True, default='')
     contrast = serializers.ChoiceField(choices=CONTRAST, default='unknown')
-    budget = BudgetField(min_value=0, max_value=1000000, default=0)
+    budget = BudgetField(min_value=0, max_value=999999, default=0)
     type = serializers.ChoiceField(choices=('all', 'fixed', 'starting', 'range', 'maximum', 'average', 'quote', 'conflict'), default='all')
     sort = serializers.ChoiceField(choices=('distance', 'price', 'scope'), default='distance')
     selected = serializers.ListField(child=serializers.CharField(max_length=200), max_length=3, default=list)

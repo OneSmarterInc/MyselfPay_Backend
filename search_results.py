@@ -34,19 +34,22 @@ def directory_matches(entry, search):
     return True
 
 
-def apply_filters(result, path, requested_sort=None, requested_scope=None):
+def apply_filters(result, path, requested_sort=None, requested_scope=None, *, informational_body=False, statewide=False):
     search = result['search']
     if requested_sort is not None:
         search['sort'] = requested_sort
+    if informational_body:
+        search = {**search, 'body': ''}
     national = search['location'].strip().casefold() == 'national'
     origin = result.get('resolved_location')
     city_only = bool(requested_scope == 'city' and origin and origin['kind'] == 'place')
     if requested_scope == 'city':
         search['scope'] = 'city' if city_only else 'state'
+        result['search']['scope'] = search['scope']
     if not national and (not origin or result.get('location_suggestions')):
         return result
     state = origin['state'] if origin else None
-    spatial = bool(origin and origin['kind'] in ('place', 'zcta') and search['scope'] == 'radius')
+    spatial = bool(not statewide and origin and origin['kind'] in ('place', 'zcta') and search['scope'] == 'radius')
     data = core.catalog(path)
     offers, programs, facilities, program_entries = [], [], [], []
     missing_coordinates = 0

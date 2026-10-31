@@ -30,6 +30,22 @@ class OptionalFilterTests(unittest.TestCase):
         self.assertEqual(result['search']['scope'], 'city')
         self.assertEqual({entry['name'] for entry in result['nearby_unpriced']}, {'Ohio Center','Unplaced Cincinnati'})
 
+    def test_manual_search_ignores_body_and_mileage_but_keeps_state_boundary(self):
+        self.entries[0]['locations'][0]['latitude'] = 45
+        self.entries.append(dict(name='Unplaced Ohio Center',booking_id='unplaced',states='OH',mri='Available',locations=[]))
+        expected = None
+        for radius in (25,50,100,250):
+            for body in ('', 'Brain', 'any notes not an exam'):
+                search = core.clean_search({'location':'Cincinnati, OH','scope':'radius','radius':radius,'body':body})
+                result = dict(search=search,resolved_location=self.origin,location_suggestions=[])
+                with patch('search_results.core.catalog',return_value={'offers':self.offers,'entries':self.entries}):
+                    result = apply_filters(result,'unused',informational_body=True,statewide=True)
+                ids = ({offer['id'] for offer in result['offers']}, {entry['booking_id'] for entry in result['nearby_unpriced']})
+                self.assertEqual(result['search']['body'],body)
+                if expected is None: expected = ids
+                self.assertEqual(ids,expected)
+                self.assertEqual(ids,({'knee','brain'},{'unplaced'}))
+
     def test_each_optional_filter_works_without_other_exam_fields(self):
         for filters, expected in [({}, {'knee','brain','quote'}),
                 ({'mod':'CT'}, {'brain'}), ({'body':'Knee'}, {'knee','quote'}),

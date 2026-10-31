@@ -225,5 +225,15 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200, response.content)
         self.assertEqual(response.json()['predefined_question'], 'Knee MRI near Dayton')
 
+    def test_budget_is_optional_and_accepts_only_up_to_six_digits(self):
+        self.guest()
+        for value in ('',0,1,999999,'999999'):
+            response = self.post('search',{'location':'Ohio','budget':value})
+            self.assertEqual(response.status_code,200,response.content)
+        for value in (1000000,'1234567','1e3',12.5,'12.50','letters',-1):
+            response = self.post('search',{'location':'Ohio','budget':value})
+            self.assertEqual(response.status_code,400,response.content)
+            self.assertIn('budget',response.json()['details'])
+
 if __name__ == '__main__':
     unittest.main()
