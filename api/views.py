@@ -14,6 +14,7 @@ from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, 
 import accounts
 import booking
 import core
+import chat_questions
 from search_results import apply_filters
 
 
@@ -160,12 +161,15 @@ class AgentView(ResourceView):
 
     def post(self, request):
         data = self.validated(request)
+        question = data['message']
+        search = chat_questions.preset_search(question)
+        query = chat_questions.QUESTIONS[question]['query']
         if request.auth['tenant'] == 'guest':
-            result = core.guest_agent(session_token(request), client_ip(request), data['message'],
-                            data['search'], data.get('conversation_id'), (3, 5, 500, 30, 2000), database())
+            result = core.guest_agent(session_token(request), client_ip(request), query,
+                            search, data.get('conversation_id'), (3, 5, 500, 30, 2000), database())
         else:
-            result = core.agent(data['message'], data['search'], database())
-        return Response(apply_filters(result, database(), data['search'].get('sort', 'distance')))
+            result = core.agent(query, search, database())
+        return Response(chat_questions.answer(apply_filters(result, database(), search['sort']), question))
 
 
 class ConversationsView(ResourceView):

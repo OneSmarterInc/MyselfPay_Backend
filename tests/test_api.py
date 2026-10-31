@@ -194,5 +194,36 @@ class APITests(unittest.TestCase):
             response = self.post('search', data)
             self.assertEqual(response.status_code, 200, response.content)
 
+    def test_predefined_chat_questions_only_and_guest_quota(self):
+        from chat_questions import QUESTIONS
+        self.guest()
+        rejected = self.post('agent', {'message':'What scan should I get?'})
+        self.assertEqual(rejected.status_code, 400)
+        self.assertEqual(self.client.get('/api/guest-usage').json()['usage'], {})
+        conversation = None
+        for question, preset in QUESTIONS.items():
+            response = self.post('agent', {'message':question, 'search':{'location':'National','mod':'CT','budget':1}, 'conversation_id':conversation})
+            self.assertEqual(response.status_code, 200, response.content)
+            data = response.json()
+            conversation = data['conversation_id']
+            self.assertEqual(data['agent_mode'], 'predefined-questions')
+            self.assertEqual(data['predefined_question'], question)
+            self.assertEqual(data['location_suggestions'], [])
+            self.assertEqual(data['search']['mod'], 'MRI')
+            self.assertEqual(data['search']['budget'], preset['search']['budget'])
+            self.assertEqual(data['search']['location'], preset['search']['location'])
+            self.assertIn('No matching listings', data['reply'])
+        question = next(iter(QUESTIONS))
+        for _ in range(2):
+            self.assertEqual(self.post('agent', {'message':question, 'conversation_id':conversation}).status_code, 200)
+        self.assertEqual(self.post('agent', {'message':question, 'conversation_id':conversation}).status_code, 429)
+
+    def test_registered_chat_also_rejects_free_text(self):
+        self.assertEqual(self.post('register', {'name':'Synthetic Chat User','email':'chat@example.com','password':'Synthetic-only-passphrase!'}).status_code, 201)
+        self.assertEqual(self.post('agent', {'message':'Hello arbitrary question'}).status_code, 400)
+        response = self.post('agent', {'message':'  KNEE MRI NEAR DAYTON  '})
+        self.assertEqual(response.status_code, 200, response.content)
+        self.assertEqual(response.json()['predefined_question'], 'Knee MRI near Dayton')
+
 if __name__ == '__main__':
     unittest.main()

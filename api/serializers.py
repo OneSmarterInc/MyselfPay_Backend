@@ -55,6 +55,13 @@ class AgentSerializer(serializers.Serializer):
     search = SearchSerializer(default=dict)
     conversation_id = serializers.CharField(max_length=100, allow_null=True, required=False)
 
+    def validate_message(self, value):
+        from chat_questions import canonical_question
+        question = canonical_question(value)
+        if question is None:
+            raise serializers.ValidationError('Choose one of the predefined questions. Free-text questions are not supported.')
+        return question
+
 
 class MessageSerializer(serializers.Serializer):
     role = serializers.ChoiceField(choices=('user', 'assistant'))
