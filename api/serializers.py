@@ -35,7 +35,7 @@ class BudgetField(serializers.FloatField):
 
 class SearchSerializer(serializers.Serializer):
     location = serializers.CharField(max_length=120, allow_blank=True, default='')
-    scope = serializers.ChoiceField(choices=('state', 'radius'), default='radius')
+    scope = serializers.ChoiceField(choices=('state', 'radius', 'city'), default='radius')
     radius = serializers.ChoiceField(choices=(25, 50, 100, 250), default=50)
     mod = serializers.ChoiceField(choices=('', 'MRI', 'CT'), default='')
     body = serializers.CharField(max_length=100, allow_blank=True, default='')

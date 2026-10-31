@@ -148,7 +148,7 @@ class SearchView(ResourceView):
 
     def post(self, request):
         data = self.validated(request)
-        return Response(apply_filters(core.search(data, database()), database(), data['sort']))
+        return Response(apply_filters(core.search(data, database()), database(), data['sort'], data['scope']))
 
 
 class GuestUsageView(ResourceView):

@@ -18,7 +18,17 @@ class OptionalFilterTests(unittest.TestCase):
         national = search['location'] == 'National'
         result = dict(search=search, resolved_location=None if national else self.origin, location_suggestions=[])
         with patch('search_results.core.catalog', return_value={'offers':self.offers, 'entries':self.entries}):
-            return apply_filters(result, 'unused', filters.get('sort', 'distance'))
+            return apply_filters(result, 'unused', filters.get('sort', 'distance'), filters.get('scope'))
+
+    def test_city_browse_includes_unpriced_city_records_without_other_filters(self):
+        self.offers = []
+        self.origin['name'] = 'Cincinnati'
+        self.entries[0]['locations'][0]['city'] = 'Cincinnati'
+        self.entries.append(dict(name='Unplaced Cincinnati', booking_id='city-no-coordinates', area='Cincinnati', states='OH', locations=[]))
+        self.entries.append(dict(name='Dayton Center', booking_id='dayton', area='Dayton', states='OH', locations=[]))
+        result = self.search(location='Cincinnati, OH', scope='city')
+        self.assertEqual(result['search']['scope'], 'city')
+        self.assertEqual({entry['name'] for entry in result['nearby_unpriced']}, {'Ohio Center','Unplaced Cincinnati'})
 
     def test_each_optional_filter_works_without_other_exam_fields(self):
         for filters, expected in [({}, {'knee','brain','quote'}),

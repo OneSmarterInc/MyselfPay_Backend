@@ -34,12 +34,15 @@ def directory_matches(entry, search):
     return True
 
 
-def apply_filters(result, path, requested_sort=None):
+def apply_filters(result, path, requested_sort=None, requested_scope=None):
     search = result['search']
     if requested_sort is not None:
         search['sort'] = requested_sort
     national = search['location'].strip().casefold() == 'national'
     origin = result.get('resolved_location')
+    city_only = bool(requested_scope == 'city' and origin and origin['kind'] == 'place')
+    if requested_scope == 'city':
+        search['scope'] = 'city' if city_only else 'state'
     if not national and (not origin or result.get('location_suggestions')):
         return result
     state = origin['state'] if origin else None
@@ -53,6 +56,14 @@ def apply_filters(result, path, requested_sort=None):
         is_program = entry.get('location_type') == 'program'
         if national:
             return dict(entry)
+        if city_only:
+            city = origin.get('name', search['location'].split(',')[0])
+            city_locations = [loc for loc in locations if loc.get('state') == state and str(loc.get('city', '')).casefold() == city.casefold()]
+            area_matches = has_words(str(entry.get('area', '')), city) and (covers(entry, state) or any(loc.get('state') == state for loc in entry.get('locations', [])))
+            if not city_locations and not area_matches:
+                return None
+            match = nearest(origin, city_locations)
+            return annotate(entry, match) if match else dict(entry)
         if is_program:
             return dict(entry) if covers(entry, state) else None
         if spatial:
