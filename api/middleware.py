@@ -19,10 +19,10 @@ class RequestSecurityMiddleware:
                 request.get_host()
             except DisallowedHost:
                 return JsonResponse({'error': 'Host rejected.'}, status=400)
-        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') not in settings.CORS_ALLOWED_ORIGINS:
+        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') != settings.FRONTEND_ORIGIN:
             return JsonResponse({'error': 'Origin rejected.'}, status=403)
         response = self.get_response(request)
-        response['Cache-Control'] = 'no-store'
+        response['Cache-Control'] = 'private, no-store' if request.path.startswith('/api/v1/spatial-bundle/') else 'no-store'
         response['X-Frame-Options'] = 'DENY'
         response['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
         return response

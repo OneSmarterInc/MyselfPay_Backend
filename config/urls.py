@@ -1,7 +1,9 @@
 from django.urls import path, re_path
 from api import views
+from api.spatial_views import SpatialBundleView
 
 urlpatterns = [
+    path('api/v1/spatial-bundle/<str:h3_res7>/', SpatialBundleView.as_view(), name='spatial-bundle'),
     path('api/health', views.HealthView.as_view(), name='health'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),

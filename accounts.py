@@ -16,6 +16,7 @@ class AccountError(ValueError):
 def initialize(path):
     with core.connect(path) as db:
         db.executescript((Path(__file__).parent / 'ops/sql/20261030-user-accounts.sql').read_text())
+        db.executescript((Path(__file__).parent / 'ops/sql/20261101-account-zip.sql').read_text())
 
 def email_address(value):
     if not isinstance(value, str): raise AccountError('Enter a valid email address.')
@@ -59,6 +60,9 @@ def authenticate(path, data, action, ip, previous_token=''):
         if not isinstance(phone, str) or (phone and not re.fullmatch(r'[+0-9 ()\-\.]{7,30}', phone)):
             raise AccountError('Enter a valid phone number or leave it blank.')
         if len(password) < 12: raise AccountError('Use a password of 12–128 characters.')
+        zip_code = data.get('zip_code', '')
+        if not isinstance(zip_code, str) or (zip_code and not re.fullmatch(r'[0-9]{5}-[0-9]{4}', zip_code)):
+            raise AccountError('Enter ZIP+4 in the format 12345-6789, or leave it blank.')
         ident, salt = str(uuid.uuid4()), secrets.token_hex(16)
         hashed = 'scrypt-v1$' + password_hash(password, salt)
         with core.connect(path) as db:
@@ -68,6 +72,7 @@ def authenticate(path, data, action, ip, previous_token=''):
                 raise AccountError('Unable to create an account with these details. Try logging in.', 409)
             db.execute('INSERT INTO members(id,tenant,email,name,salt,password_hash) VALUES(?,?,?,?,?,?)', (ident, 'selfpay', email, name.strip(), salt, hashed))
             db.execute('INSERT INTO user_accounts(member_id,email,phone,created) VALUES(?,?,?,?)', (ident, email, phone.strip(), time.time()))
+            db.execute('INSERT INTO account_zip_codes(member_id,zip_code) VALUES(?,?)', (ident, zip_code))
             return new_session(db, ident, previous_token)
     with core.connect(path) as db:
         row = db.execute('SELECT m.id,m.salt,m.password_hash FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE a.email=?', (email,)).fetchone()
@@ -85,5 +90,11 @@ def new_session(db, ident, previous_token):
         db.execute('DELETE FROM sessions WHERE token_hash=?', (old,))
     db.execute('INSERT INTO sessions VALUES(?,?,?,?)', (hashlib.sha256(token.encode()).hexdigest(), ident, csrf, time.time() + 8*3600))
     member = dict(db.execute('SELECT id,tenant,name,email FROM members WHERE id=?', (ident,)).fetchone())
+    member['zip_code'] = saved_zip(db, ident)
     return {'token': token, 'csrf': csrf, 'member': member}
+
+def saved_zip(db, ident):
+    row = db.execute('SELECT zip_code FROM account_zip_codes WHERE member_id=?', (ident,)).fetchone()
+    return row['zip_code'] if row else ''
+
 

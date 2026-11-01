@@ -73,6 +73,8 @@ class HealthView(ResourceView):
             with core.connect(database()) as con:
                 con.execute('SELECT member_id FROM user_accounts LIMIT 0')
                 con.execute('SELECT id FROM booking_requests LIMIT 0')
+                con.execute('SELECT id FROM spatial_locations LIMIT 0')
+                con.execute('SELECT member_id FROM account_zip_codes LIMIT 0')
                 con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
@@ -84,7 +86,11 @@ class DirectorySummaryView(ResourceView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response(core.directory_summary(database()))
+        data = core.directory_summary(database())
+        with core.connect(database()) as db:
+            active = core.active_batch(db)
+            ready = bool(active and db.execute('SELECT value FROM settings WHERE key=?', ('spatial-ready:' + active,)).fetchone())
+        return Response({**data, 'spatial_api_version': 1, 'spatial_ready': ready, 'account_zip_enabled': True})
 
 
 class AuthenticationView(ResourceView):
@@ -126,7 +132,11 @@ class PasswordView(ResourceView):
 
 class MeView(ResourceView):
     def get(self, request):
-        return Response(session_details(request.auth))
+        member = dict(request.auth)
+        if member['tenant'] != 'guest':
+            with core.connect(database()) as db:
+                member['zip_code'] = accounts.saved_zip(db, member['id'])
+        return Response(session_details(member))
 
 
 class LogoutView(ResourceView):
@@ -140,7 +150,10 @@ class LogoutView(ResourceView):
 
 class CatalogView(ResourceView):
     def get(self, request):
-        return Response(core.catalog(database()))
+        data = core.catalog(database())
+        if request.query_params.get('metadata') == '1':
+            return Response({'version': data['version'], 'entry_count': len(data['entries']), 'offer_count': len(data['offers']), 'entries': [], 'offers': [], 'locations': data['locations'], 'metadata_only': True})
+        return Response(data)
 
 
 class SearchView(ResourceView):

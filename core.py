@@ -70,6 +70,8 @@ def initialize(path=DB):
             category TEXT NOT NULL, description TEXT NOT NULL, created REAL NOT NULL, status TEXT NOT NULL);
         ''')
         db.execute('PRAGMA secure_delete=ON')
+        import spatial
+        spatial.initialize(db)
     if not str(path).startswith(('postgres://','postgresql://')):
         import accounts
         accounts.initialize(path)
@@ -158,6 +160,8 @@ def stage_import(source, mappings, path=DB):
         report['offer_count']=len(offers)
         db.execute('INSERT INTO batches VALUES(?,?,?,?,?,?)',(batch,signature,Path(source).name,time.time(),'staged',canonical(report)))
         db.executemany('INSERT INTO entries VALUES(?,?,?,?)',[(batch,k,h,canonical(e)) for k,h,e in normalized])
+        import spatial
+        spatial.index_batch(db, batch)
         for m,key in offers:
             from decimal import Decimal
             cents=lambda v: int(Decimal(str(v))*100) if v is not None else None
@@ -496,6 +500,8 @@ def history(member,path=DB):
     if member['tenant']=='guest':return []
     with connect(path) as db:
         db.execute('PRAGMA secure_delete=ON')
+        import spatial
+        spatial.initialize(db)
         return [{'id':r['id'],'title':r['title'],'updated':r['updated']*1000,'expires':r['expires']*1000,**json.loads(r['payload'])} for r in db.execute('SELECT * FROM conversations WHERE tenant=? AND member_id=? AND expires>? ORDER BY updated DESC',(member['tenant'],member['id'],time.time()))]
 
 def save_conversation(member,data,path=DB):
@@ -519,6 +525,8 @@ def save_conversation(member,data,path=DB):
 def delete_conversation(member,ident,path=DB):
     with connect(path) as db:
         db.execute('PRAGMA secure_delete=ON')
+        import spatial
+        spatial.initialize(db)
         if ident=='all':db.execute('DELETE FROM conversations WHERE tenant=? AND member_id=?',(member['tenant'],member['id']))
         else:
             count=db.execute('DELETE FROM conversations WHERE id=? AND tenant=? AND member_id=?',(ident,member['tenant'],member['id'])).rowcount

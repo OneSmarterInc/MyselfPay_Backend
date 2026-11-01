@@ -77,6 +77,8 @@ class Command(BaseCommand):
                 con.execute('INSERT INTO offers VALUES(?,?,?,?,?,?,?)', (batch, offer['id'], CENTER_KEY, None, None, 'quote', core.canonical(offer)))
             count = con.execute('SELECT COUNT(*) AS n FROM entries WHERE batch_id=?', (batch,)).fetchone()['n']
             offer_count = con.execute('SELECT COUNT(*) AS n FROM offers WHERE batch_id=?', (batch,)).fetchone()['n']
+            import spatial
+            spatial.index_batch(con, batch)
             report = core.canonical({'entry_count': count, 'offer_count': offer_count, 'parent_batch': active, 'test_center_added': True})
             con.execute("UPDATE batches SET status='published',report=? WHERE id=?", (report, batch))
             con.execute("INSERT INTO settings VALUES('active_batch',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (batch,))
