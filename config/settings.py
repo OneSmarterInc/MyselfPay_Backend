@@ -63,7 +63,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_TZ = True
 APPEND_SLASH = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100000
-CORS_ALLOWED_ORIGINS = [FRONTEND_ORIGIN]
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys([
+    FRONTEND_ORIGIN,
+    'https://myselfpay-frontend.vercel.app',
+    'https://myselfpay.onesmarter.com',
+]))
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['content-type', 'x-csrf-token']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'DELETE', 'OPTIONS']
