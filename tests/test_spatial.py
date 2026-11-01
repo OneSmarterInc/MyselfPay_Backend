@@ -73,6 +73,14 @@ class SpatialTests(unittest.TestCase):
         self.assertEqual(response['Cache-Control'], 'private, no-store')
         self.assertIn('Cookie', response['Vary'])
 
+    def test_bundle_without_trailing_slash_matches_canonical_response(self):
+        self.guest()
+        canonical = self.client.get(f'/api/v1/spatial-bundle/{self.center}/')
+        proxied = self.client.get(f'/api/v1/spatial-bundle/{self.center}')
+        self.assertEqual(proxied.status_code, 200)
+        self.assertEqual(proxied.json(), canonical.json())
+        self.assertEqual(proxied['Cache-Control'], 'private, no-store')
+
     def test_authentication_validation_and_no_coordinate_parameters(self):
         self.assertEqual(self.client.get(f'/api/v1/spatial-bundle/{self.center}/').status_code, 401)
         self.guest()
