@@ -53,6 +53,15 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         return response.json()
 
+    def test_both_approved_frontend_origins_and_csrf(self):
+        for origin in ('https://myselfpay-frontend.vercel.app', 'https://myselfpay.onesmarter.com'):
+            with self.subTest(origin=origin):
+                self.assertEqual(self.post('guest', origin=origin).status_code, 200)
+                self.assertEqual(self.post('search', {'location': 'Ohio'}, origin=origin, csrf='wrong').status_code, 403)
+                self.assertEqual(self.post('logout', origin=origin).status_code, 200)
+        for origin in ('https://evil.example', 'https://myselfpay.onesmarter.com.evil.example', ''):
+            self.assertEqual(self.post('guest', origin=origin).status_code, 403)
+
     def test_guest_search_csrf_cookie_and_logout(self):
         self.assertEqual(self.client.get('/api/me').status_code, 401)
         self.assertEqual(self.post('guest', origin='https://evil.example').status_code, 403)
