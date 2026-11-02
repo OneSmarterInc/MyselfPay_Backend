@@ -26,13 +26,36 @@ class LiveDeliveryTests(unittest.TestCase):
                 self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_requests').fetchone()['n'], 1)
             self.assertEqual(recipient, 'appointments@example.test')
             self.assertIn('New self-pay request', str(message['Subject']))
-            self.assertNotIn(self.fixture.data['phone'], message.as_string())
+            self.assertIn(self.fixture.data['phone'], message.as_string())
+            self.assertEqual(str(message['Reply-To']), 'patient@example.test')
         with patch('booking_mail.send_message', side_effect=transport) as send:
             result = self.fixture.create()
             self.assertEqual(result['delivery'], 'sent')
             self.assertEqual(self.fixture.create()['id'], result['id'])
             self.assertFalse(booking_delivery.deliver(self.fixture.db, result['id']))
             send.assert_called_once()
+
+    def test_email_uses_registered_contact_and_escapes_content(self):
+        with patch('booking_mail.send_message') as send:
+            booking.create(self.fixture.db, 'guest-owner', self.fixture.data, 'https://portal.example.test',
+                           account_contact={'email': 'registered@example.test', 'phone': '+1 555 010 2222'})
+        message = send.call_args.args[0]
+        self.assertEqual(str(message['Reply-To']), 'registered@example.test')
+        html = message.get_body(preferencelist=('html',)).get_content()
+        self.assertIn('mailto:registered@example.test', html)
+        self.assertIn('tel:+15550102222', html)
+        self.assertNotIn('mailto:patient@example.test', html)
+        self.assertNotIn('/#clinic/', html)
+        self.assertEqual(html.count('<a href='), 2)
+        self.assertIn('Preferred appointment times', html)
+        self.assertIn('America/New_York', html)
+        self.assertIn('Clinic will confirm', html)
+        payload={'recipient':'appointments@example.test','clinic_name':'<script>test</script>',
+                 'service':'MRI','exam':'<b>Knee</b>','contrast':'without','slots':self.fixture.data['slots'],
+                 'timezone':'America/New_York','patient_email':'patient@example.test','phone':'5550101111'}
+        html=booking.notification(payload,'MSP-TEST').get_body(preferencelist=('html',)).get_content()
+        self.assertIn('&lt;script&gt;', html)
+        self.assertNotIn('<script>', html)
 
     def test_safe_failure_is_retryable_without_losing_or_recreating_booking(self):
         with patch('booking_mail.send_message', side_effect=booking_mail.MailUnavailable('unavailable')):

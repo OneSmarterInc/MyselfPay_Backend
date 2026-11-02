@@ -21,6 +21,7 @@ import sqlite3
 import time
 from typing import Any, Iterator
 from zoneinfo import ZoneInfo
+from urllib.parse import quote
 
 from cryptography.fernet import Fernet
 import core
@@ -214,41 +215,57 @@ def pack(payload: dict) -> str:
 
 
 def notification(payload: dict, ident: str) -> EmailMessage:
-    """Clinic request email: patient contact details stay behind OTP verification."""
+    """Readable clinic summary with direct patient reply and call actions."""
     message = EmailMessage()
     message['From'] = Address('MySelfPay', addr_spec=os.environ.get('SMTP_FROM', 'info@kormic.ai'))
     if payload['recipient']:
         message['To'] = payload['recipient']
-    message['Subject'] = f'New self-pay request {ident}'
+    message['Subject'] = f'New self-pay request — {payload["clinic_name"]} — {ident}'
     message['Message-ID'] = f'<selfpay-{ident}@{os.environ.get("SMTP_FROM", "no-reply@example.invalid").rsplit("@", 1)[-1]}>'
-    slots = '; '.join(f"{s['date']} {PERIODS[s['period']]}" for s in payload['slots'])
-    exam = ' '.join(filter(None, (payload['service'], payload['exam'])))
+    reply_email = str(payload.get('reply_email') or payload.get('patient_email', '')).strip()
+    if not EMAIL.fullmatch(reply_email):
+        reply_email = ''
+    phone = str(payload.get('reply_phone') or payload.get('phone', '')).strip()
+    call_number = ('+' if phone.startswith('+') else '') + re.sub(r'\D', '', phone)
+    if reply_email:
+        message['Reply-To'] = reply_email
+    exam = ' '.join(filter(None, (payload['service'], payload.get('exam', ''))))
     contrast = {'unknown': 'Not sure — confirm with patient', 'without': 'Without contrast', 'with': 'With contrast', 'both': 'Without and with contrast'}[payload['contrast']]
+    zone = ZONES[payload['timezone']] + ' (' + payload['timezone'] + ')'
+    slots = [datetime.strptime(slot['date'], '%Y-%m-%d').strftime('%A, %d %B %Y') + ' · ' + PERIODS[slot['period']] for slot in payload['slots']]
+    price = payload.get('price_text') or 'Clinic will confirm the exact total.'
+    email_url = 'mailto:' + quote(reply_email, safe='@') + '?subject=' + quote('Re: MySelfPay appointment request ' + ident, safe='')
+    call_url = 'tel:' + call_number
+    test_note = 'TEST CENTER — synthetic booking workflow. No medical care is provided.' if payload.get('is_test_center') else ''
     message.set_content(
-        f"New self-pay request {ident}\nClinic: {payload['clinic_name']}\n"
-        f"Exam: {exam}\nContrast: {contrast}\nPreferred times: {slots} ({ZONES[payload['timezone']]} time)\n"
-        f"Price: {payload.get('price_text', 'Confirm directly with the patient.')}\n"
-        + ('TEST CENTER: This is a synthetic booking workflow; no medical care is provided.\n' if payload.get('is_test_center') else '') +
-        'Open the secure link to review patient contact details.\n'
-        f"{payload['clinic_url']}\n\n"
-        'This link expires in 72 hours. A one-time code is required.\n'
-        'This is a request, not a confirmed appointment.\n\n'
-        'Please do not reply to this automated email.'
+        f'New self-pay appointment request\nClinic: {payload["clinic_name"]}\nExam: {exam}\nContrast: {contrast}\n'
+        + 'Preferred times (' + zone + '):\n' + '\n'.join('- ' + slot for slot in slots)
+        + f'\nPrice: {price}\n\nReply by email: {reply_email or "Not provided"}\nCall patient: {phone or "Not provided"}\n'
+        + (email_url + '\n' if reply_email else '') + (call_url + '\n' if call_number else '')
+        + f'\n{test_note}\nThis is an appointment request, not a confirmed booking.\nMySelfPay · {ident}\n'
     )
-    message.add_alternative(f'''<html lang="en"><body style="background:#f4f5f6;font-family:Arial,sans-serif;color:#22272b;padding:24px">
-<div style="max-width:560px;margin:auto;background:white;padding:32px;border-radius:14px">
-<p style="font-size:26px;font-weight:bold">MySelf<span style="color:#b51d2b">Pay</span></p>
-<h1 style="font-size:24px">New self-pay request</h1><p>{escape(ident)}</p>
-<p><strong>Clinic:</strong> {escape(payload['clinic_name'])}</p><p><strong>Exam:</strong> {escape(exam)}</p>
-<p><strong>Contrast:</strong> {escape(contrast)}</p>
-<p><strong>Preferred times:</strong> {escape(slots)} ({escape(ZONES[payload['timezone']])} time)</p>
-<p><strong>Price:</strong> {escape(payload.get('price_text', 'Confirm directly with the patient.'))}</p>
-{'<p><strong>TEST CENTER — synthetic booking workflow. No medical care is provided.</strong></p>' if payload.get('is_test_center') else ''}
-<p><a href="{escape(payload['clinic_url'], quote=True)}" style="display:inline-block;padding:14px 22px;background:#b51d2b;color:white;text-decoration:none;border-radius:8px">Open request</a></p>
-<p>The patient's contact details open after verification. This link expires in 72 hours.</p>
-<p>This is a request, not a confirmed appointment.</p><hr style="border:0;border-top:1px solid #eceef0">
-<p style="font-size:12px;color:#68727a">MySelfPay by One Smarter, Inc.<br>Please do not reply to this automated email.</p>
-</div></body></html>''', subtype='html')
+    rows = [('Clinic', payload['clinic_name']), ('Exam', exam), ('Contrast', contrast)]
+    row_html = ''.join('<tr><td style="padding:8px 0;font-size:12px;color:#626974">' + escape(label) + '<br><strong style="font-size:16px;color:#202429;line-height:1.5">' + escape(value) + '</strong></td></tr>' for label, value in rows)
+    slot_html = ''.join('<div style="padding:10px 12px;margin:6px 0;background:#f4f5f7;border-radius:6px;font-size:14px;line-height:1.6">' + escape(slot) + '</div>' for slot in slots)
+    email_action = f'<a href="{escape(email_url, quote=True)}" style="display:inline-block;background:#b51d2b;color:#fff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 6px 8px 0">Reply by email</a>' if reply_email else ''
+    phone_action = f'<a href="{escape(call_url, quote=True)}" style="display:inline-block;background:#202429;color:#fff;text-decoration:none;padding:13px 18px;border-radius:6px;font-weight:bold;margin:0 0 8px">Call patient</a>' if call_number else ''
+    message.add_alternative(f'''<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;background:#f4f5f7;color:#202429;font-family:Arial,sans-serif;-webkit-text-size-adjust:100%">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:16px 10px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#fff;border:1px solid #e2e4e7;border-radius:12px"><tr><td style="padding:24px 20px;word-break:break-word">
+<div style="font-size:24px;font-weight:bold;margin-bottom:20px">MySelf<span style="color:#b51d2b">Pay</span></div>
+<h1 style="font-size:22px;line-height:1.35;margin:0 0 16px">New appointment request</h1>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0">{row_html}</table>
+<h2 style="font-size:15px;margin:20px 0 4px">Preferred appointment times</h2>
+<div style="font-size:12px;color:#626974;margin-bottom:8px">{escape(zone)}</div>{slot_html}
+<div style="margin:18px 0;padding:14px;background:#f8f3ef;border-radius:8px"><span style="font-size:12px;color:#626974">Price</span><br><strong style="font-size:17px;line-height:1.5">{escape(price)}</strong></div>
+<h2 style="font-size:15px;margin:20px 0 8px">Contact the patient</h2>
+<p style="font-size:14px;line-height:1.7;margin:0 0 14px">Email: {escape(reply_email or 'Not provided')}<br>Mobile: {escape(phone or 'Not provided')}</p>
+<div style="font-size:14px">{email_action}{phone_action}</div>
+{'<p style="font-size:12px;line-height:1.6;color:#7a4b00">' + escape(test_note) + '</p>' if test_note else ''}
+<p style="font-size:12px;line-height:1.6;color:#626974;margin:16px 0 0">This is an appointment request, not a confirmed booking.</p>
+<p style="font-size:11px;line-height:1.5;color:#626974;border-top:1px solid #e2e4e7;padding-top:12px;margin-bottom:0">MySelfPay by One Smarter, Inc.<br>Reference: {escape(ident)}</p>
+</td></tr></table></td></tr></table></body></html>''', subtype='html')
     return message
 
 
@@ -364,7 +381,7 @@ def verified_patient_email(con: Any, owner_hash: str, ident: Any, proof: Any) ->
     return cipher().decrypt(row['email_encrypted'].encode()).decode()
 
 
-def create(path: Any, owner: str, data: dict, base_url: str) -> dict:
+def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact: dict | None = None) -> dict:
     validated = validate(data)
     key = text_field(data, 'idempotency_key', 80)
     center_key = text_field(data, 'clinic_id', 200)
@@ -399,6 +416,8 @@ def create(path: Any, owner: str, data: dict, base_url: str) -> dict:
         patient_token, clinic_token = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         payload = {**validated, 'clinic_id': center_key, 'clinic_name': center['name'],
                    'patient_email': patient_email,
+                   'reply_email': (account_contact or {}).get('email') or patient_email,
+                   'reply_phone': (account_contact or {}).get('phone') or validated['phone'],
                    'price_text': price_text,
                    'location': center.get('area', ''), 'recipient': appointment_email(center),
                    'phone_clinic': center.get('phone', ''),

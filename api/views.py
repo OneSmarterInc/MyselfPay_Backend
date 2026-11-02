@@ -292,7 +292,10 @@ class BookingView(ResourceView):
         elif action == 'email-verify':
             result = booking.verify_patient_code(db, request.auth['id'], data['verification_id'], data['code'])
         elif action == 'create':
-            result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN)
+            with core.connect(db) as con:
+                contact = con.execute('SELECT email,phone FROM user_accounts WHERE member_id=?', (request.auth['id'],)).fetchone()
+            result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN,
+                                    account_contact=dict(contact) if contact else None)
         elif action == 'patient':
             result = booking.patient(db, data['id'], data['token'])
         elif action == 'code':
