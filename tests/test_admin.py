@@ -42,7 +42,7 @@ class AdminTests(TransactionTestCase):
         anonymous=Client()
         self.assertEqual(anonymous.get('/admin/').status_code,302)
         login=anonymous.get('/admin/login/')
-        self.assertContains(login,'MySelfPay administration')
+        self.assertContains(login,'Administrator sign in')
         self.assertIn('style-src',login['Content-Security-Policy'])
         staff=get_user_model().objects.create_user('staff',password='Synthetic-staff-password!',is_staff=True)
         anonymous.force_login(staff)

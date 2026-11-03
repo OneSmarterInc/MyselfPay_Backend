@@ -9,6 +9,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import connection
+from django.urls import reverse
 from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration
 from admin_settings import secret_cipher
 import accounts
@@ -19,6 +20,8 @@ class SelfPayAdminSite(AdminSite):
     site_title = 'MySelfPay Admin'
     index_title = 'Dashboard'
     index_template = 'admin/selfpay_index.html'
+    login_template = 'admin/login.html'
+    enable_nav_sidebar = False
 
     def has_permission(self, request):
         return bool(request.user.is_active and request.user.is_superuser)
@@ -27,6 +30,14 @@ class SelfPayAdminSite(AdminSite):
         context = {'registered_users': PortalAccount.objects.count(),
                    'suspended_users': PortalSetting.objects.filter(key__startswith='account-disabled:', value='1').count(),
                    'twilio_saved': TwilioConfiguration.objects.filter(pk=1).exists()}
+        context['active_users'] = max(0, context['registered_users'] - context['suspended_users'])
+        recent = list(PortalAccount.objects.order_by('-created')[:6])
+        names = dict(PortalMember.objects.filter(pk__in=[a.pk for a in recent]).values_list('pk', 'name'))
+        suspended = set(PortalSetting.objects.filter(key__in=['account-disabled:' + a.pk for a in recent], value='1').values_list('key', flat=True))
+        context['recent_accounts'] = [{'name': names.get(a.pk, 'Portal user'), 'email': a.email,
+                                     'registered': datetime.fromtimestamp(a.created, timezone.utc).strftime('%d %b %Y'),
+                                     'suspended': 'account-disabled:' + a.pk in suspended,
+                                     'url': reverse('admin:api_portalaccount_change', args=[a.pk])} for a in recent]
         context.update(extra_context or {})
         return super().index(request, context)
 

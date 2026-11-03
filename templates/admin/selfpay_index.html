@@ -1,17 +1,7 @@
-{% extends "admin/index.html" %}
-{% block extrastyle %}{{ block.super }}
-<style>
-.selfpay-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
-.selfpay-stat{padding:16px;border:1px solid var(--hairline-color);border-radius:8px;background:var(--body-bg)}
-.selfpay-stat h2{font-size:13px;margin:0 0 10px;padding:0;background:none;color:var(--body-quiet-color)}
-.selfpay-stat p{font-size:26px;margin:0;color:var(--body-fg)}
-</style>
-{% endblock %}
-{% block content %}
-<div class="selfpay-stats">
-<div class="selfpay-stat"><h2>Registered users</h2><p>{{ registered_users }}</p></div>
-<div class="selfpay-stat"><h2>Suspended users</h2><p>{{ suspended_users }}</p></div>
-<div class="selfpay-stat"><h2>Twilio settings</h2><p style="font-size:18px">{% if twilio_saved %}Saved{% else %}Not configured{% endif %}</p></div>
-</div>
-{{ block.super }}
+{% extends "admin/base_site.html" %}
+{% block content_title %}{% endblock %}
+{% block content %}<div class="sp-page-heading"><div><span class="sp-eyebrow">WORKSPACE OVERVIEW</span><h1>Dashboard</h1><p>Manage your MySelfPay users and portal configuration.</p></div><a class="sp-button" href="{% url 'admin:api_portalaccount_changelist' %}">Manage users →</a></div>
+<div class="sp-stats"><div class="sp-stat"><h2>Registered users</h2><strong>{{ registered_users }}</strong><p>Total portal accounts</p></div><div class="sp-stat"><h2>Active users</h2><strong>{{ active_users }}</strong><p>Accounts with portal access</p></div><div class="sp-stat"><h2>Suspended users</h2><strong>{{ suspended_users }}</strong><p>Accounts with access paused</p></div><div class="sp-stat"><h2>Twilio settings</h2><strong class="sp-stat-text">{% if twilio_saved %}Saved{% else %}Not configured{% endif %}</strong><p>Encrypted credential storage</p></div></div>
+<section class="sp-panel"><div class="sp-panel-heading"><div><h2>Recent registered users</h2><p>The latest accounts created on your portal.</p></div><a href="{% url 'admin:api_portalaccount_changelist' %}">View all users →</a></div><div class="sp-table-scroll"><table class="sp-user-table"><thead><tr><th>Name</th><th>Email</th><th>Registered</th><th>Status</th><th><span class="sr-only">Action</span></th></tr></thead><tbody>{% for account in recent_accounts %}<tr><td>{{ account.name }}</td><td>{{ account.email }}</td><td>{{ account.registered }}</td><td><span class="sp-status {% if account.suspended %}paused{% endif %}">{% if account.suspended %}Suspended{% else %}Active{% endif %}</span></td><td><a href="{{ account.url }}">Manage</a></td></tr>{% empty %}<tr><td colspan="5" class="sp-empty">No registered users yet. New portal registrations will appear here.</td></tr>{% endfor %}</tbody></table></div></section>
+<div class="sp-shortcuts"><a class="sp-shortcut" href="{% url 'admin:api_twilioconfiguration_changelist' %}"><span class="sp-shortcut-icon" aria-hidden="true">✉</span><div><h2>Twilio configuration</h2><p>Add or update your SMS verification credentials.</p></div><span aria-hidden="true">→</span></a><a class="sp-shortcut" href="{% url 'admin:auth_user_changelist' %}"><span class="sp-shortcut-icon" aria-hidden="true">◇</span><div><h2>Administrator accounts</h2><p>Manage the people who can access this workspace.</p></div><span aria-hidden="true">→</span></a></div>
 {% endblock %}

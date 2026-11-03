@@ -21,3 +21,7 @@ Dashboard: registered account count, suspended count, and saved Twilio configura
 Twilio settings accept API Key SID (SK), API key secret, optional Account SID (AC), and Verify Service SID (VA). Blank secret retains the saved value. The clear checkbox removes the stored override. Secrets are encrypted before saving using a key derived from the stable DJANGO_SECRET_KEY and a dedicated purpose. Back up this key; changing it requires re-entering stored Twilio secrets. Stored values take precedence over environment values through admin_settings.twilio_configuration(); fallback names include TWILIO_API_KEY_SID / SID and TWILIO_API_KEY_SECRET / CLIENTSECERT. These settings prepare configuration; mobile OTP delivery is not yet implemented or activated by saving this form.
 
 The deployment must forward /admin/ and /admin-assets/ to the Django service. Django serves collected assets from STATIC_ROOT. If your AWS reverse proxy only forwards /api/, add both paths using its existing Django upstream. Keep FRONTEND_ORIGIN set to the HTTPS public origin; admin POSTs use standard Django CSRF validation as well as the project's origin checks.
+
+## MySelfPay interface
+
+The admin uses MySelfPay login and dashboard templates, branded navigation and responsive styles from api/static/selfpay-admin. After updating the design, run collectstatic --noinput and restart the backend; existing superuser credentials remain valid.
