@@ -316,6 +316,43 @@ class BookingView(ResourceView):
         return Response(result, status=201 if action == 'create' else 200)
 
 
+class DashboardView(ResourceView):
+    permission_classes = [AccountMemberOnly]
+
+    def get(self, request):
+        try:
+            page = max(1, int(request.query_params.get('page', '1')))
+        except ValueError:
+            return Response({'error':'Invalid page.'}, status=400)
+        mode = request.query_params.get('filter', 'all')
+        if mode not in ('all', 'open'):
+            return Response({'error':'Invalid request filter.'}, status=400)
+        owner, now = booking.digest(request.auth['id']), time.time()
+        with core.connect(database()) as con:
+            profile = con.execute('SELECT m.name,a.email,a.phone,a.created FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE m.id=?', (request.auth['id'],)).fetchone()
+            if not profile:
+                return Response({'error':'Account profile unavailable.'}, status=404)
+            stats = {row['status']:row['n'] for row in con.execute("""SELECT CASE WHEN status IN ('requested','voicemail') AND link_expires<=? THEN 'expired' ELSE status END AS status,COUNT(*) AS n FROM booking_requests WHERE owner_hash=? GROUP BY 1""", (now,owner)).fetchall()}
+            where, params = 'owner_hash=?', [owner]
+            if mode == 'open':
+                where += " AND status IN ('requested','voicemail') AND link_expires>?"
+                params.append(now)
+            total = con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE '+where, tuple(params)).fetchone()['n']
+            pages = max(1, (total+9)//10)
+            page = min(page,pages)
+            rows = con.execute('SELECT * FROM booking_requests WHERE '+where+' ORDER BY created DESC,id DESC LIMIT ? OFFSET ?', tuple(params+[10,(page-1)*10])).fetchall()
+            requests = []
+            for row in rows:
+                item = booking.receipt(row,con)
+                if item['status'] in ('requested','voicemail') and row['link_expires']<=now:
+                    item['status']='expired'
+                requests.append(item)
+            account = dict(profile)
+            account['zip_code'] = accounts.saved_zip(con,request.auth['id'])
+        return Response({'profile':account,'verified_email':booking.saved_verified_email(database(),request.auth['id']),
+                         'requests':requests,'stats':stats,'total':total,'page':page,'pages':pages})
+
+
 class NotFoundView(ResourceView):
     authentication_classes = []
     permission_classes = [AllowAny]

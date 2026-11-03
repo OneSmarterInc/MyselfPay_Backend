@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/login', views.AuthenticationView.as_view(), name='login'),
     path('api/logout', views.LogoutView.as_view(), name='logout'),
     path('api/password', views.PasswordView.as_view(), name='password'),
+    path('api/dashboard', views.DashboardView.as_view(), name='dashboard'),
     path('api/me', views.MeView.as_view(), name='me'),
     path('api/catalog', views.CatalogView.as_view(), name='catalog'),
     path('api/search', views.SearchView.as_view(), name='search'),

@@ -138,12 +138,31 @@ def price_snapshot(con: Any, key: str, offer_id: str, service: str = '') -> str:
     return f"{label} · {offer.get('type', 'quote')} · {offer.get('included', 'Confirm inclusions with clinic')}. Final price requires clinic confirmation."
 
 
+def default_timezone(center: dict) -> str:
+    explicit = center.get('timezone') or center.get('time_zone')
+    if explicit in ZONES:
+        return explicit
+    states = center.get('states', [])
+    if isinstance(states, str):
+        states = re.findall(r'\b[A-Z]{2}\b', states)
+    state = states[0] if len(states) == 1 else ''
+    zones = {'HI':'Pacific/Honolulu','AK':'America/Anchorage','AZ':'America/Phoenix',
+             'CA':'America/Los_Angeles','WA':'America/Los_Angeles','OR':'America/Los_Angeles','NV':'America/Los_Angeles',
+             'CO':'America/Denver','UT':'America/Denver','NM':'America/Denver','MT':'America/Denver','WY':'America/Denver','ID':'America/Denver'}
+    if state in zones:
+        return zones[state]
+    if state in ('AL','AR','IL','IA','KS','LA','MN','MS','MO','NE','ND','OK','SD','TN','TX','WI'):
+        return 'America/Chicago'
+    return 'America/New_York'
+
+
 def options(path: Any, key: str, offer_id: str = '') -> dict:
     with connection(path) as con:
         center = resolve_center(con, key)
         price_text = price_snapshot(con, key, offer_id)
     return {
         'name': center['name'], 'location': center.get('area', ''),
+        'timezone': default_timezone(center),
         'price_text': price_text,
         'delivery': booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
         'is_test_center': bool(center.get('is_test_center')),
@@ -384,6 +403,9 @@ def verified_patient_email(con: Any, owner_hash: str, ident: Any, proof: Any) ->
 
 
 def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact: dict | None = None) -> dict:
+    if not data.get('timezone'):
+        with connection(path) as con:
+            data = {**data, 'timezone': default_timezone(resolve_center(con, data.get('clinic_id', '')))}
     validated = validate(data)
     key = text_field(data, 'idempotency_key', 80)
     center_key = text_field(data, 'clinic_id', 200)

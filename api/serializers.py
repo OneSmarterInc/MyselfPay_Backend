@@ -124,7 +124,7 @@ class BookingCreateSerializer(BookingOptionsSerializer):
     email = serializers.EmailField(max_length=254, required=False)
     first_name = serializers.CharField(max_length=80)
     phone = serializers.CharField(max_length=30, allow_blank=True, default='')
-    timezone = serializers.ChoiceField(choices=tuple(booking.ZONES))
+    timezone = serializers.ChoiceField(choices=tuple(booking.ZONES), required=False)
     service = serializers.ChoiceField(choices=('MRI', 'CT', 'Other imaging', 'Please contact me'))
     exam = serializers.CharField(max_length=100, allow_blank=True, default='')
     contrast = serializers.ChoiceField(choices=CONTRAST, default='unknown')

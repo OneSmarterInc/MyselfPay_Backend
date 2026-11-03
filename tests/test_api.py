@@ -131,7 +131,20 @@ class APITests(unittest.TestCase):
         self.assertEqual(saved.json()['verified_email'], 'patient@example.test')
         repeat = {k:v for k,v in data.items() if 'verification_' not in k}
         repeat.update(email='patient@example.test', phone='', idempotency_key='saved-email-repeat')
+        repeat.pop('timezone')
         self.assertEqual(self.post('booking/create', repeat).status_code, 201)
+        dashboard=self.client.get('/api/dashboard').json()
+        self.assertEqual(dashboard['profile']['email'],'booker@example.com')
+        self.assertEqual(dashboard['total'],2)
+        self.assertEqual(dashboard['stats']['requested'],2)
+        self.assertEqual(self.client.get('/api/dashboard?filter=open').json()['total'],2)
+        other=Client(enforce_csrf_checks=True)
+        self.assertEqual(other.get('/api/dashboard').status_code,401)
+        self.post('register',{'name':'Other Dashboard User','email':'dashboard-other@example.com','password':'Synthetic-only-passphrase!'},client=other,csrf='')
+        private=other.get('/api/dashboard').json()
+        self.assertEqual(private['total'],0)
+        self.assertNotIn('Synthetic Imaging',str(private))
+
         repeat.update(email='unverified@example.test', idempotency_key='forged-email')
         self.assertEqual(self.post('booking/create', repeat).status_code, 403)
 
