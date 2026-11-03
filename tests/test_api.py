@@ -255,5 +255,18 @@ class APITests(unittest.TestCase):
             con.execute("UPDATE settings SET value='0' WHERE key=?",('account-disabled:'+member['id'],))
         self.assertEqual(self.post('login',credentials).status_code,200)
 
+    def test_patient_otp_requests_are_not_rate_limited_by_the_application(self):
+        self.post('register',{'name':'OTP Test','email':'otp@example.com','password':'Synthetic-only-passphrase!'})
+        with patch('booking_mail.send_patient_code') as send:
+            for _ in range(8):
+                response=self.post('booking/email-code',{'email':'patient@example.test'})
+                self.assertEqual(response.status_code,200,response.content)
+            self.assertEqual(send.call_count,8)
+        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'1'*32) as send:
+            for _ in range(8):
+                response=self.post('booking/phone-code',{'phone':'+15550102222'})
+                self.assertEqual(response.status_code,200,response.content)
+            self.assertEqual(send.call_count,8)
+
 if __name__ == '__main__':
     unittest.main()

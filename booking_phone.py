@@ -25,25 +25,14 @@ def request_code(path, owner, phone):
         raise booking.BookingError(str(exc), 503) from None
     owner_hash, phone_hash = booking.digest(owner), booking.digest(phone)
     now = time.time()
-    with booking.connection(path, write=True) as db:
-        allowed = True
-        for key, window, limit in [('owner:' + owner_hash, int(now//3600), 5), ('phone:' + phone_hash, int(now//3600), 5), ('global-day', int(now//86400), 500)]:
-            row = db.execute('INSERT INTO booking_sms_limits VALUES(?,?,1) ON CONFLICT(key,window_id) DO UPDATE SET attempts=booking_sms_limits.attempts+1 RETURNING attempts', (key,window)).fetchone()
-            allowed = allowed and row['attempts'] <= limit
-    if not allowed:
-        raise booking.BookingError('Mobile code limit reached. Please try again later.', 429)
     ident = secrets.token_urlsafe(24)
     with booking.connection(path, write=True) as db:
         db.execute("INSERT INTO settings(key,value) VALUES(?,'1') ON CONFLICT(key) DO UPDATE SET value=excluded.value", ('booking-phone-owner:' + owner_hash,))
         query='SELECT * FROM booking_phone_checks WHERE owner_hash=? AND phone_hash=?'
         if not isinstance(db, sqlite3.Connection): query+=' FOR UPDATE'
         prior=db.execute(query,(owner_hash,phone_hash)).fetchone()
-        if prior and prior['last_sent'] > now-60:
-            raise booking.BookingError('Wait 60 seconds before requesting another SMS code.',429)
-        if prior and prior['attempts'] >= 5 and prior['created'] > now-3600:
-            raise booking.BookingError('Too many incorrect mobile codes. Try again in an hour.',429)
-        attempts=prior['attempts'] if prior and prior['created'] > now-3600 else 0
-        created=prior['created'] if attempts else now
+        attempts=0
+        created=now
         encrypted=booking.cipher().encrypt(phone.encode()).decode()
         db.execute("""INSERT INTO booking_phone_checks(id,owner_hash,phone_hash,phone_encrypted,state,attempts,created,last_sent,expires)
             VALUES(?,?,?,?,'sending',?,?,?,?) ON CONFLICT(owner_hash,phone_hash) DO UPDATE SET
@@ -58,7 +47,7 @@ def request_code(path, owner, phone):
         raise booking.BookingError(str(exc),503) from None
     with booking.connection(path,write=True) as db:
         db.execute("UPDATE booking_phone_checks SET state='sent',provider_sid=? WHERE id=? AND state='sending'",(sid,ident))
-    return {'verification_id':ident,'expires_in':600,'resend_after':60,'message':'SMS verification code sent.'}
+    return {'verification_id':ident,'expires_in':600,'resend_after':0,'message':'SMS verification code sent.'}
 
 
 def verify_code(path, owner, ident, code):
@@ -71,8 +60,6 @@ def verify_code(path, owner, ident, code):
         row=db.execute(query,(ident,booking.digest(owner))).fetchone()
         if not row or row['state']!='sent' or row['expires']<=now:
             raise booking.BookingError('Mobile code expired, is being checked, or was already used. Request another code.',410)
-        if row['attempts']>=5:
-            raise booking.BookingError('Too many incorrect mobile codes. Try again in an hour.',429)
         db.execute("UPDATE booking_phone_checks SET state='checking',attempts=attempts+1 WHERE id=?",(ident,))
         sid=row['provider_sid']
     try:

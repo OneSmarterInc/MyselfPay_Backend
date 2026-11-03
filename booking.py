@@ -296,19 +296,6 @@ def request_patient_code(path: Any, owner: str, email: Any) -> dict:
     email = email_address(email)
     owner_hash, email_hash = digest(owner), digest(email.casefold())
     now = time.time()
-    # Commit counters even on throttling; counters contain no raw addresses.
-    with connection(path, write=True) as con:
-        checks = [('owner:' + owner_hash, int(now // 3600), 5),
-                  ('email:' + email_hash, int(now // 3600), 5),
-                  ('global-day', int(now // 86400), 500)]
-        allowed = True
-        for key, window, limit in checks:
-            row = con.execute('''INSERT INTO booking_mail_limits VALUES(?,?,1)
-                ON CONFLICT(key,window_id) DO UPDATE SET attempts=booking_mail_limits.attempts+1
-                RETURNING attempts''', (key, window)).fetchone()
-            allowed = allowed and row['attempts'] <= limit
-    if not allowed:
-        raise BookingError('Email code limit reached. Please try again later.', 429)
     code = f'{secrets.randbelow(1000000):06d}'
     ident = secrets.token_urlsafe(24)
     with connection(path, write=True) as con:
@@ -316,13 +303,8 @@ def request_patient_code(path: Any, owner: str, email: Any) -> dict:
         if not isinstance(con, sqlite3.Connection):
             query += ' FOR UPDATE'
         prior = con.execute(query, (owner_hash, email_hash)).fetchone()
-        if prior and prior['last_sent'] > now - 60:
-            raise BookingError('Wait 60 seconds before requesting another code.', 429)
-        if prior and prior['attempts'] >= 5 and prior['created'] > now - 3600:
-            raise BookingError('Too many incorrect codes. Try again in an hour.', 429)
         encrypted = cipher().encrypt(email.encode()).decode()
-        attempts = prior['attempts'] if prior and prior['created'] > now - 3600 else 0
-        created = prior['created'] if attempts else now
+        attempts, created = 0, now
         # A rotated challenge invalidates previous codes and verification proofs.
         con.execute('''INSERT INTO booking_email_checks
             (id,owner_hash,email_hash,email_encrypted,code_hash,state,attempts,created,last_sent,expires)
@@ -340,7 +322,7 @@ def request_patient_code(path: Any, owner: str, email: Any) -> dict:
         raise BookingError(str(exc), 503) from None
     with connection(path, write=True) as con:
         con.execute("UPDATE booking_email_checks SET state='sent' WHERE id=? AND state='sending'", (ident,))
-    return {'verification_id': ident, 'expires_in': 600, 'resend_after': 60,
+    return {'verification_id': ident, 'expires_in': 600, 'resend_after': 0,
             'message': 'Verification email submitted. Check your inbox and spam folder.'}
 
 
@@ -355,8 +337,6 @@ def verify_patient_code(path: Any, owner: str, ident: Any, code: Any) -> dict:
         row = con.execute(query, (ident, digest(owner))).fetchone()
         if not row or row['state'] != 'sent' or row['expires'] <= now:
             raise BookingError('Code expired or already used. Request another code.', 410)
-        if row['attempts'] >= 5:
-            raise BookingError('Too many incorrect codes. Try again in an hour.', 429)
         if not hmac.compare_digest(code_digest(ident, code), row['code_hash'] or ''):
             con.execute('UPDATE booking_email_checks SET attempts=attempts+1 WHERE id=?', (ident,))
             failure = BookingError('Incorrect code. Check your email and try again.')

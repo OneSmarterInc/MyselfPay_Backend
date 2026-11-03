@@ -217,18 +217,19 @@ class BookingTests(unittest.TestCase):
             code = send.call_args.args[1]
         self.assertNotIn('code', issued)
         self.assertNotIn('preview_code', issued)
-        with self.assertRaises(booking.BookingError):
-            booking.request_patient_code(self.db, 'new-owner', 'check@example.test')
         with patch('booking.time.time', return_value=time.time() + 601):
             with self.assertRaises(booking.BookingError):
                 booking.verify_patient_code(self.db, 'new-owner', issued['verification_id'], code)
         wrong = '000000' if code != '000000' else '000001'
-        for _ in range(5):
-            with self.assertRaises(booking.BookingError):
+        for _ in range(8):
+            with self.assertRaises(booking.BookingError) as error:
                 booking.verify_patient_code(self.db, 'new-owner', issued['verification_id'], wrong)
-        with self.assertRaises(booking.BookingError) as error:
-            booking.verify_patient_code(self.db, 'new-owner', issued['verification_id'], code)
-        self.assertEqual(error.exception.status, 429)
+            self.assertEqual(error.exception.status,400)
+        verified=booking.verify_patient_code(self.db, 'new-owner', issued['verification_id'], code)
+        self.assertIn('verification_token',verified)
+        with patch('booking_mail.send_patient_code') as send:
+            for _ in range(8):booking.request_patient_code(self.db,'resend-owner','resend@example.test')
+            self.assertEqual(send.call_count,8)
 
     def test_smtp_failure_does_not_verify_or_accept_code(self):
         import booking_mail

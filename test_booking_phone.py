@@ -36,16 +36,17 @@ class MobileOTPTests(unittest.TestCase):
             self.assertNotEqual(row['proof_hash'],proof['verification_token'])
         with self.assertRaises(booking.BookingError): booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
 
-    def test_resend_limits_and_attempt_limits(self):
-        issued=self.request()
-        with self.assertRaises(booking.BookingError) as error:self.request()
-        self.assertEqual(error.exception.status,429)
+    def test_resends_and_checks_have_no_application_limits(self):
+        with booking.connection(self.path,write=True) as db:
+            db.execute('INSERT INTO booking_sms_limits VALUES(?,?,999)',('owner:'+booking.digest(self.owner),int(time.time()//3600)))
+        for _ in range(8):issued=self.request()
         with patch('booking_sms.check_code',return_value=False) as check:
-            for _ in range(5):
-                with self.assertRaises(booking.BookingError):booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'000000')
-            with self.assertRaises(booking.BookingError) as error:booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'000000')
-            self.assertEqual(error.exception.status,429)
-            self.assertEqual(check.call_count,5)
+            for _ in range(8):
+                with self.assertRaises(booking.BookingError) as error:booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'000000')
+                self.assertEqual(error.exception.status,400)
+            self.assertEqual(check.call_count,8)
+        with patch('booking_sms.check_code',return_value=True):
+            self.assertIn('verification_token',booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456'))
 
     def test_missing_configuration_and_provider_failure_fail_closed(self):
         with patch('booking_sms.configuration',side_effect=booking_sms.SMSUnavailable('Not configured')):

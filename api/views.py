@@ -276,10 +276,10 @@ class BookingView(ResourceView):
         return [BookingAccountOnly() if self.kwargs['action'] in authenticated_actions else AllowAny()]
 
     def get_throttles(self):
+        if self.kwargs['action'] in ('email-code', 'email-verify', 'phone-code', 'phone-verify'):
+            return []
         classes = [BookingThrottle]
-        if self.kwargs['action'] == 'email-code':
-            classes.append(BookingEmailThrottle)
-        elif self.kwargs['action'] == 'create':
+        if self.kwargs['action'] == 'create':
             classes.append(BookingCreateThrottle)
         return [throttle() for throttle in classes]
 
