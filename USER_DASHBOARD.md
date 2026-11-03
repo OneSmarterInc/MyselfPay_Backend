@@ -15,3 +15,8 @@ New booking emails include an Open request link. The link opens a center email O
 The user dashboard supports filter=approved and shows full account-private request details. Superusers can use /admin/requests/ and /admin/requests/?filter=approved, with complete read-only request pages under /admin/requests/<id>/. Admin pages never expose patient/center capability tokens. Existing expiry and retention remain in force.
 
 Pull backend main and restart the service. Run collectstatic after admin asset updates (no new assets in this change). No new schema migration is required for approval.
+
+
+## Dashboard and ZIP update
+The account dashboard now uses a desktop sidebar and compact mobile navigation, with structured preferred-time cards and expandable request details. Center notification emails contain only preferred times, their time zone, the Open request link and a short MySelfPay description. Patient contacts, exam and price are viewed after center verification.
+Registration accepts an optional five-digit ZIP code. Migration 0008 converts existing ZIP+4 records to their base ZIP, preserving leading zeroes. Run migrate and collectstatic before restarting the backend for this release.

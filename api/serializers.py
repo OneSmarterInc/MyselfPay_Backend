@@ -21,7 +21,7 @@ class LoginSerializer(serializers.Serializer):
 class RegistrationSerializer(LoginSerializer):
     name = serializers.CharField(max_length=100)
     phone = serializers.CharField(max_length=30, allow_blank=True, default='')
-    zip_code = serializers.RegexField(r'^[0-9]{5}-[0-9]{4}$', max_length=10, allow_blank=True, default='', error_messages={'invalid': 'Enter ZIP+4 in the format 12345-6789.'})
+    zip_code = serializers.RegexField(r'^[0-9]{5}$', max_length=5, allow_blank=True, default='', error_messages={'invalid': 'Enter a five-digit ZIP code.'})
 
     def validate_password(self, value):
         if len(value) < 12:

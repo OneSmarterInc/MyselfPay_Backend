@@ -243,37 +243,21 @@ def notification(payload: dict, ident: str) -> EmailMessage:
         message['To'] = payload['recipient']
     message['Subject'] = f'New self-pay request — {payload["clinic_name"]} — {ident}'
     message['Message-ID'] = f'<selfpay-{ident}@{os.environ.get("SMTP_FROM", "no-reply@example.invalid").rsplit("@", 1)[-1]}>'
-    exam = ' '.join(filter(None, (payload['service'], payload.get('exam', ''))))
-    contrast = {'unknown': 'Not sure — confirm with patient', 'without': 'Without contrast', 'with': 'With contrast', 'both': 'Without and with contrast'}[payload['contrast']]
-    zone = ZONES[payload['timezone']] + ' (' + payload['timezone'] + ')'
-    slots = [datetime.strptime(slot['date'], '%Y-%m-%d').strftime('%A, %d %B %Y') + ' · ' + PERIODS[slot['period']] for slot in payload['slots']]
-    price = payload.get('price_text') or 'Clinic will confirm the exact total.'
-    test_note = 'TEST CENTER — synthetic booking workflow. No medical care is provided.' if payload.get('is_test_center') else ''
-    rows = [('Clinic', payload['clinic_name']), ('Exam', exam), ('Contrast', contrast)]
-    row_html = ''.join('<tr><td style="padding:8px 0;font-size:12px;color:#626974">' + escape(label) + '<br><strong style="font-size:16px;color:#202429;line-height:1.5">' + escape(value) + '</strong></td></tr>' for label, value in rows)
-    slot_html = ''.join('<div style="padding:10px 12px;margin:6px 0;background:#f4f5f7;border-radius:6px;font-size:14px;line-height:1.6">' + escape(slot) + '</div>' for slot in slots)
+    zone = ZONES[payload['timezone']] + ' time'
+    slots = [datetime.strptime(slot['date'], '%Y-%m-%d').strftime('%a, %d %b %Y') + ' · ' + PERIODS[slot['period']] for slot in payload['slots']]
+    slot_html = ''.join('<div style="padding:12px 14px;margin:8px 0;background:#f5f5f4;border-radius:8px;font-size:15px;line-height:1.6">' + escape(slot) + '</div>' for slot in slots)
     request_url = payload['clinic_url']
-    message.set_content(
-        f'New MySelfPay appointment request\nClinic: {payload["clinic_name"]}\nExam: {exam}\nContrast: {contrast}\n'
-        + 'Preferred times (' + zone + '):\n' + '\n'.join('- ' + slot for slot in slots)
-        + f'\nPrice: {price}\n\nOpen request: {request_url}\n'
-        + 'Verify the code sent to this center email to view patient details and approve or decline the request.\n'
-        + f'\n{test_note}\nReference: {ident}\n'
-    )
+    description = 'MySelfPay connects patients with imaging centers for self-pay appointment requests.'
+    message.set_content('MySelfPay\nPreferred appointment times (' + zone + '):\n' + '\n'.join(slots)
+                        + '\n\nOpen request: ' + request_url + '\n\n' + description + '\n')
     message.add_alternative(f'''<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
-<body style="margin:0;background:#f4f5f7;color:#202429;font-family:Arial,sans-serif">
+<body style="margin:0;background:#f4f5f7;color:#202429;font-family:Arial,sans-serif;-webkit-text-size-adjust:100%">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:20px 12px">
-<table role="presentation" width="100%" style="max-width:560px;background:white;border:1px solid #e2e4e7;border-radius:12px"><tr><td style="padding:26px 22px">
-<div style="font-size:26px;font-weight:bold">MySelf<span style="color:#b51d2b">Pay</span></div>
-<h1 style="font-size:23px;margin:24px 0 16px">New appointment request</h1>
-<table role="presentation" width="100%">{row_html}</table>
-<h2 style="font-size:16px;margin:20px 0 5px">Preferred appointment times</h2><p style="font-size:13px;color:#626974">{escape(zone)}</p>{slot_html}
-<p style="padding:14px;background:#f8f3ef;border-radius:8px;line-height:1.6"><strong>Price</strong><br>{escape(price)}</p>
-<p style="line-height:1.7">Open this request and verify your center email to view the patient’s contact details, then approve or decline the request.</p>
-<a href="{escape(request_url,quote=True)}" style="display:inline-block;padding:15px 24px;background:#b51d2b;color:white;text-decoration:none;border-radius:8px;font-weight:bold">Open request</a>
-<p style="font-size:13px;color:#626974;line-height:1.6">Approval is recorded in MySelfPay and shown in the user dashboard. Opening this link does not approve the request.</p>
-{'<p style="font-size:12px;color:#7a4b00">'+escape(test_note)+'</p>' if test_note else ''}
-<p style="font-size:12px;color:#626974">Reference: {escape(ident)}<br>MySelfPay by One Smarter, Inc.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:white;border:1px solid #e2e4e7;border-radius:14px"><tr><td style="padding:28px 22px">
+<div style="font-size:25px;font-weight:bold;margin-bottom:26px">MySelf<span style="color:#b51d2b">Pay</span></div>
+<h1 style="font-size:21px;margin:0 0 8px;line-height:1.4">Preferred appointment times</h1><p style="font-size:13px;color:#626974;margin:0 0 16px">{escape(zone)}</p>{slot_html}
+<a href="{escape(request_url,quote=True)}" style="display:block;text-align:center;margin:24px 0;padding:15px 18px;background:#b51d2b;color:white;text-decoration:none;border-radius:8px;font-size:16px;font-weight:bold">Open request</a>
+<p style="font-size:13px;color:#626974;line-height:1.7;margin:0">{escape(description)}</p>
 </td></tr></table></td></tr></table></body></html>''', subtype='html')
     return message
 

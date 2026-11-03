@@ -61,8 +61,8 @@ def authenticate(path, data, action, ip, previous_token=''):
             raise AccountError('Enter a valid phone number or leave it blank.')
         if len(password) < 12: raise AccountError('Use a password of 12–128 characters.')
         zip_code = data.get('zip_code', '')
-        if not isinstance(zip_code, str) or (zip_code and not re.fullmatch(r'[0-9]{5}-[0-9]{4}', zip_code)):
-            raise AccountError('Enter ZIP+4 in the format 12345-6789, or leave it blank.')
+        if not isinstance(zip_code, str) or (zip_code and not re.fullmatch(r'[0-9]{5}', zip_code)):
+            raise AccountError('Enter a five-digit ZIP code, or leave it blank.')
         ident, salt = str(uuid.uuid4()), secrets.token_hex(16)
         hashed = 'scrypt-v1$' + password_hash(password, salt)
         with core.connect(path) as db:
@@ -97,6 +97,6 @@ def new_session(db, ident, previous_token):
 
 def saved_zip(db, ident):
     row = db.execute('SELECT zip_code FROM account_zip_codes WHERE member_id=?', (ident,)).fetchone()
-    return row['zip_code'] if row else ''
+    return row['zip_code'][:5] if row else ''
 
 

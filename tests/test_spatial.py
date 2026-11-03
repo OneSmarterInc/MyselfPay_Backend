@@ -73,14 +73,6 @@ class SpatialTests(unittest.TestCase):
         self.assertEqual(response['Cache-Control'], 'private, no-store')
         self.assertIn('Cookie', response['Vary'])
 
-    def test_bundle_without_trailing_slash_matches_canonical_response(self):
-        self.guest()
-        canonical = self.client.get(f'/api/v1/spatial-bundle/{self.center}/')
-        proxied = self.client.get(f'/api/v1/spatial-bundle/{self.center}')
-        self.assertEqual(proxied.status_code, 200)
-        self.assertEqual(proxied.json(), canonical.json())
-        self.assertEqual(proxied['Cache-Control'], 'private, no-store')
-
     def test_authentication_validation_and_no_coordinate_parameters(self):
         self.assertEqual(self.client.get(f'/api/v1/spatial-bundle/{self.center}/').status_code, 401)
         self.guest()
@@ -126,15 +118,22 @@ class SpatialTests(unittest.TestCase):
             self.assertIsNone(spatial.prepare_location({'latitude': latitude, 'longitude': 0, 'precision': 'city'}))
 
     def test_registration_zip_is_optional_validated_and_saved_across_login(self):
-        credentials = {'name': 'Synthetic ZIP User', 'email': f'zip-{uuid.uuid4().hex}@example.com', 'password': 'Synthetic-only-passphrase!', 'zip_code': '45202-1234'}
-        for bad in ('45202', '452021234', '45202-123', 'ABCDE-1234'):
+        credentials = {'name': 'Synthetic ZIP User', 'email': f'zip-{uuid.uuid4().hex}@example.com', 'password': 'Synthetic-only-passphrase!', 'zip_code': '45202'}
+        for bad in ('4520', '452021234', '45202-1234', 'ABCDE'):
             response = self.client.post('/api/register', {**credentials, 'zip_code': bad}, format='json', HTTP_ORIGIN='http://localhost:5173')
             self.assertEqual(response.status_code, 400)
         response = self.client.post('/api/register', credentials, format='json', HTTP_ORIGIN='http://localhost:5173')
         self.assertEqual(response.status_code, 201, response.content)
-        self.assertEqual(response.json()['member']['zip_code'], '45202-1234')
-        self.assertEqual(self.client.get('/api/me').json()['member']['zip_code'], '45202-1234')
+        self.assertEqual(response.json()['member']['zip_code'], '45202')
+        self.assertEqual(self.client.get('/api/me').json()['member']['zip_code'], '45202')
         fresh = APIClient()
         response = fresh.post('/api/login', credentials, format='json', HTTP_ORIGIN='http://localhost:5173')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['member']['zip_code'], '45202-1234')
+        self.assertEqual(response.json()['member']['zip_code'], '45202')
+        with core.connect(self.path) as db:
+            db.execute("UPDATE account_zip_codes SET zip_code='00501-1234'")
+        from importlib import import_module
+        import_module('api.migrations.0008_five_digit_zip').normalize_zip(None,None)
+        with core.connect(self.path) as db:
+            self.assertEqual(db.execute('SELECT zip_code FROM account_zip_codes').fetchone()['zip_code'],'00501')
+

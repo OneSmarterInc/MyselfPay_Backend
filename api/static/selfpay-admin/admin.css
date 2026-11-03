@@ -13,3 +13,5 @@ html,body{min-height:100%;font-family:Arial,Helvetica,sans-serif;color:#242b36}b
 .sp-table-scroll{position:relative;overflow-x:auto;overflow-y:hidden;width:100%}
 
 #header{flex-shrink:0}
+
+.sp-user-table td,.sp-user-table th{overflow-wrap:anywhere}.sp-user-table td{line-height:1.6}.sp-page-heading>div{min-width:0}.sp-panel{min-width:0}.sp-table-scroll{max-width:100%;overflow-x:auto}@media(max-width:600px){.sp-page-heading h1{font-size:25px;overflow-wrap:anywhere}.sp-page-heading .sp-button{display:inline-flex;margin:4px 0;font-size:12px}.sp-stats{gap:10px}.sp-user-table th,.sp-user-table td{padding:12px;font-size:12px}}

@@ -48,13 +48,16 @@ class LiveDeliveryTests(unittest.TestCase):
         self.assertIn('/#clinic/', html)
         self.assertEqual(html.count('<a href='), 1)
         self.assertIn('Preferred appointment times', html)
-        self.assertIn('America/New_York', html)
-        self.assertIn('Clinic will confirm', html)
+        self.assertIn('Eastern time', html)
+        self.assertNotIn('Clinic will confirm', html)
+        self.assertNotIn('Contrast',html)
+        self.assertNotIn('Price',html)
+        self.assertNotIn('MRI',html)
         payload={'recipient':'appointments@example.test','clinic_name':'<script>test</script>',
                  'service':'MRI','exam':'<b>Knee</b>','contrast':'without','slots':self.fixture.data['slots'],
-                 'clinic_url':'https://portal.example.test/#clinic/MSP-TEST/token','timezone':'America/New_York','patient_email':'patient@example.test','phone':'5550101111'}
+                 'clinic_url':'https://portal.example.test/#clinic/MSP-TEST/token?a=1&b=2','timezone':'America/New_York','patient_email':'patient@example.test','phone':'5550101111'}
         html=booking.notification(payload,'MSP-TEST').get_body(preferencelist=('html',)).get_content()
-        self.assertIn('&lt;script&gt;', html)
+        self.assertIn('a=1&amp;b=2', html)
         self.assertNotIn('<script>', html)
 
     def test_safe_failure_is_retryable_without_losing_or_recreating_booking(self):
