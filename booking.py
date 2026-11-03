@@ -87,6 +87,7 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/booking-schema.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-outbox.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-phone.sql').read_text())
+        con.executescript((core.ROOT / 'ops/booking-verified-email.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:
@@ -344,9 +345,29 @@ def verify_patient_code(path: Any, owner: str, ident: Any, code: Any) -> dict:
             proof = secrets.token_urlsafe(32)
             con.execute("UPDATE booking_email_checks SET state='verified',proof_hash=?,code_hash=NULL,expires=? WHERE id=?",
                         (digest(proof), now + 900, ident))
+            con.execute("""INSERT INTO booking_verified_emails(owner_hash,email_hash,email_encrypted,verified_at)
+                VALUES(?,?,?,?) ON CONFLICT(owner_hash,email_hash) DO UPDATE SET
+                email_encrypted=excluded.email_encrypted,verified_at=excluded.verified_at""",
+                (digest(owner), row['email_hash'], row['email_encrypted'], now))
     if failure:
         raise failure
-    return {'verification_id': ident, 'verification_token': proof, 'expires_in': 900}
+    return {'verification_id': ident, 'verification_token': proof, 'expires_in': 900, 'email_verified': True}
+
+
+def saved_verified_email(path: Any, owner: str) -> str:
+    with connection(path) as con:
+        row = con.execute('SELECT email_encrypted FROM booking_verified_emails WHERE owner_hash=? ORDER BY verified_at DESC LIMIT 1', (digest(owner),)).fetchone()
+        return cipher().decrypt(row['email_encrypted'].encode()).decode() if row else ''
+
+
+def require_saved_email(con: Any, owner_hash: str, email: Any) -> str:
+    if not isinstance(email, str) or not EMAIL.fullmatch(email.strip()):
+        raise BookingError('Verify your email before submitting this request.', 403)
+    email = email.strip().lower()
+    row = con.execute('SELECT email_encrypted FROM booking_verified_emails WHERE owner_hash=? AND email_hash=?', (owner_hash, digest(email))).fetchone()
+    if not row:
+        raise BookingError('Verify this email before submitting this request.', 403)
+    return cipher().decrypt(row['email_encrypted'].encode()).decode()
 
 
 def verified_patient_email(con: Any, owner_hash: str, ident: Any, proof: Any) -> str:
@@ -372,7 +393,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         raise BookingError('Invalid price offer.')
     verification_id = data.get('verification_id')
     input_hash = digest(core.canonical({'clinic': center_key, 'offer_id': offer_id,
-                                      'verification_id': verification_id, 'phone_verification_id': data.get('phone_verification_id'), **validated}))
+                                      'email': data.get('email'), 'verification_id': verification_id, 'phone_verification_id': data.get('phone_verification_id'), **validated}))
     now = time.time()
     with connection(path, write=True) as con:
         if not isinstance(con, sqlite3.Connection) and isinstance(verification_id, str):
@@ -385,7 +406,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             if prior['input_hash'] != input_hash:
                 raise BookingError('This submission key was already used for different details.', 409)
             return receipt(prior, con)
-        patient_email = verified_patient_email(con, owner_hash, verification_id, data.get('verification_token'))
+        patient_email = (require_saved_email(con, owner_hash, data['email']) if data.get('email')
+                         else verified_patient_email(con, owner_hash, verification_id, data.get('verification_token')))
         import booking_phone
         has_phone_proof = bool(data.get('phone_verification_id') or data.get('phone_verification_token'))
         if has_phone_proof:

@@ -101,6 +101,9 @@ class BookingTests(unittest.TestCase):
 
     def test_recipient_cannot_be_overridden(self):
         data = {**self.data, 'email': 'attacker@example.test', 'recipient': 'attacker@example.test'}
+        with self.assertRaises(booking.BookingError):
+            self.create(data)
+        data.pop('email')
         r = self.create(data)
         preview = booking.patient(self.db, r['id'], r['tracking_token'], preview=True)
         self.assertNotIn('attacker', preview['notification'])

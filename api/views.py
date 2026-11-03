@@ -290,6 +290,7 @@ class BookingView(ResourceView):
         db, data = database(), self.validated(request)
         if action == 'options':
             result = booking.options(db, data['clinic_id'], data['offer_id'])
+            result['verified_email'] = booking.saved_verified_email(db, request.auth['id'])
         elif action == 'email-code':
             result = booking.request_patient_code(db, request.auth['id'], data['email'])
         elif action == 'email-verify':

@@ -44,6 +44,20 @@ class MobileOTPTests(unittest.TestCase):
             self.assertTrue(result['id'])
             mobile_check.assert_not_called()
 
+    def test_saved_email_survives_booking_and_is_bound_to_owner_and_address(self):
+        self.assertEqual(booking.saved_verified_email(self.path, 'guest-owner'), 'patient@example.test')
+        self.assertEqual(booking.saved_verified_email(self.path, 'other-owner'), '')
+        data={k:v for k,v in self.fixture.data.items() if 'verification_' not in k}
+        data['email']='patient@example.test'
+        self.assertTrue(self.fixture.create(data)['id'])
+        data['idempotency_key']='second-saved-email-request'
+        self.assertTrue(self.fixture.create(data)['id'])
+        data['idempotency_key']='changed-email-request'
+        data['email']='unverified@example.test'
+        with self.assertRaises(booking.BookingError): self.fixture.create(data)
+        with booking.connection(self.path) as db:
+            with self.assertRaises(booking.BookingError): booking.require_saved_email(db, booking.digest('other-owner'), 'patient@example.test')
+
     def test_resends_and_checks_have_no_application_limits(self):
         with booking.connection(self.path,write=True) as db:
             db.execute('INSERT INTO booking_sms_limits VALUES(?,?,999)',('owner:'+booking.digest(self.owner),int(time.time()//3600)))

@@ -31,8 +31,9 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/booking-schema.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-outbox.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-phone.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/booking-verified-email.sql').read_text())
             # CI database is disposable and must never point at production.
-            for table in ['booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
+            for table in ['booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
         self.client = Client(enforce_csrf_checks=True)
         self.csrf = ''
@@ -117,6 +118,23 @@ class APITests(unittest.TestCase):
         self.assertEqual(tracking.status_code, 200)
         self.assertNotIn('phone', tracking.json())
         self.assertEqual(self.post('booking/preview', {'id': result.json()['id'], 'token': result.json()['tracking_token']}).status_code, 404)
+        # Migration recovers verification from an earlier successfully consumed challenge.
+        with core.connect(self.db) as con:
+            con.execute('DELETE FROM booking_verified_emails')
+        from importlib import import_module
+        import_module('api.migrations.0007_saved_email_verification').create_schema(None, None)
+        # The verified address is retained across logout/login and no proof or SMS is needed.
+        self.assertEqual(self.post('logout').status_code, 200)
+        self.csrf = ''
+        self.assertEqual(self.post('login', {'email':'booker@example.com','password':'Synthetic-only-passphrase!'}).status_code, 200)
+        saved = self.post('booking/options', {'clinic_id':'api-test-clinic'})
+        self.assertEqual(saved.json()['verified_email'], 'patient@example.test')
+        repeat = {k:v for k,v in data.items() if 'verification_' not in k}
+        repeat.update(email='patient@example.test', phone='', idempotency_key='saved-email-repeat')
+        self.assertEqual(self.post('booking/create', repeat).status_code, 201)
+        repeat.update(email='unverified@example.test', idempotency_key='forged-email')
+        self.assertEqual(self.post('booking/create', repeat).status_code, 403)
+
 
     def test_bad_payload_limits_and_secure_production_cookie(self):
         response = self.client.post('/api/guest', '[]', content_type='application/json', HTTP_ORIGIN='http://localhost:5173')
