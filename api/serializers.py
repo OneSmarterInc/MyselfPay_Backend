@@ -13,6 +13,20 @@ class ObjectSerializer(serializers.Serializer):
     pass
 
 
+class CenterEmailSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=254)
+
+
+class CenterVerifySerializer(serializers.Serializer):
+    verification_id = serializers.CharField(max_length=100)
+    code = serializers.RegexField(r'^[0-9]{6}$', max_length=6)
+
+
+class CenterRequestSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+    status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
     password = serializers.CharField(max_length=128, trim_whitespace=False, write_only=True)

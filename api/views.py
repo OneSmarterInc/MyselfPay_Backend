@@ -82,6 +82,49 @@ class HealthView(ResourceView):
             return Response({'status': 'unavailable'}, status=503)
 
 
+class CenterPortalView(ResourceView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
+                      'request': inputs.CenterRequestSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
+        return serializer(*args, **kwargs)
+
+    def cookie_name(self):
+        return 'selfpay_center' if settings.DEBUG else '__Host-selfpay_center'
+
+    def get(self, request, action):
+        import center_portal
+        if action != 'dashboard':
+            raise NotFound()
+        return Response(center_portal.dashboard(database(), request.COOKIES.get(self.cookie_name(), '')))
+
+    def post(self, request, action):
+        import center_portal
+        data = self.validated(request)
+        token = request.COOKIES.get(self.cookie_name(), '')
+        csrf = request.headers.get('X-Center-CSRF', '')
+        if action == 'code':
+            return Response(center_portal.issue(database(), data.get('email', '')))
+        if action == 'verify':
+            token, csrf = center_portal.verify(database(), str(data.get('verification_id', '')), data.get('code', ''))
+            response = Response({'verified': True})
+            response.set_cookie(self.cookie_name(), token, max_age=28800, secure=not settings.DEBUG,
+                                httponly=True, samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
+            return response
+        if action == 'request':
+            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status')))
+        if action == 'logout':
+            with booking.connection(database(), write=True) as db:
+                center_portal.identity(db, token, csrf)
+                db.execute('DELETE FROM center_portal_sessions WHERE token_hash=?', (booking.digest(token),))
+            response = Response({'ok': True})
+            response.delete_cookie(self.cookie_name(), path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
+            return response
+        raise NotFound()
+
+
 class DirectorySummaryView(ResourceView):
     authentication_classes = []
     permission_classes = [AllowAny]

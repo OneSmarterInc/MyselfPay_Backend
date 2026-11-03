@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin-assets/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
     path('api/v1/spatial-bundle/<str:h3_res7>/', SpatialBundleView.as_view(), name='spatial-bundle'),
     path('api/health', views.HealthView.as_view(), name='health'),
+    re_path(r'^api/center/(?P<action>code|verify|dashboard|request|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),
     path('api/register', views.RegistrationView.as_view(), name='register'),

@@ -32,6 +32,7 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/booking-outbox.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-phone.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-verified-email.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/center-portal.sql').read_text())
             # CI database is disposable and must never point at production.
             for table in ['booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
@@ -65,6 +66,30 @@ class APITests(unittest.TestCase):
         self.assertEqual(self.post('preferences', {'location': 'Ohio'}).status_code, 403)
         self.assertEqual(self.post('logout').status_code, 200)
         self.assertEqual(self.client.get('/api/me').status_code, 401)
+
+    def test_center_cookie_login_csrf_and_logout(self):
+        with core.connect(self.db) as db:
+            db.execute("INSERT INTO batches VALUES('center-batch','center-hash','test',0,'published','{}') ON CONFLICT(id) DO NOTHING")
+            db.execute("INSERT INTO settings(key,value) VALUES('active_batch','center-batch') ON CONFLICT(key) DO UPDATE SET value='center-batch'")
+            db.execute('INSERT INTO entries VALUES(?,?,?,?) ON CONFLICT(batch_id,entry_key) DO UPDATE SET payload=excluded.payload',
+                       ('center-batch','synthetic-center','center-hash',json.dumps({'name':'Synthetic Center','email':'center@example.test'})))
+        self.assertEqual(self.client.get('/api/center/dashboard').status_code, 401)
+        self.assertEqual(self.post('center/code',{'email':'center@example.test'},origin='https://evil.example').status_code,403)
+        with patch('booking_mail.send_message') as send:
+            issued=self.post('center/code',{'email':'center@example.test'})
+        self.assertEqual(issued.status_code,200,issued.content)
+        code=send.call_args.args[0].get_content().split('code is: ')[1].split()[0]
+        verified=self.post('center/verify',{'verification_id':issued.json()['verification_id'],'code':code})
+        self.assertEqual(verified.status_code,200,verified.content)
+        self.assertTrue(self.client.cookies['selfpay_center']['httponly'])
+        dashboard=self.client.get('/api/center/dashboard')
+        self.assertEqual(dashboard.status_code,200,dashboard.content)
+        self.assertEqual(dashboard.json()['centers'][0]['name'],'Synthetic Center')
+        self.assertNotIn('csrf',dashboard.json())
+        self.assertEqual(self.post('center/logout').status_code,403)
+        logout=self.client.post('/api/center/logout','{}',content_type='application/json',HTTP_ORIGIN='http://localhost:5173',HTTP_X_CENTER_CSRF=dashboard.json()['center_csrf'])
+        self.assertEqual(logout.status_code,200,logout.content)
+        self.assertEqual(self.client.get('/api/center/dashboard').status_code,401)
 
     def test_registration_login_and_owner_isolation(self):
         self.guest()

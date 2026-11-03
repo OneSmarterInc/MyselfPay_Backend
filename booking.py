@@ -88,6 +88,7 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/booking-outbox.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-phone.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-verified-email.sql').read_text())
+        con.executescript((core.ROOT / 'ops/center-portal.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:
@@ -438,6 +439,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
                           (owner_hash, key_hash)).fetchone()
         if row['input_hash'] != input_hash:
             raise BookingError('This submission key was already used for different details.', 409)
+        con.execute('INSERT INTO center_request_routes(request_id,clinic_id,email_hash) VALUES(?,?,?) ON CONFLICT(request_id) DO NOTHING',
+                    (row['id'], center_key, digest(payload['recipient'].strip().lower())))
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
         if has_phone_proof:
             con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
