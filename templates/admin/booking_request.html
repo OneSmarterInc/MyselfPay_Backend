@@ -1,0 +1,10 @@
+{% extends "admin/base_site.html" %}
+{% block content_title %}{% endblock %}
+{% block content %}<div class="sp-page-heading"><div><span class="sp-eyebrow">{{ item.id }}</span><h1>{{ item.clinic }}</h1><p><span class="sp-status">{{ item.status }}</span></p></div><a class="sp-button" href="{% url 'admin:booking_requests' %}">Back to requests</a></div>
+<section class="sp-panel"><h2>Request details</h2><div class="sp-table-scroll"><table class="sp-user-table"><tbody>
+<tr><th>Clinic</th><td>{{ item.clinic }}</td></tr><tr><th>Location</th><td>{{ item.location|default:"Not provided" }}</td></tr><tr><th>Center email</th><td>{{ item.center_email }}</td></tr>
+<tr><th>Patient name</th><td>{{ item.first_name }}</td></tr><tr><th>Verified patient email</th><td>{{ item.email }}</td></tr><tr><th>Mobile number</th><td>{{ item.phone|default:"Not provided" }}</td></tr>
+<tr><th>Imaging / exam context</th><td>{{ item.service }}{% if item.exam %} · {{ item.exam }}{% endif %}</td></tr><tr><th>Contrast</th><td>{{ item.contrast }}</td></tr>
+<tr><th>Preferred times</th><td>{% for slot in item.slots %}{{ slot.date }} · {{ slot.period }}<br>{% endfor %}{{ item.timezone }} time</td></tr>
+<tr><th>Price</th><td>{{ item.price }}</td></tr><tr><th>Status</th><td>{{ item.status }}</td></tr><tr><th>Submitted</th><td>{{ item.submitted }}</td></tr><tr><th>Approved by center</th><td>{{ item.approved }}</td></tr><tr><th>Closed</th><td>{{ item.closed }}</td></tr><tr><th>Email delivery</th><td>{{ item.delivery }}</td></tr><tr><th>Contact consent</th><td>{{ item.consent|yesno:"Provided,Not provided" }}</td></tr><tr><th>Test center</th><td>{{ item.test_center|yesno:"Yes,No" }}</td></tr>
+</tbody></table></div></section>{% endblock %}

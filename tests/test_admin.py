@@ -91,3 +91,32 @@ class AdminTests(TransactionTestCase):
         csrf_client.force_login(self.admin)
         response=csrf_client.post('/admin/api/twilioconfiguration/add/',{'api_key_sid':'SK'+'1'*32},HTTP_ORIGIN='http://testserver')
         self.assertEqual(response.status_code,403)
+
+    def test_approved_requests_and_complete_details_are_superuser_only(self):
+        import test_booking
+        import booking
+        fixture=test_booking.BookingTests()
+        fixture.setUp()
+        try:
+            item=fixture.create()
+            session=fixture.authorize_clinic(item)
+            booking.clinic_details(fixture.db,item['id'],session,'scheduled')
+            with override_settings(DOMAIN_DATABASE=str(fixture.db)):
+                dashboard=self.client.get('/admin/')
+                self.assertContains(dashboard,'Approved requests')
+                listing=self.client.get('/admin/requests/?filter=approved')
+                self.assertContains(listing,item['id'])
+                self.assertContains(listing,'Approved')
+                details=self.client.get('/admin/requests/'+item['id']+'/')
+                self.assertContains(details,'patient@example.test')
+                self.assertContains(details,'appointments@example.test')
+                self.assertContains(details,'Synthetic Jamie')
+                self.assertContains(details,'Morning')
+                self.assertNotContains(details,item['tracking_token'])
+                anonymous=Client()
+                self.assertEqual(anonymous.get('/admin/requests/').status_code,302)
+                staff=get_user_model().objects.create_user('booking-staff',password='Synthetic-staff-password!',is_staff=True)
+                anonymous.force_login(staff)
+                self.assertEqual(anonymous.get('/admin/requests/'+item['id']+'/').status_code,302)
+        finally:
+            fixture.tearDown()

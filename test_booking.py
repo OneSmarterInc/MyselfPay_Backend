@@ -86,7 +86,7 @@ class BookingTests(unittest.TestCase):
         with self.assertRaises(booking.BookingError):
             booking.clinic_details(self.db, request['id'], session, 'unable')
 
-    def test_mail_never_connects_and_notification_has_direct_contact_actions(self):
+    def test_mail_never_connects_and_notification_has_verified_request_link(self):
         with patch('smtplib.SMTP') as smtp, patch('smtplib.SMTP_SSL') as ssl:
             result = self.create()
             token = self.tokens(result)
@@ -95,8 +95,8 @@ class BookingTests(unittest.TestCase):
             ssl.assert_not_called()
         preview = booking.patient(self.db, result['id'], result['tracking_token'], preview=True)
         self.assertIn('appointments@example.test', preview['notification'])
-        self.assertIn(self.data['phone'], preview['notification'])
-        self.assertNotIn('Open request', preview['notification'])
+        self.assertNotIn(self.data['phone'], preview['notification'])
+        self.assertIn('Open request', preview['notification'])
         self.assertNotIn(self.data['first_name'], preview['notification'])
 
     def test_recipient_cannot_be_overridden(self):

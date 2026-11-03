@@ -147,6 +147,27 @@ class APITests(unittest.TestCase):
 
         repeat.update(email='unverified@example.test', idempotency_key='forged-email')
         self.assertEqual(self.post('booking/create', repeat).status_code, 403)
+        # Email-link approval cannot be performed before center OTP verification.
+        request_id=result.json()['id']
+        with booking.connection(self.db) as con:
+            clinic_token=booking.unpack(booking.get_row(con,request_id))['clinic_token']
+        self.assertEqual(self.post('booking/status',{'id':request_id,'session':'unverified','status':'scheduled'}).status_code,404)
+        with patch('booking_delivery.mode',return_value='enabled'), patch('booking_mail.send_clinic_code') as center_sender:
+            issued=self.post('booking/code',{'id':request_id,'token':clinic_token})
+            self.assertEqual(issued.status_code,200,issued.content)
+            self.assertEqual(center_sender.call_args.args[0],'appointments@example.test')
+            center_code=center_sender.call_args.args[2]
+        checked=self.post('booking/verify',{'id':request_id,'token':clinic_token,'code':center_code})
+        self.assertEqual(checked.status_code,200)
+        approved=self.post('booking/status',{'id':request_id,'session':checked.json()['session'],'status':'scheduled'})
+        self.assertEqual(approved.status_code,200,approved.content)
+        dashboard=self.client.get('/api/dashboard?filter=approved').json()
+        self.assertEqual(dashboard['total'],1)
+        self.assertEqual(dashboard['stats']['scheduled'],1)
+        self.assertEqual(dashboard['requests'][0]['status'],'scheduled')
+        self.assertEqual(dashboard['requests'][0]['contact_email'],'patient@example.test')
+        self.assertIsNotNone(dashboard['requests'][0]['approved_at'])
+
 
 
     def test_bad_payload_limits_and_secure_production_cookie(self):

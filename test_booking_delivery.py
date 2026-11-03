@@ -26,8 +26,8 @@ class LiveDeliveryTests(unittest.TestCase):
                 self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_requests').fetchone()['n'], 1)
             self.assertEqual(recipient, 'appointments@example.test')
             self.assertIn('New self-pay request', str(message['Subject']))
-            self.assertIn(self.fixture.data['phone'], message.as_string())
-            self.assertEqual(str(message['Reply-To']), 'patient@example.test')
+            self.assertNotIn(self.fixture.data['phone'], message.as_string())
+            self.assertIsNone(message['Reply-To'])
         with patch('booking_mail.send_message', side_effect=transport) as send:
             result = self.fixture.create()
             self.assertEqual(result['delivery'], 'sent')
@@ -40,19 +40,19 @@ class LiveDeliveryTests(unittest.TestCase):
             booking.create(self.fixture.db, 'guest-owner', self.fixture.data, 'https://portal.example.test',
                            account_contact={'email': 'registered@example.test', 'phone': '+1 555 010 2222'})
         message = send.call_args.args[0]
-        self.assertEqual(str(message['Reply-To']), 'patient@example.test')
+        self.assertIsNone(message['Reply-To'])
         html = message.get_body(preferencelist=('html',)).get_content()
-        self.assertIn('mailto:patient@example.test', html)
-        self.assertIn('tel:+16145550142', html)
+        self.assertNotIn('mailto:patient@example.test', html)
+        self.assertNotIn('tel:+16145550142', html)
         self.assertNotIn('mailto:registered@example.test', html)
-        self.assertNotIn('/#clinic/', html)
-        self.assertEqual(html.count('<a href='), 2)
+        self.assertIn('/#clinic/', html)
+        self.assertEqual(html.count('<a href='), 1)
         self.assertIn('Preferred appointment times', html)
         self.assertIn('America/New_York', html)
         self.assertIn('Clinic will confirm', html)
         payload={'recipient':'appointments@example.test','clinic_name':'<script>test</script>',
                  'service':'MRI','exam':'<b>Knee</b>','contrast':'without','slots':self.fixture.data['slots'],
-                 'timezone':'America/New_York','patient_email':'patient@example.test','phone':'5550101111'}
+                 'clinic_url':'https://portal.example.test/#clinic/MSP-TEST/token','timezone':'America/New_York','patient_email':'patient@example.test','phone':'5550101111'}
         html=booking.notification(payload,'MSP-TEST').get_body(preferencelist=('html',)).get_content()
         self.assertIn('&lt;script&gt;', html)
         self.assertNotIn('<script>', html)

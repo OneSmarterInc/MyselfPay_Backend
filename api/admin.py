@@ -9,7 +9,13 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import connection
-from django.urls import reverse
+from django.urls import reverse, path
+from django.template.response import TemplateResponse
+from django.http import Http404
+import admin_bookings
+import booking
+import sqlite3
+import psycopg
 from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration
 from admin_settings import secret_cipher
 import accounts
@@ -26,10 +32,30 @@ class SelfPayAdminSite(AdminSite):
     def has_permission(self, request):
         return bool(request.user.is_active and request.user.is_superuser)
 
+    def get_urls(self):
+        return [path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
+                path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
+
+    def requests_view(self, request):
+        mode='approved' if request.GET.get('filter')=='approved' else 'all'
+        try: number=int(request.GET.get('page','1'))
+        except ValueError: number=1
+        context={**self.each_context(request),'title':'Appointment requests',**admin_bookings.page(number,mode)}
+        return TemplateResponse(request,'admin/booking_requests.html',context)
+
+    def request_view(self, request, ident):
+        try: item=admin_bookings.detail(ident)
+        except booking.BookingError: raise Http404('Request unavailable') from None
+        return TemplateResponse(request,'admin/booking_request.html',{**self.each_context(request),'title':'Appointment request','item':item})
+
     def index(self, request, extra_context=None):
         context = {'registered_users': PortalAccount.objects.count(),
                    'suspended_users': PortalSetting.objects.filter(key__startswith='account-disabled:', value='1').count(),
                    'twilio_saved': TwilioConfiguration.objects.filter(pk=1).exists()}
+        try:
+            context.update(admin_bookings.stats())
+        except (sqlite3.DatabaseError, psycopg.Error):
+            context.update(request_total='Unavailable',request_approved='Unavailable')
         context['active_users'] = max(0, context['registered_users'] - context['suspended_users'])
         recent = list(PortalAccount.objects.order_by('-created')[:6])
         names = dict(PortalMember.objects.filter(pk__in=[a.pk for a in recent]).values_list('pk', 'name'))

@@ -325,7 +325,7 @@ class DashboardView(ResourceView):
         except ValueError:
             return Response({'error':'Invalid page.'}, status=400)
         mode = request.query_params.get('filter', 'all')
-        if mode not in ('all', 'open'):
+        if mode not in ('all', 'open', 'approved'):
             return Response({'error':'Invalid request filter.'}, status=400)
         owner, now = booking.digest(request.auth['id']), time.time()
         with core.connect(database()) as con:
@@ -337,6 +337,8 @@ class DashboardView(ResourceView):
             if mode == 'open':
                 where += " AND status IN ('requested','voicemail') AND link_expires>?"
                 params.append(now)
+            elif mode == 'approved':
+                where += " AND status='scheduled'"
             total = con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE '+where, tuple(params)).fetchone()['n']
             pages = max(1, (total+9)//10)
             page = min(page,pages)
@@ -344,6 +346,8 @@ class DashboardView(ResourceView):
             requests = []
             for row in rows:
                 item = booking.receipt(row,con)
+                payload = booking.unpack(row)
+                item.update(contact_name=payload['first_name'],contact_email=payload['patient_email'],contact_phone=payload.get('phone',''),consent=payload.get('consent',False),approved_at=row['closed'] if row['status']=='scheduled' else None)
                 if item['status'] in ('requested','voicemail') and row['link_expires']<=now:
                     item['status']='expired'
                 requests.append(item)
