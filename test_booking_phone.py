@@ -36,6 +36,14 @@ class MobileOTPTests(unittest.TestCase):
             self.assertNotEqual(row['proof_hash'],proof['verification_token'])
         with self.assertRaises(booking.BookingError): booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
 
+    def test_email_only_booking_without_mobile_proof(self):
+        data={k:v for k,v in self.fixture.data.items() if not k.startswith('phone_verification_')}
+        data.pop('phone')
+        with patch('booking_phone.require_verified') as mobile_check:
+            result=self.fixture.create(data)
+            self.assertTrue(result['id'])
+            mobile_check.assert_not_called()
+
     def test_resends_and_checks_have_no_application_limits(self):
         with booking.connection(self.path,write=True) as db:
             db.execute('INSERT INTO booking_sms_limits VALUES(?,?,999)',('owner:'+booking.digest(self.owner),int(time.time()//3600)))

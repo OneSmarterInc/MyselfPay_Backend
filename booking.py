@@ -162,8 +162,8 @@ def text_field(data: dict, field: str, limit: int) -> str:
 
 def validate(data: dict) -> dict:
     name = text_field(data, 'first_name', 80)
-    phone = text_field(data, 'phone', 30)
-    if not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 8 <= len(re.sub(r'\D', '', phone)) <= 15:
+    phone = text_field(data, 'phone', 30) if data.get('phone') else ''
+    if phone and (not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 8 <= len(re.sub(r'\D', '', phone)) <= 15):
         raise BookingError('Enter a valid phone number, including area code.')
     zone = data.get('timezone')
     if zone not in ZONES:
@@ -387,7 +387,9 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             return receipt(prior, con)
         patient_email = verified_patient_email(con, owner_hash, verification_id, data.get('verification_token'))
         import booking_phone
-        validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
+        has_phone_proof = bool(data.get('phone_verification_id') or data.get('phone_verification_token'))
+        if has_phone_proof:
+            validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
         center = resolve_center(con, center_key)
         if booking_delivery.mode(appointment_email(center)) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
@@ -421,7 +423,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         if row['input_hash'] != input_hash:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
-        con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
+        if has_phone_proof:
+            con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
         if booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
