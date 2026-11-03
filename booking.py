@@ -455,7 +455,7 @@ def receipt(row: Any, con: Any = None) -> dict:
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
     return {'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
-            'clinic_name': p['clinic_name'], 'location': p['location'],
+            'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],
             'slots': p['slots'], 'timezone': p['timezone'],
@@ -570,7 +570,11 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
         p = unpack(row)
         result = receipt(row, con)
         result.pop('tracking_token')
-        result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'], expires_at=row['clinic_session_expires'])
+        result['expires_at'] = row['clinic_session_expires']
+        if row['status'] not in TERMINAL:
+            result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'])
+        else:
+            result['contact_hidden'] = True
         return result
 
 
