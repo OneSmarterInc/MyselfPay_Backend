@@ -7,6 +7,7 @@ Public URL: https://myselfpay.onesmarter.com/admin/ (Vercel proxies this path an
 ```bash
 cd /var/www/MyselfPay_Backend
 git pull --ff-only origin main
+./venv/bin/python -m pip install -r requirements.txt
 ./venv/bin/python manage.py migrate --noinput
 ./venv/bin/python manage.py collectstatic --noinput
 ./venv/bin/python manage.py createsuperuser

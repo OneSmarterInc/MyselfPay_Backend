@@ -1,3 +1,4 @@
+# Backend runtime dependencies. Django includes the admin, auth and session modules.
 Django>=5.2,<5.3
 djangorestframework>=3.16,<4
 django-cors-headers>=4.9,<5

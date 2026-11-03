@@ -1,0 +1,2 @@
+# Compatibility filename; use requirements.txt as the canonical dependency list.
+-r requirements.txt
