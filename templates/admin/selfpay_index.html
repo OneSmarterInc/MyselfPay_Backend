@@ -1,0 +1,17 @@
+{% extends "admin/index.html" %}
+{% block extrastyle %}{{ block.super }}
+<style>
+.selfpay-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px}
+.selfpay-stat{padding:16px;border:1px solid var(--hairline-color);border-radius:8px;background:var(--body-bg)}
+.selfpay-stat h2{font-size:13px;margin:0 0 10px;padding:0;background:none;color:var(--body-quiet-color)}
+.selfpay-stat p{font-size:26px;margin:0;color:var(--body-fg)}
+</style>
+{% endblock %}
+{% block content %}
+<div class="selfpay-stats">
+<div class="selfpay-stat"><h2>Registered users</h2><p>{{ registered_users }}</p></div>
+<div class="selfpay-stat"><h2>Suspended users</h2><p>{{ suspended_users }}</p></div>
+<div class="selfpay-stat"><h2>Twilio settings</h2><p style="font-size:18px">{% if twilio_saved %}Saved{% else %}Not configured{% endif %}</p></div>
+</div>
+{{ block.super }}
+{% endblock %}

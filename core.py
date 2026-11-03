@@ -494,6 +494,8 @@ def guest_login(path=DB):
 def session(token,path=DB):
     with connect(path) as db:
         row=db.execute('SELECT m.id,m.tenant,m.name,m.email,s.csrf FROM sessions s JOIN members m ON m.id=s.member_id WHERE s.token_hash=? AND s.expires>?',(hashlib.sha256(token.encode()).hexdigest(),time.time())).fetchone()
+        if row and db.execute("SELECT value FROM settings WHERE key=? AND value='1'", ('account-disabled:' + row['id'],)).fetchone():
+            return None
         return dict(row) if row else None
 
 def history(member,path=DB):

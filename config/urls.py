@@ -1,9 +1,16 @@
 from django.urls import path, re_path
+from django.conf import settings
+from django.views.generic import RedirectView
+from django.views.static import serve
+from api.admin import admin_site
 from api import views
 from api.spatial_views import SpatialBundleView
 
 urlpatterns = [
-    re_path(r'^api/v1/spatial-bundle/(?P<h3_res7>[^/]+)/?$', SpatialBundleView.as_view(), name='spatial-bundle'),
+    path('admin', RedirectView.as_view(url='/admin/', permanent=False)),
+    path('admin/', admin_site.urls),
+    path('admin-assets/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
+    path('api/v1/spatial-bundle/<str:h3_res7>/', SpatialBundleView.as_view(), name='spatial-bundle'),
     path('api/health', views.HealthView.as_view(), name='health'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),

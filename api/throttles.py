@@ -45,3 +45,8 @@ class BookingEmailThrottle(DatabaseWindowThrottle):
 class BookingCreateThrottle(DatabaseWindowThrottle):
     scope = 'booking-create'
     limit = 5
+
+
+class AdminLoginThrottle(DatabaseWindowThrottle):
+    scope = 'admin-login'
+    limit = 10

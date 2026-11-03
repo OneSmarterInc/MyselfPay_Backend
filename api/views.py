@@ -23,7 +23,7 @@ def database():
 
 
 def session_token(request):
-    return request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
+    return request.COOKIES.get(settings.SELFPAY_SESSION_COOKIE_NAME, '')
 
 
 def client_ip(request):
@@ -34,11 +34,11 @@ def session_response(data, status=200, token=None):
     response = Response(data, status=status)
     if token is not None:
         if token:
-            response.set_cookie(settings.SESSION_COOKIE_NAME, token, max_age=28800,
+            response.set_cookie(settings.SELFPAY_SESSION_COOKIE_NAME, token, max_age=28800,
                                 secure=not settings.DEBUG, httponly=True,
                                 samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
         else:
-            response.delete_cookie(settings.SESSION_COOKIE_NAME, path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
+            response.delete_cookie(settings.SELFPAY_SESSION_COOKIE_NAME, path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
     return response
 
 

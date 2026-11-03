@@ -23,7 +23,7 @@ class MemberIdentity:
 
 class SelfPaySessionAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        token = request.COOKIES.get(settings.SESSION_COOKIE_NAME, '')
+        token = request.COOKIES.get(settings.SELFPAY_SESSION_COOKIE_NAME, '')
         if not token:
             return None
         member = core.session(token, settings.DOMAIN_DATABASE)

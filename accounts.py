@@ -76,6 +76,8 @@ def authenticate(path, data, action, ip, previous_token=''):
             return new_session(db, ident, previous_token)
     with core.connect(path) as db:
         row = db.execute('SELECT m.id,m.salt,m.password_hash FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE a.email=?', (email,)).fetchone()
+        if row and db.execute("SELECT value FROM settings WHERE key=? AND value='1'", ('account-disabled:' + row['id'],)).fetchone():
+            row = None
         salt = row['salt'] if row else '00' * 16
         candidate = 'scrypt-v1$' + password_hash(password, salt)
         if not hmac.compare_digest(candidate, row['password_hash'] if row else 'scrypt-v1$' + '0' * 64):

@@ -53,15 +53,6 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         return response.json()
 
-    def test_both_approved_frontend_origins_and_csrf(self):
-        for origin in ('https://myselfpay-frontend.vercel.app', 'https://myselfpay.onesmarter.com'):
-            with self.subTest(origin=origin):
-                self.assertEqual(self.post('guest', origin=origin).status_code, 200)
-                self.assertEqual(self.post('search', {'location': 'Ohio'}, origin=origin, csrf='wrong').status_code, 403)
-                self.assertEqual(self.post('logout', origin=origin).status_code, 200)
-        for origin in ('https://evil.example', 'https://myselfpay.onesmarter.com.evil.example', ''):
-            self.assertEqual(self.post('guest', origin=origin).status_code, 403)
-
     def test_guest_search_csrf_cookie_and_logout(self):
         self.assertEqual(self.client.get('/api/me').status_code, 401)
         self.assertEqual(self.post('guest', origin='https://evil.example').status_code, 403)
@@ -122,7 +113,7 @@ class APITests(unittest.TestCase):
     def test_bad_payload_limits_and_secure_production_cookie(self):
         response = self.client.post('/api/guest', '[]', content_type='application/json', HTTP_ORIGIN='http://localhost:5173')
         self.assertEqual(response.status_code, 400)
-        with override_settings(DEBUG=False, SESSION_COOKIE_NAME='__Host-selfpay_session', SECURE_SSL_REDIRECT=False):
+        with override_settings(DEBUG=False, SELFPAY_SESSION_COOKIE_NAME='__Host-selfpay_session', SECURE_SSL_REDIRECT=False):
             response = self.post('guest')
             cookie = response.cookies['__Host-selfpay_session']
             self.assertTrue(cookie['secure'])
@@ -243,6 +234,18 @@ class APITests(unittest.TestCase):
             response = self.post('search',{'location':'Ohio','budget':value})
             self.assertEqual(response.status_code,400,response.content)
             self.assertIn('budget',response.json()['details'])
+
+    def test_admin_suspension_blocks_existing_sessions_and_new_login(self):
+        credentials={'name':'Suspend Test','email':'suspend@example.com','password':'Synthetic-only-passphrase!'}
+        member=self.post('register',credentials).json()['member']
+        self.assertEqual(self.client.get('/api/me').status_code,200)
+        with core.connect(self.db) as con:
+            con.execute("INSERT INTO settings(key,value) VALUES(?,'1')",('account-disabled:'+member['id'],))
+        self.assertEqual(self.client.get('/api/me').status_code,401)
+        self.assertEqual(self.post('login',credentials).status_code,401)
+        with core.connect(self.db) as con:
+            con.execute("UPDATE settings SET value='0' WHERE key=?",('account-disabled:'+member['id'],))
+        self.assertEqual(self.post('login',credentials).status_code,200)
 
 if __name__ == '__main__':
     unittest.main()

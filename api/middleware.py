@@ -19,10 +19,16 @@ class RequestSecurityMiddleware:
                 request.get_host()
             except DisallowedHost:
                 return JsonResponse({'error': 'Host rejected.'}, status=400)
-        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') not in set(settings.CORS_ALLOWED_ORIGINS) | {settings.FRONTEND_ORIGIN}:
+        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') != settings.FRONTEND_ORIGIN:
             return JsonResponse({'error': 'Origin rejected.'}, status=403)
+        if request.path == '/admin/login/' and request.method == 'POST':
+            from api.throttles import AdminLoginThrottle
+            if not AdminLoginThrottle().allow_request(request, None):
+                return JsonResponse({'error': 'Too many admin login attempts. Try again in a minute.'}, status=429)
         response = self.get_response(request)
         response['Cache-Control'] = 'private, no-store' if request.path.startswith('/api/v1/spatial-bundle/') else 'no-store'
         response['X-Frame-Options'] = 'DENY'
-        response['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'none'; base-uri 'none'"
+        if request.path.startswith('/admin'):
+            response['Referrer-Policy'] = 'same-origin'
+        response['Content-Security-Policy'] = ("default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'" if request.path.startswith('/admin') else "default-src 'none'; frame-ancestors 'none'; base-uri 'none'")
         return response

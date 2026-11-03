@@ -8,3 +8,5 @@ data/
 *.sqlite3
 .coverage
 htmlcov/
+
+staticfiles/
