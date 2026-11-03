@@ -1,0 +1,7 @@
+# Approved booking conversations
+
+Migrate before enabling SECURE_MAIL_ENABLED=true. Set SECURE_MAIL_URL (service origin), SECURE_MAIL_PORTAL_URL (browser origin), SECURE_MAIL_KEY_ID and SECURE_MAIL_SECRET. Configure the matching Secure Mail integration with an active owner and suppress_provider_notifications=false. Production requires HTTPS. Optional SECURE_MAIL_CA_FILE, SECURE_MAIL_CLIENT_CERT and SECURE_MAIL_CLIENT_KEY support mTLS. SECURE_MAIL_ALLOW_LOOPBACK_HTTP=true is local development only.
+
+Run `python manage.py process_booking_chats --watch` as a supervised worker, plus the Secure Mail delivery worker. Both clinic approval paths enqueue within the approval transaction. The worker creates the chat after commit. Approval persists during outages; retries use the same request ID to prevent duplicate chats and initial invitations. Participants come from verified booking data and the server catalog. The initial message contains patient details and requested slots. Secure Mail owns OTP, authorization and notifications.
+
+Dashboard links appear only for approved requests after handoff succeeds. Both participants receive Secure Mail invitations and subsequent message notifications. Links are not authentication capabilities. Existing approved requests require explicit reviewed enqueueing; they are not automatically replayed. Follow repository policy for all live database operations.

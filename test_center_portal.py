@@ -17,7 +17,7 @@ class CenterPortalTests(unittest.TestCase):
     def login(self, email='appointments@example.test'):
         with patch('booking_mail.send_message') as send:
             issued = center_portal.issue(self.db, email)
-        code = send.call_args.args[0].get_content().split('code is: ')[1].split()[0]
+        code = send.call_args.args[0].get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
         token, csrf = center_portal.verify(self.db, issued['verification_id'], code)
         return token, csrf
 
@@ -30,7 +30,7 @@ class CenterPortalTests(unittest.TestCase):
     def test_otp_is_single_use_and_attempts_persist(self):
         with patch('booking_mail.send_message') as send:
             issued = center_portal.issue(self.db, 'APPOINTMENTS@example.test')
-        code = send.call_args.args[0].get_content().split('code is: ')[1].split()[0]
+        code = send.call_args.args[0].get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
         bad = '000000' if code != '000000' else '111111'
         with self.assertRaisesRegex(booking.BookingError, 'Incorrect'):
             center_portal.verify(self.db, issued['verification_id'], bad)
