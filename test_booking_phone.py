@@ -82,3 +82,23 @@ class MobileOTPTests(unittest.TestCase):
             response.read.return_value=b'{"status":"approved"}'
             self.assertTrue(booking_sms.check_code(sid,'123456'))
             self.assertIn(b'VerificationSid=',opener.return_value.open.call_args.args[0].data)
+
+    def test_provider_error_logs_only_safe_status_and_numeric_code(self):
+        from urllib.error import HTTPError
+        from io import BytesIO, StringIO
+        values={'api_key_sid':'SK'+'1'*32,'api_key_secret':'synthetic-secret','verify_service_sid':'VA'+'2'*32}
+        provider_error=HTTPError('https://verify.twilio.com',401,'Unauthorized',{},BytesIO(b'{"code":20003,"message":"synthetic-secret +15550129999"}'))
+        with patch('booking_sms.configuration',return_value=values),patch('booking_sms.build_opener') as opener,self.assertLogs('booking_sms',level='WARNING') as logs:
+            opener.return_value.open.side_effect=provider_error
+            with self.assertRaises(booking_sms.SMSUnavailable) as exc:booking_sms.send_code(self.phone)
+        self.assertEqual(exc.exception.provider_code,20003)
+        self.assertEqual(exc.exception.http_status,401)
+        self.assertIn('TwilioCode=20003',logs.output[0])
+        self.assertNotIn('synthetic-secret',' '.join(logs.output))
+        self.assertNotIn(self.phone,' '.join(logs.output))
+        from api.management.commands.check_twilio import Command
+        output=StringIO()
+        with patch('booking_sms.check_service',return_value={'code_length':6}),patch('booking_sms.send_code') as send:
+            Command(stdout=output).handle(send=False,phone=None)
+            send.assert_not_called()
+        self.assertIn('No SMS sent',output.getvalue())
