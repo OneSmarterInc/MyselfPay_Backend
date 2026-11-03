@@ -86,6 +86,7 @@ def initialize_local(path: Any) -> None:
     with connection(path) as con:
         con.executescript((core.ROOT / 'ops/booking-schema.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-outbox.sql').read_text())
+        con.executescript((core.ROOT / 'ops/booking-phone.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:
@@ -162,7 +163,7 @@ def text_field(data: dict, field: str, limit: int) -> str:
 def validate(data: dict) -> dict:
     name = text_field(data, 'first_name', 80)
     phone = text_field(data, 'phone', 30)
-    if not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 10 <= len(re.sub(r'\D', '', phone)) <= 15:
+    if not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 8 <= len(re.sub(r'\D', '', phone)) <= 15:
         raise BookingError('Enter a valid phone number, including area code.')
     zone = data.get('timezone')
     if zone not in ZONES:
@@ -391,7 +392,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         raise BookingError('Invalid price offer.')
     verification_id = data.get('verification_id')
     input_hash = digest(core.canonical({'clinic': center_key, 'offer_id': offer_id,
-                                      'verification_id': verification_id, **validated}))
+                                      'verification_id': verification_id, 'phone_verification_id': data.get('phone_verification_id'), **validated}))
     now = time.time()
     with connection(path, write=True) as con:
         if not isinstance(con, sqlite3.Connection) and isinstance(verification_id, str):
@@ -405,6 +406,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
                 raise BookingError('This submission key was already used for different details.', 409)
             return receipt(prior, con)
         patient_email = verified_patient_email(con, owner_hash, verification_id, data.get('verification_token'))
+        import booking_phone
+        validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
         center = resolve_center(con, center_key)
         if booking_delivery.mode(appointment_email(center)) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
@@ -416,8 +419,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         patient_token, clinic_token = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         payload = {**validated, 'clinic_id': center_key, 'clinic_name': center['name'],
                    'patient_email': patient_email,
-                   'reply_email': (account_contact or {}).get('email') or patient_email,
-                   'reply_phone': (account_contact or {}).get('phone') or validated['phone'],
+                   'reply_email': patient_email,
+                   'reply_phone': validated['phone'],
                    'price_text': price_text,
                    'location': center.get('area', ''), 'recipient': appointment_email(center),
                    'phone_clinic': center.get('phone', ''),
@@ -438,6 +441,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         if row['input_hash'] != input_hash:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
+        con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
         if booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
@@ -577,6 +581,9 @@ def cleanup(path: Any) -> int:
         con.execute("UPDATE booking_requests SET status='expired',closed=link_expires WHERE closed IS NULL AND link_expires<=?", (now,))
         result = con.execute('DELETE FROM booking_requests WHERE closed<=?', (now - 30 * 86400,))
         con.execute('DELETE FROM booking_email_checks WHERE expires<?', (now - 86400,))
+        con.execute('DELETE FROM booking_phone_checks WHERE expires<?', (now - 86400,))
+        con.execute("DELETE FROM booking_sms_limits WHERE key<>'global-day' AND window_id<?", (int(now // 3600) - 48,))
+        con.execute("DELETE FROM booking_sms_limits WHERE key='global-day' AND window_id<?", (int(now // 86400) - 2,))
         con.execute("DELETE FROM booking_mail_limits WHERE key<>'global-day' AND window_id<?", (int(now // 3600) - 48,))
         con.execute("DELETE FROM booking_mail_limits WHERE key='global-day' AND window_id<?", (int(now // 86400) - 2,))
         return result.rowcount

@@ -30,6 +30,7 @@ class APITests(unittest.TestCase):
         with core.connect(self.db) as con:
             con.executescript((Path(core.__file__).parent / 'ops/booking-schema.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-outbox.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/booking-phone.sql').read_text())
             # CI database is disposable and must never point at production.
             for table in ['booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
@@ -101,6 +102,13 @@ class APITests(unittest.TestCase):
         self.assertEqual(verified.status_code, 200)
         from datetime import datetime, timedelta
         data = {**verified.json(), 'clinic_id': 'api-test-clinic', 'idempotency_key': 'test-request', 'first_name': 'Synthetic', 'phone': '6145550142', 'service': 'MRI', 'exam': 'Knee', 'contrast': 'without', 'timezone': 'America/New_York', 'consent': True, 'slots': [{'date': (datetime.now() + timedelta(days=3)).date().isoformat(), 'period': 'morning'}]}
+        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'1'*32):
+            phone=self.post('booking/phone-code',{'phone':'+16145550142'})
+        self.assertEqual(phone.status_code,200,phone.content)
+        with patch('booking_sms.check_code',return_value=True):
+            checked=self.post('booking/phone-verify',{'verification_id':phone.json()['verification_id'],'code':'123456'})
+        self.assertEqual(checked.status_code,200,checked.content)
+        data.update(phone='+16145550142',phone_verification_id=checked.json()['verification_id'],phone_verification_token=checked.json()['verification_token'])
         result = self.post('booking/create', data)
         self.assertEqual(result.status_code, 201, result.content)
         self.assertEqual(result.json()['delivery'], 'suppressed')
@@ -163,7 +171,7 @@ class APITests(unittest.TestCase):
     def test_guest_cannot_start_booking_or_send_verification_email(self):
         self.guest()
         with patch('booking_mail.send_patient_code') as sender, patch('booking.create') as create:
-            for action in ('options', 'email-code', 'email-verify', 'create'):
+            for action in ('options', 'email-code', 'email-verify', 'phone-code', 'phone-verify', 'create'):
                 response = self.post('booking/' + action)
                 self.assertEqual(response.status_code, 403, response.content)
                 self.assertIn('user account', response.json()['error'])

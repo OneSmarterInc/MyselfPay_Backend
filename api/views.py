@@ -76,6 +76,7 @@ class HealthView(ResourceView):
                 con.execute('SELECT id FROM spatial_locations LIMIT 0')
                 con.execute('SELECT member_id FROM account_zip_codes LIMIT 0')
                 con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
+                con.execute('SELECT id FROM booking_phone_checks LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
             return Response({'status': 'unavailable'}, status=503)
@@ -258,6 +259,8 @@ class BookingView(ResourceView):
     serializers_by_action = {
         'options': inputs.BookingOptionsSerializer,
         'email-code': inputs.PatientEmailSerializer,
+        'phone-code': inputs.PatientPhoneSerializer,
+        'phone-verify': inputs.PatientCodeSerializer,
         'email-verify': inputs.PatientCodeSerializer,
         'create': inputs.BookingCreateSerializer,
         'patient': inputs.BookingCapabilitySerializer,
@@ -269,7 +272,7 @@ class BookingView(ResourceView):
     }
 
     def get_permissions(self):
-        authenticated_actions = ('options', 'email-code', 'email-verify', 'create')
+        authenticated_actions = ('options', 'email-code', 'email-verify', 'phone-code', 'phone-verify', 'create')
         return [BookingAccountOnly() if self.kwargs['action'] in authenticated_actions else AllowAny()]
 
     def get_throttles(self):
@@ -291,11 +294,14 @@ class BookingView(ResourceView):
             result = booking.request_patient_code(db, request.auth['id'], data['email'])
         elif action == 'email-verify':
             result = booking.verify_patient_code(db, request.auth['id'], data['verification_id'], data['code'])
+        elif action == 'phone-code':
+            import booking_phone
+            result = booking_phone.request_code(db, request.auth['id'], data['phone'])
+        elif action == 'phone-verify':
+            import booking_phone
+            result = booking_phone.verify_code(db, request.auth['id'], data['verification_id'], data['code'])
         elif action == 'create':
-            with core.connect(db) as con:
-                contact = con.execute('SELECT email,phone FROM user_accounts WHERE member_id=?', (request.auth['id'],)).fetchone()
-            result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN,
-                                    account_contact=dict(contact) if contact else None)
+            result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN)
         elif action == 'patient':
             result = booking.patient(db, data['id'], data['token'])
         elif action == 'code':

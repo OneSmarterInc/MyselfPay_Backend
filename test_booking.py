@@ -31,12 +31,13 @@ class BookingTests(unittest.TestCase):
             con.execute("INSERT INTO settings VALUES('active_batch','batch')")
             con.execute('INSERT INTO entries VALUES(?,?,?,?)', ('batch', 'clinic-1', 'h', json.dumps(self.center)))
         self.data = {'clinic_id': 'clinic-1', 'idempotency_key': 'synthetic-request-key',
-                     'first_name': 'Synthetic Jamie', 'phone': '6145550142', 'service': 'MRI',
+                     'first_name': 'Synthetic Jamie', 'phone': '+16145550142', 'service': 'MRI',
                      'exam': 'Knee', 'contrast': 'without', 'timezone': 'America/New_York',
                      'consent': True, 'slots': [
                          {'date': (datetime.now() + timedelta(days=n)).date().isoformat(), 'period': 'morning'}
                          for n in (2, 3, 4)]}
         self.data.update(self.verify_email('guest-owner', 'patient@example.test'))
+        self.data.update(self.verify_phone('guest-owner', self.data['phone']))
 
     def tearDown(self):
         self.env.stop()
@@ -51,6 +52,14 @@ class BookingTests(unittest.TestCase):
             issued = booking.request_patient_code(self.db, owner, email)
             code = send.call_args.args[1]
         return booking.verify_patient_code(self.db, owner, issued['verification_id'], code)
+
+    def verify_phone(self, owner, phone):
+        import booking_phone
+        with patch('booking_sms.configuration', return_value={}), patch('booking_sms.send_code', return_value='VE'+'1'*32):
+            issued=booking_phone.request_code(self.db,owner,phone)
+        with patch('booking_sms.check_code',return_value=True):
+            proof=booking_phone.verify_code(self.db,owner,issued['verification_id'],'123456')
+        return {'phone_verification_id':proof['verification_id'],'phone_verification_token':proof['verification_token']}
 
     def tokens(self, request):
         preview = booking.patient(self.db, request['id'], request['tracking_token'], preview=True)
@@ -165,7 +174,7 @@ class BookingTests(unittest.TestCase):
     def test_capabilities_cannot_access_other_requests(self):
         a = self.create()
         proof = self.verify_email('guest-owner', 'patient2@example.test')
-        b = self.create({**self.data, **proof, 'idempotency_key': 'second'})
+        b = self.create({**self.data, **proof, **self.verify_phone('guest-owner', '+16145550143'), 'phone': '+16145550143', 'idempotency_key': 'second'})
         with self.assertRaises(booking.BookingError):
             booking.patient(self.db, b['id'], a['tracking_token'])
         with self.assertRaises(booking.BookingError):

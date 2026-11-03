@@ -35,16 +35,16 @@ class LiveDeliveryTests(unittest.TestCase):
             self.assertFalse(booking_delivery.deliver(self.fixture.db, result['id']))
             send.assert_called_once()
 
-    def test_email_uses_registered_contact_and_escapes_content(self):
+    def test_email_uses_verified_contact_and_escapes_content(self):
         with patch('booking_mail.send_message') as send:
             booking.create(self.fixture.db, 'guest-owner', self.fixture.data, 'https://portal.example.test',
                            account_contact={'email': 'registered@example.test', 'phone': '+1 555 010 2222'})
         message = send.call_args.args[0]
-        self.assertEqual(str(message['Reply-To']), 'registered@example.test')
+        self.assertEqual(str(message['Reply-To']), 'patient@example.test')
         html = message.get_body(preferencelist=('html',)).get_content()
-        self.assertIn('mailto:registered@example.test', html)
-        self.assertIn('tel:+15550102222', html)
-        self.assertNotIn('mailto:patient@example.test', html)
+        self.assertIn('mailto:patient@example.test', html)
+        self.assertIn('tel:+16145550142', html)
+        self.assertNotIn('mailto:registered@example.test', html)
         self.assertNotIn('/#clinic/', html)
         self.assertEqual(html.count('<a href='), 2)
         self.assertIn('Preferred appointment times', html)

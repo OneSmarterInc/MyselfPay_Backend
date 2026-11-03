@@ -1,0 +1,83 @@
+import time
+import unittest
+from unittest.mock import patch
+import booking
+import booking_phone
+import booking_sms
+import test_booking
+
+
+class MobileOTPTests(unittest.TestCase):
+    def setUp(self):
+        self.fixture=test_booking.BookingTests();self.fixture.setUp()
+        self.path=self.fixture.db
+        self.owner='mobile-test-owner'
+        self.phone='+15550129999'
+
+    def tearDown(self): self.fixture.tearDown()
+
+    def request(self):
+        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'2'*32):
+            return booking_phone.request_code(self.path,self.owner,self.phone)
+
+    def test_required_phone_owner_and_contact_binding(self):
+        for changes in ({'phone_verification_token':None},{'phone':'+15550128888'}):
+            with self.assertRaises(booking.BookingError): self.fixture.create({**self.fixture.data,**changes})
+        issued=self.request()
+        with patch('booking_sms.check_code',return_value=True) as check:
+            with self.assertRaises(booking.BookingError): booking_phone.verify_code(self.path,'another-owner',issued['verification_id'],'123456')
+            check.assert_not_called()
+            proof=booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
+        with booking.connection(self.path) as db:
+            normalized=booking_phone.require_verified(db,booking.digest(self.owner),issued['verification_id'],proof['verification_token'],'+1 (555) 012-9999')
+            self.assertEqual(normalized,self.phone)
+            row=db.execute('SELECT phone_encrypted,proof_hash FROM booking_phone_checks WHERE id=?',(issued['verification_id'],)).fetchone()
+            self.assertNotIn(self.phone,row['phone_encrypted'])
+            self.assertNotEqual(row['proof_hash'],proof['verification_token'])
+        with self.assertRaises(booking.BookingError): booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
+
+    def test_resend_limits_and_attempt_limits(self):
+        issued=self.request()
+        with self.assertRaises(booking.BookingError) as error:self.request()
+        self.assertEqual(error.exception.status,429)
+        with patch('booking_sms.check_code',return_value=False) as check:
+            for _ in range(5):
+                with self.assertRaises(booking.BookingError):booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'000000')
+            with self.assertRaises(booking.BookingError) as error:booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'000000')
+            self.assertEqual(error.exception.status,429)
+            self.assertEqual(check.call_count,5)
+
+    def test_missing_configuration_and_provider_failure_fail_closed(self):
+        with patch('booking_sms.configuration',side_effect=booking_sms.SMSUnavailable('Not configured')):
+            with self.assertRaises(booking.BookingError) as error:booking_phone.request_code(self.path,self.owner,self.phone)
+            self.assertEqual(error.exception.status,503)
+        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',side_effect=booking_sms.SMSUnavailable('Unavailable')):
+            with self.assertRaises(booking.BookingError):booking_phone.request_code(self.path,self.owner,self.phone)
+        with booking.connection(self.path) as db:
+            row=db.execute('SELECT state FROM booking_phone_checks WHERE owner_hash=?',(booking.digest(self.owner),)).fetchone()
+            self.assertEqual(row['state'],'failed')
+
+    def test_expiration_and_single_use_booking(self):
+        issued=self.request()
+        with patch('booking_phone.time.time',return_value=time.time()+601):
+            with self.assertRaises(booking.BookingError):booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
+        first=self.fixture.create()
+        self.assertEqual(self.fixture.create()['id'],first['id'])
+        data={**self.fixture.data,**self.fixture.verify_email('guest-owner','other@example.test'),'idempotency_key':'new-booking'}
+        with self.assertRaises(booking.BookingError):self.fixture.create(data)
+
+    def test_transport_uses_verify_service_and_does_not_return_secret(self):
+        values={'api_key_sid':'SK'+'1'*32,'api_key_secret':'synthetic-secret','verify_service_sid':'VA'+'2'*32}
+        with patch('booking_sms.configuration',return_value=values),patch('booking_sms.build_opener') as opener:
+            response=opener.return_value.open.return_value.__enter__.return_value
+            response.read.return_value=b'{"sid":"VE11111111111111111111111111111111","status":"pending"}'
+            sid=booking_sms.send_code(self.phone)
+            self.assertTrue(sid.startswith('VE'))
+            request=opener.return_value.open.call_args.args[0]
+            self.assertTrue(request.full_url.startswith('https://verify.twilio.com/v2/Services/VA'))
+            self.assertIn(b'Channel=sms',request.data)
+            self.assertEqual(opener.return_value.open.call_args.kwargs['timeout'],12)
+            self.assertNotIn('synthetic-secret',request.full_url)
+            response.read.return_value=b'{"status":"approved"}'
+            self.assertTrue(booking_sms.check_code(sid,'123456'))
+            self.assertIn(b'VerificationSid=',opener.return_value.open.call_args.args[0].data)

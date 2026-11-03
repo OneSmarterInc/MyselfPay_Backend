@@ -101,6 +101,10 @@ class PatientEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
 
 
+class PatientPhoneSerializer(serializers.Serializer):
+    phone = serializers.CharField(max_length=30)
+
+
 class PatientCodeSerializer(serializers.Serializer):
     verification_id = serializers.CharField(max_length=100)
     code = serializers.RegexField(r'^\d{6}$', write_only=True)
@@ -112,6 +116,8 @@ class SlotSerializer(serializers.Serializer):
 
 
 class BookingCreateSerializer(BookingOptionsSerializer):
+    phone_verification_id = serializers.CharField(max_length=100)
+    phone_verification_token = serializers.CharField(max_length=200, write_only=True)
     idempotency_key = serializers.CharField(max_length=80)
     verification_id = serializers.CharField(max_length=100)
     verification_token = serializers.CharField(max_length=200, write_only=True)

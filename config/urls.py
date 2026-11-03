@@ -27,6 +27,6 @@ urlpatterns = [
     path('api/conversations/<str:ident>', views.ConversationDetailView.as_view(), name='conversation-detail'),
     path('api/preferences', views.PreferencesView.as_view(), name='preferences'),
     path('api/corrections', views.CorrectionsView.as_view(), name='corrections'),
-    re_path(r'^api/booking/(?P<action>options|email-code|email-verify|create|patient|code|verify|details|status|lock)$', views.BookingView.as_view(), name='booking-action'),
+    re_path(r'^api/booking/(?P<action>options|email-code|email-verify|phone-code|phone-verify|create|patient|code|verify|details|status|lock)$', views.BookingView.as_view(), name='booking-action'),
     re_path(r'^api/.*$', views.NotFoundView.as_view(), name='api-not-found'),
 ]
