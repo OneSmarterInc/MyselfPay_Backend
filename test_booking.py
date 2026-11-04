@@ -20,7 +20,12 @@ class BookingTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.db = Path(self.temp.name) / 'booking.sqlite3'
-        self.env = patch.dict(os.environ, {'BOOKING_ENCRYPTION_KEY': Fernet.generate_key().decode()})
+        self.env = patch.dict(os.environ, {
+            'BOOKING_ENCRYPTION_KEY': Fernet.generate_key().decode(),
+            'BOOKING_EMAIL_ENABLED': 'false',
+            'SECURE_MAIL_ENABLED': 'false',
+            'SMTP_HOST': '', 'SMTP_USERNAME': '', 'SMTP_PASSWORD': '',
+        })
         self.env.start()
         core.initialize(self.db)
         booking.initialize_local(self.db)

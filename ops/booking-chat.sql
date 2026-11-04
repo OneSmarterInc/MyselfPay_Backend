@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS booking_chat (
+ request_id TEXT PRIMARY KEY REFERENCES booking_requests(id) ON DELETE CASCADE,
+ state TEXT NOT NULL DEFAULT 'queued', thread_id TEXT, attempts INTEGER NOT NULL DEFAULT 0,
+ next_attempt DOUBLE PRECISION NOT NULL DEFAULT 0, lease TEXT,
+ created DOUBLE PRECISION NOT NULL
+);

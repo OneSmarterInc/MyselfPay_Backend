@@ -78,7 +78,7 @@ class APITests(unittest.TestCase):
         with patch('booking_mail.send_message') as send:
             issued=self.post('center/code',{'email':'center@example.test'})
         self.assertEqual(issued.status_code,200,issued.content)
-        code=send.call_args.args[0].get_content().split('code is: ')[1].split()[0]
+        code=send.call_args.args[0].get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
         verified=self.post('center/verify',{'verification_id':issued.json()['verification_id'],'code':code})
         self.assertEqual(verified.status_code,200,verified.content)
         self.assertTrue(self.client.cookies['selfpay_center']['httponly'])

@@ -3,9 +3,9 @@ import hmac
 import json
 import secrets
 import time
-from email.message import EmailMessage
 import booking
 import booking_mail
+import booking_chat
 import core
 
 
@@ -30,11 +30,8 @@ def issue(path, address):
         db.execute('DELETE FROM center_login_checks WHERE expires<?', (time.time(),))
         db.execute('INSERT INTO center_login_checks(id,email_hash,email_cipher,code_hash,expires) VALUES(?,?,?,?,?)',
                    (ident, booking.digest(email), booking.cipher().encrypt(email.encode()).decode(), booking.digest(ident + ':' + code), time.time() + 600))
-    message = EmailMessage()
-    message['Subject'] = 'Your MySelfPay center login code'
-    message.set_content(f'Your center login code is: {code}\n\nExpires in 10 minutes. Enter it only on MySelfPay. Do not share this code.\nIf you did not request access, ignore this email.\n\nMySelfPay by One Smarter, Inc.')
     try:
-        booking_mail.send_message(message, email)
+        booking_mail.send_center_code(email, code)
     except booking_mail.MailUnavailable as exc:
         with booking.connection(path, write=True) as db:
             db.execute('DELETE FROM center_login_checks WHERE id=?', (ident,))
@@ -120,6 +117,7 @@ def open_request(path, token, csrf, ident, status=None):
             closed = row['closed'] or (time.time() if status in booking.TERMINAL else None)
             db.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
             row = booking.get_row(db, ident)
+            booking_chat.enqueue(db, row)
         result = booking.receipt(row, db)
         result.pop('tracking_token', None)
         if row['status'] not in booking.TERMINAL and row['link_expires'] > time.time():

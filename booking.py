@@ -27,6 +27,7 @@ from cryptography.fernet import Fernet
 import core
 import booking_mail
 import booking_delivery
+import booking_chat
 
 ZONES = {
     'America/New_York': 'Eastern', 'America/Chicago': 'Central',
@@ -89,6 +90,7 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/booking-phone.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-verified-email.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-portal.sql').read_text())
+        con.executescript((core.ROOT / 'ops/booking-chat.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:
@@ -444,10 +446,12 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
         if has_phone_proof:
             con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
-        if booking_delivery.enabled():
+        if booking_chat.enabled():
+            booking_chat.enqueue(con, row)
+        elif booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
-    if booking_delivery.enabled():
+    if booking_delivery.enabled() and not booking_chat.enabled():
         booking_delivery.deliver(path, row['id'])
     with connection(path) as con:
         return receipt(get_row(con, row['id']), con)
@@ -456,7 +460,10 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
 def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
-    return {'id': row['id'], 'status': row['status'], 'delivery': delivery,
+    chat = booking_chat.summary(con, row)
+    if chat:
+        delivery = 'secure_mail_ready' if chat.get('secure_chat_url') else 'secure_mail_pending'
+    return {**chat, 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
@@ -570,6 +577,7 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
             closed = row['closed'] or (time.time() if status in TERMINAL else None)
             con.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
             row = get_row(con, ident)
+            booking_chat.enqueue(con, row)
         p = unpack(row)
         result = receipt(row, con)
         result.pop('tracking_token')
