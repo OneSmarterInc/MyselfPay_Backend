@@ -1,4 +1,4 @@
-"""Approval-triggered durable handoff to independently hosted Secure Mail."""
+"""Submission-triggered durable handoff to independently hosted Secure Mail."""
 import hashlib
 import hmac
 import json
@@ -16,7 +16,7 @@ def enabled():
 
 
 def enqueue(con, row):
-    if enabled() and row['status'] == 'scheduled':
+    if enabled() and row['status'] in ('requested', 'voicemail', 'scheduled'):
         con.execute("INSERT INTO booking_chat(request_id,created) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING", (row['id'], time.time()))
 
 
@@ -35,12 +35,12 @@ def link(thread_id):
 
 
 def summary(con, row):
-    if not enabled() or row['status'] != 'scheduled' or con is None:
+    if not enabled() or con is None:
         return {}
     chat = con.execute('SELECT state,thread_id FROM booking_chat WHERE request_id=?', (row['id'],)).fetchone()
     if chat and chat['state'] == 'ready':
         return {'secure_chat_url': link(chat['thread_id']), 'secure_chat_status': 'ready'}
-    return {'secure_chat_status': 'pending'}
+    return {'secure_chat_status': 'pending'} if chat else {}
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -51,11 +51,12 @@ class NoRedirect(HTTPRedirectHandler):
 def create_thread(ident, payload):
     import booking
     slots = '\n'.join(f"- {slot['date']}: {booking.PERIODS[slot['period']]}" for slot in payload['slots'])
-    body = (f"Approved appointment request: {ident}\nClinic: {payload['clinic_name']}\n"
+    body = (f"Appointment request: {ident}\nClinic: {payload['clinic_name']}\n"
             f"Patient: {payload['first_name']}\nEmail: {payload['patient_email']}\nPhone: {payload.get('phone', '')}\n"
             f"Service: {payload['service']}\nExam: {payload['exam']}\nContrast: {payload['contrast']}\n"
             f"Requested slots ({payload['timezone']}):\n{slots}\nThe clinic confirms final scheduling with the patient.")
     data = {'external_id': ident, 'subject': 'Appointment request - ' + payload['clinic_name'], 'body': body,
+            'provider_action': {'url': payload['clinic_url'], 'expires_at': payload['clinic_link_expires']},
             'participants': [{'email': payload['patient_email'], 'name': payload['first_name'], 'role': 'requester'},
                              {'email': payload['recipient'], 'name': payload['clinic_name'], 'role': 'provider'}]}
     raw = json.dumps(data, separators=(',', ':')).encode()
@@ -88,12 +89,13 @@ def dispatch(path, ident):
     lease = secrets.token_hex(16)
     with booking.connection(path, write=True) as con:
         row = booking.get_row(con, ident, lock=True)
-        if row['status'] != 'scheduled':
+        if row['status'] not in ('requested', 'voicemail', 'scheduled') or (row['status'] != 'scheduled' and row['link_expires'] <= time.time()):
             return False
         claimed = con.execute("UPDATE booking_chat SET state='sending',lease=?,attempts=attempts+1,next_attempt=? WHERE request_id=? AND state<>'ready' AND next_attempt<=? RETURNING request_id", (lease,time.time()+120,ident,time.time())).fetchone()
         if not claimed:
             return False
         payload = booking.unpack(row)
+        payload['clinic_link_expires'] = row['link_expires']
     try:
         thread_id = create_thread(ident, payload)
     except Exception:

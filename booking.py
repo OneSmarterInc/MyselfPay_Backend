@@ -446,10 +446,12 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
         if has_phone_proof:
             con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
-        if booking_delivery.enabled():
+        if booking_chat.enabled():
+            booking_chat.enqueue(con, row)
+        elif booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
-    if booking_delivery.enabled():
+    if booking_delivery.enabled() and not booking_chat.enabled():
         booking_delivery.deliver(path, row['id'])
     with connection(path) as con:
         return receipt(get_row(con, row['id']), con)
@@ -458,7 +460,10 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
 def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
-    return {**booking_chat.summary(con, row), 'id': row['id'], 'status': row['status'], 'delivery': delivery,
+    chat = booking_chat.summary(con, row)
+    if chat:
+        delivery = 'secure_mail_ready' if chat.get('secure_chat_url') else 'secure_mail_pending'
+    return {**chat, 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
