@@ -18,6 +18,8 @@ def enabled():
 def enqueue(con, row):
     if enabled() and row['status'] in ('requested', 'voicemail', 'scheduled'):
         con.execute("INSERT INTO booking_chat(request_id,created) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING", (row['id'], time.time()))
+        if row['status'] == 'scheduled':
+            enqueue_confirmation(con, row)
 
 
 def origin(name):
@@ -59,6 +61,13 @@ def create_thread(ident, payload):
             'provider_action': {'url': payload['clinic_url'], 'expires_at': payload['clinic_link_expires']},
             'participants': [{'email': payload['patient_email'], 'name': payload['first_name'], 'role': 'requester'},
                              {'email': payload['recipient'], 'name': payload['clinic_name'], 'role': 'provider'}]}
+    result = signed_request(data)
+    if result.get('provider_notification') != 'queued':
+        raise ValueError('Clinic notifications are suppressed in Secure Mail')
+    return str(uuid.UUID(result['id']))
+
+
+def signed_request(data):
     raw = json.dumps(data, separators=(',', ':')).encode()
     path = '/api/integrations/threads'
     source, secret = os.environ['SECURE_MAIL_KEY_ID'], os.environ['SECURE_MAIL_SECRET']
@@ -77,9 +86,7 @@ def create_thread(ident, payload):
     opener = build_opener(NoRedirect(), HTTPSHandler(context=context))
     with opener.open(Request(origin('SECURE_MAIL_URL') + path, data=raw, headers=headers), timeout=15) as response:
         result = json.loads(response.read(32769))
-    if result.get('provider_notification') != 'queued':
-        raise ValueError('Clinic notifications are suppressed in Secure Mail')
-    return str(uuid.UUID(result['id']))
+    return result
 
 
 def dispatch(path, ident):
@@ -105,4 +112,62 @@ def dispatch(path, ident):
         return False
     with booking.connection(path, write=True) as con:
         con.execute("UPDATE booking_chat SET state='ready',thread_id=?,lease=NULL WHERE request_id=? AND lease=?", (thread_id,ident,lease))
+    return True
+
+
+def enqueue_confirmation(con, row):
+    """Freeze a patient-only confirmation in the same transaction as approval."""
+    import booking
+    payload = booking.unpack(row)
+    base = payload['clinic_url'].split('/#clinic/', 1)[0]
+    tracking = base + '/#request/' + quote(row['id'], safe='') + '/' + quote(payload['patient_token'], safe='')
+    content = {
+        'body': (f"Your appointment request {row['id']} has been marked scheduled by "
+                 f"{payload['clinic_name']}.\nService: {payload['service']}\n"
+                 f"Exam: {payload['exam']}\nClinic: {payload['location']}\n"
+                 f"Clinic phone: {payload.get('phone_clinic', '')}\n"
+                 "Use the request link to review your booking. Confirm the exact appointment time with the clinic."),
+        'actions': [{'label': 'View my booking', 'url': tracking,
+                     'expires_at': (row['closed'] or time.time()) + 30 * 86400}],
+    }
+    con.execute(
+        "INSERT INTO booking_chat_events(request_id,event_id,payload,created) VALUES(?,?,?,?) "
+        "ON CONFLICT(request_id,event_id) DO NOTHING",
+        (row['id'], 'booking-confirmed-v1', booking.pack(content), time.time()),
+    )
+
+
+def dispatch_confirmation(path, ident):
+    import booking
+    if not enabled():
+        return False
+    lease = secrets.token_hex(16)
+    with booking.connection(path, write=True) as con:
+        row = booking.get_row(con, ident, lock=True)
+        if row['status'] != 'scheduled':
+            return False
+        chat = con.execute('SELECT state FROM booking_chat WHERE request_id=?', (ident,)).fetchone()
+        if not chat or chat['state'] != 'ready':
+            return False
+        claimed = con.execute(
+            "UPDATE booking_chat_events SET state='sending',lease=?,attempts=attempts+1,next_attempt=? "
+            "WHERE request_id=? AND event_id='booking-confirmed-v1' AND state<>'ready' "
+            "AND next_attempt<=? RETURNING payload,event_id",
+            (lease, time.time()+120, ident, time.time()),
+        ).fetchone()
+        if not claimed:
+            return False
+        content = booking.unpack(claimed)
+    try:
+        result = signed_request({**content, 'event_type': 'booking_confirmed',
+                                 'external_id': ident, 'event_id': claimed['event_id']})
+        str(uuid.UUID(result['id']))
+    except Exception:
+        with booking.connection(path, write=True) as con:
+            con.execute("UPDATE booking_chat_events SET state='retry',next_attempt=? WHERE request_id=? AND lease=?",
+                        (time.time()+60, ident, lease))
+        return False
+    with booking.connection(path, write=True) as con:
+        con.execute("UPDATE booking_chat_events SET state='ready',lease=NULL WHERE request_id=? AND lease=?",
+                    (ident, lease))
     return True

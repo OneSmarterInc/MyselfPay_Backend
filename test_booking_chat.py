@@ -63,3 +63,30 @@ class ChatTests(unittest.TestCase):
             smtp.assert_not_called()
         with patch('booking_chat.create_thread',return_value='12345678-1234-1234-1234-123456789abc'):
             self.assertTrue(booking_chat.dispatch(self.db,item['id']))
+
+    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED': 'true'})
+    def test_private_confirmation_is_durable_and_deduplicated(self):
+        import center_portal
+        item = self.create()
+        token, csrf = self.login()
+        center_portal.open_request(self.db, token, csrf, item['id'], 'scheduled')
+        center_portal.open_request(self.db, token, csrf, item['id'], 'scheduled')
+        with booking.connection(self.db) as con:
+            rows = con.execute('SELECT * FROM booking_chat_events').fetchall()
+            self.assertEqual(len(rows), 1)
+            self.assertNotIn('#request/', rows[0]['payload'])
+        self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
+        with patch('booking_chat.create_thread', return_value='12345678-1234-1234-1234-123456789abc'):
+            self.assertTrue(booking_chat.dispatch(self.db, item['id']))
+        with patch('booking_chat.signed_request', side_effect=TimeoutError):
+            self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
+        with booking.connection(self.db, write=True) as con:
+            con.execute('UPDATE booking_chat_events SET next_attempt=0')
+        with patch('booking_chat.signed_request', return_value={'id': '12345678-1234-1234-1234-123456789abc'}) as send:
+            self.assertTrue(booking_chat.dispatch_confirmation(self.db, item['id']))
+            self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
+            send.assert_called_once()
+            event = send.call_args.args[0]
+            self.assertEqual(event['event_type'], 'booking_confirmed')
+            self.assertIn('/#request/', event['actions'][0]['url'])
+            self.assertNotIn('/#clinic/', str(event))

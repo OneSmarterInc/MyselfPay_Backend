@@ -91,6 +91,7 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/booking-verified-email.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-portal.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-chat.sql').read_text())
+        con.executescript((core.ROOT / 'ops/booking-chat-events.sql').read_text())
 
 
 def appointment_email(center: dict) -> str:

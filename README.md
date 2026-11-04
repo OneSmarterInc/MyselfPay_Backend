@@ -1,3 +1,5 @@
+> Updated booking flow: clinic-only request, requester-only confirmation, and environment-SMTP Secure Mail notifications. See [docs/PRIVATE_BOOKING_MESSAGES.md](docs/PRIVATE_BOOKING_MESSAGES.md). This supersedes older shared initial-message/email descriptions below.
+
 # MySelfPay backend — Django REST Framework + PostgreSQL
 
 Django 5.2 LTS with Django REST Framework 3.18 API for the separately hosted [React frontend](https://github.com/OneSmarterInc/Myselfpay_Frontend). Migrated from SelfPay main commit `bf839ef9af6efde48b2666cc26e7e793a7d9bd06`.
