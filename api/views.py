@@ -130,11 +130,8 @@ class DirectorySummaryView(ResourceView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        data = core.directory_summary(database())
-        with core.connect(database()) as db:
-            active = core.active_batch(db)
-            ready = bool(active and db.execute('SELECT value FROM settings WHERE key=?', ('spatial-ready:' + active,)).fetchone())
-        return Response({**data, 'spatial_api_version': 1, 'spatial_ready': ready, 'account_zip_enabled': True})
+        data = core.catalog_metadata(database(), include_locations=False)
+        return Response({'listing_count': data['entry_count'], 'state_count': data['state_count'], 'spatial_api_version': 1, 'spatial_ready': data['spatial_ready'], 'account_zip_enabled': True})
 
 
 class AuthenticationView(ResourceView):
@@ -194,10 +191,10 @@ class LogoutView(ResourceView):
 
 class CatalogView(ResourceView):
     def get(self, request):
-        data = core.catalog(database())
         if request.query_params.get('metadata') == '1':
-            return Response({'version': data['version'], 'entry_count': len(data['entries']), 'offer_count': len(data['offers']), 'entries': [], 'offers': [], 'locations': data['locations'], 'metadata_only': True})
-        return Response(data)
+            data = core.catalog_metadata(database())
+            return Response({key: data[key] for key in ('version', 'entry_count', 'offer_count', 'locations')} | {'entries': [], 'offers': [], 'metadata_only': True})
+        return Response(core.catalog(database()))
 
 
 class SearchView(ResourceView):
