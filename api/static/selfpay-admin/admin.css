@@ -14,4 +14,10 @@ html,body{min-height:100%;font-family:Arial,Helvetica,sans-serif;color:#242b36}b
 
 #header{flex-shrink:0}
 
+body.model-smtpconfiguration .aligned .checkbox-row label{width:auto;max-width:none;display:inline;float:none}
+body.model-smtpconfiguration .aligned .form-row .flex-container{min-width:0}
+body.model-smtpconfiguration .aligned input,body.model-smtpconfiguration .aligned select,body.model-smtpconfiguration .aligned textarea{box-sizing:border-box;max-width:100%}
+body.model-smtpconfiguration .aligned .help{max-width:70ch;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:767px){body.model-smtpconfiguration .aligned .form-row .flex-container{display:block}body.model-smtpconfiguration .aligned .form-row>div{min-width:0;max-width:100%}body.model-smtpconfiguration .aligned input:not([type=checkbox]),body.model-smtpconfiguration .aligned select,body.model-smtpconfiguration .aligned textarea{width:100%;min-width:0}body.model-smtpconfiguration .aligned .help{margin-left:0;padding-left:0}body.model-smtpconfiguration .aligned .checkbox-row input{margin-right:6px}}
+
 .sp-user-table td,.sp-user-table th{overflow-wrap:anywhere}.sp-user-table td{line-height:1.6}.sp-page-heading>div{min-width:0}.sp-panel{min-width:0}.sp-table-scroll{max-width:100%;overflow-x:auto}@media(max-width:600px){.sp-page-heading h1{font-size:25px;overflow-wrap:anywhere}.sp-page-heading .sp-button{display:inline-flex;margin:4px 0;font-size:12px}.sp-stats{gap:10px}.sp-user-table th,.sp-user-table td{padding:12px;font-size:12px}}

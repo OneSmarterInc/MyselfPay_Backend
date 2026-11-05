@@ -31,11 +31,12 @@ def page(number,mode):
             'previous':number-1 if number>1 else None,'next':number+1 if number<pages else None}
 
 def detail(ident):
+    from mail_diagnostics import request_status
     with booking.connection(settings.DOMAIN_DATABASE) as db:
         row=booking.get_row(db,ident)
         data=booking.unpack(row)
         status='expired' if row['status'] not in booking.TERMINAL and row['link_expires']<=time.time() else row['status']
-        return {'id':row['id'],'status':LABELS[status],'clinic':data['clinic_name'],
+        return {'mail_diagnostic': request_status(settings.DOMAIN_DATABASE, ident), 'id':row['id'],'status':LABELS[status],'clinic':data['clinic_name'],
                 'location':data.get('location',''),'center_email':data['recipient'],
                 'first_name':data['first_name'],'email':data['patient_email'],'phone':data.get('phone',''),
                 'service':data['service'],'exam':data.get('exam',''),'contrast':data.get('contrast','unknown'),

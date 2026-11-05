@@ -12,14 +12,15 @@ class Command(BaseCommand):
         parser.add_argument('--send', action='store_true')
 
     def handle(self, **options):
-        missing = [key for key in ('SMTP_HOST', 'SMTP_USERNAME', 'SMTP_PASSWORD', 'SMTP_FROM') if not os.getenv(key)]
+        values = booking_mail.configuration()
+        missing = [key for key in ('host', 'username', 'password', 'sender') if not values.get(key)]
         if missing:
-            raise CommandError('Missing environment variables: ' + ', '.join(missing))
+            raise CommandError('Missing SMTP settings: ' + ', '.join(missing))
         if not options['send']:
-            self.stdout.write('Required SMTP variables are present. No connection made and no email sent. Use --send to verify SMTP acceptance.')
+            self.stdout.write('Required SMTP settings are present (source: ' + values['source'] + '). No connection made and no email sent. Use --send to verify SMTP acceptance.')
             return
         try:
-            recipient = booking.email_address(os.getenv('TEST_CENTER_EMAIL', ''))
+            recipient = booking.email_address(values['test_recipient'])
         except booking.BookingError:
             raise CommandError('Set TEST_CENTER_EMAIL to the confirmed test recipient.') from None
         message = EmailMessage()

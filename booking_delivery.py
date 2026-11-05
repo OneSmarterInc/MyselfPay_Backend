@@ -5,11 +5,11 @@ import booking_mail
 
 
 def enabled():
-    return os.getenv('BOOKING_EMAIL_ENABLED', 'false').lower() == 'true'
+    return booking_mail.configuration()['booking_enabled']
 
 
 def recipient_allowed(recipient):
-    allowed = {value.strip().casefold() for value in os.getenv('BOOKING_EMAIL_ALLOWED_RECIPIENTS', '').split(',') if value.strip()}
+    allowed = {value.strip().casefold() for value in booking_mail.configuration()['allowed_recipients'].split(',') if value.strip()}
     return bool(recipient) and (not allowed or recipient.casefold() in allowed)
 
 

@@ -69,3 +69,27 @@ class TwilioConfiguration(models.Model):
 
     def __str__(self):
         return 'Twilio SMS verification settings'
+
+
+class SMTPConfiguration(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    use_database = models.BooleanField(default=False, verbose_name='Use saved SMTP settings', help_text='When off, the server environment remains authoritative.')
+    host = models.CharField(max_length=253, blank=True)
+    port = models.PositiveIntegerField(default=587)
+    username = models.CharField(max_length=254, blank=True)
+    password_encrypted = models.TextField(blank=True, editable=False)
+    from_email = models.EmailField(blank=True, verbose_name='Sender email')
+    from_name = models.CharField(max_length=100, default='MySelfPay', verbose_name='Sender name')
+    security = models.CharField(max_length=10, choices=[('starttls', 'STARTTLS (usually port 587)'), ('ssl', 'Implicit TLS (usually port 465)')], default='starttls')
+    booking_email_enabled = models.BooleanField(default=False, verbose_name='Enable direct booking emails', help_text='Secure Mail sends its own invitations when that integration is enabled.')
+    allowed_recipients = models.TextField(blank=True, help_text='Optional comma-separated center emails for testing. Blank allows all center recipients.')
+    test_recipient = models.EmailField(blank=True, help_text='Recipient used by the check_smtp --send command.')
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=150, blank=True, editable=False)
+
+    class Meta:
+        verbose_name = 'SMTP email configuration'
+        verbose_name_plural = 'SMTP email configuration'
+
+    def __str__(self):
+        return 'MySelfPay email settings'
