@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 import booking
 import booking_chat
+from urllib.error import HTTPError, URLError
 from test_center_portal import CenterPortalTests
 
 
@@ -13,6 +14,24 @@ class ChatTests(unittest.TestCase):
     verify_phone = CenterPortalTests.verify_phone
     create = CenterPortalTests.create
     login = CenterPortalTests.login
+
+    def test_retry_diagnostics_do_not_expose_secrets(self):
+        errors = (
+            (HTTPError('https://example.test/private-token', 403,
+                       'patient@example.test secret', {}, None), 'http_rejected'),
+            (URLError(TimeoutError('private-token')), 'timeout'),
+            (ValueError('private-token'), 'configuration_or_response_invalid'),
+        )
+        for error, category in errors:
+            with self.subTest(category=category):
+                with self.assertLogs('booking_chat', level='WARNING') as captured:
+                    booking_chat.log_handoff_failure('create_thread', error)
+                output = '\n'.join(captured.output)
+                self.assertIn(category, output)
+                self.assertNotIn('private-token', output)
+                self.assertNotIn('patient@example.test', output)
+                if isinstance(error, HTTPError):
+                    error.close()
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true', 'SECURE_MAIL_PORTAL_URL':'https://mail.example.test', 'SECURE_MAIL_KEY_ID':'selfpay'})
     def test_submission_queues_chat_and_delivery_is_idempotent(self):

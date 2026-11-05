@@ -2,6 +2,7 @@
 import hashlib
 import hmac
 import json
+import logging
 import os
 import secrets
 import ssl
@@ -9,6 +10,30 @@ import time
 import uuid
 from urllib.parse import urlsplit, quote
 from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHandler
+from urllib.error import HTTPError, URLError
+
+
+logger = logging.getLogger(__name__)
+
+
+def log_handoff_failure(operation: str, error: Exception) -> None:
+    """Report only fixed categories; exception text can contain patient tokens."""
+    cause = error.reason if isinstance(error, URLError) else error
+    status = error.code if isinstance(error, HTTPError) else 0
+    if isinstance(error, HTTPError):
+        category = 'http_rejected'
+    elif isinstance(cause, ssl.SSLError):
+        category = 'tls_failed'
+    elif isinstance(cause, TimeoutError):
+        category = 'timeout'
+    elif isinstance(error, URLError):
+        category = 'connection_failed'
+    elif isinstance(error, (ValueError, KeyError)):
+        category = 'configuration_or_response_invalid'
+    else:
+        category = 'unexpected_failure'
+    logger.warning('secure_mail_handoff operation=%s category=%s http_status=%s',
+                   operation, category, status)
 
 
 def enabled():
@@ -105,7 +130,8 @@ def dispatch(path, ident):
         payload['clinic_link_expires'] = row['link_expires']
     try:
         thread_id = create_thread(ident, payload)
-    except Exception:
+    except Exception as error:
+        log_handoff_failure('create_thread', error)
         # Retry with the same external ID: Secure Mail deduplicates both thread and initial emails.
         with booking.connection(path, write=True) as con:
             con.execute("UPDATE booking_chat SET state='retry',next_attempt=? WHERE request_id=? AND lease=?", (time.time()+60,ident,lease))
@@ -162,7 +188,8 @@ def dispatch_confirmation(path, ident):
         result = signed_request({**content, 'event_type': 'booking_confirmed',
                                  'external_id': ident, 'event_id': claimed['event_id']})
         str(uuid.UUID(result['id']))
-    except Exception:
+    except Exception as error:
+        log_handoff_failure('booking_confirmed', error)
         with booking.connection(path, write=True) as con:
             con.execute("UPDATE booking_chat_events SET state='retry',next_attempt=? WHERE request_id=? AND lease=?",
                         (time.time()+60, ident, lease))
