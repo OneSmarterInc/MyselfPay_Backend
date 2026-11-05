@@ -1,8 +1,8 @@
 from django.test import TransactionTestCase, Client, override_settings
 from django.db import connection
 from django.contrib.auth import get_user_model
-from api.models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration
-from admin_settings import twilio_configuration
+from api.models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration, SMTPConfiguration
+from admin_settings import twilio_configuration, smtp_configuration
 import accounts
 import secrets
 import time
@@ -91,6 +91,55 @@ class AdminTests(TransactionTestCase):
         csrf_client.force_login(self.admin)
         response=csrf_client.post('/admin/api/twilioconfiguration/add/',{'api_key_sid':'SK'+'1'*32},HTTP_ORIGIN='http://testserver')
         self.assertEqual(response.status_code,403)
+
+    def test_smtp_configuration_is_write_only_and_applies_without_restart(self):
+        from unittest.mock import patch
+        import booking_mail
+        import booking_delivery
+        from email.message import EmailMessage
+        fields = {'use_database': 'on', 'host': 'smtp.example.com', 'port': '587',
+                  'security': 'starttls', 'username': 'sender@example.com', 'password': 'synthetic-smtp-password',
+                  'from_email': 'sender@example.com', 'from_name': 'MySelfPay',
+                  'booking_email_enabled': 'on', 'allowed_recipients': 'giteshpawar3516@gmail.com', '_save': 'Save'}
+        url = '/admin/api/smtpconfiguration/'
+        response = self.client.post(url + 'add/', fields, HTTP_ORIGIN='http://testserver')
+        self.assertEqual(response.status_code, 302)
+        row = SMTPConfiguration.objects.get(pk=1)
+        self.assertNotIn(fields['password'], row.password_encrypted)
+        self.assertEqual(smtp_configuration()['password'], fields['password'])
+        response = self.client.get(url + '1/change/')
+        self.assertNotContains(response, fields['password'])
+        self.assertNotContains(response, row.password_encrypted)
+        self.assertTrue(booking_delivery.recipient_allowed('giteshpawar3516@gmail.com'))
+        self.assertFalse(booking_delivery.recipient_allowed('other@example.com'))
+        fields.update(password='', host='changed.example.com')
+        self.assertEqual(self.client.post(url + '1/change/', fields, HTTP_ORIGIN='http://testserver').status_code, 302)
+        self.assertEqual(smtp_configuration()['password'], 'synthetic-smtp-password')
+        message = EmailMessage()
+        message.set_content('Synthetic transport test')
+        with patch('booking_mail.smtplib.SMTP') as transport:
+            transport.return_value.__enter__.return_value.send_message.return_value = {}
+            booking_mail.send_message(message, 'giteshpawar3516@gmail.com')
+            transport.assert_called_once_with('changed.example.com', 587, timeout=15)
+            transport.return_value.__enter__.return_value.login.assert_called_once_with('sender@example.com', 'synthetic-smtp-password')
+        fields['use_database'] = ''
+        self.client.post(url + '1/change/', fields, HTTP_ORIGIN='http://testserver')
+        self.assertEqual(smtp_configuration()['source'], 'environment')
+        anonymous = Client()
+        self.assertEqual(anonymous.get(url).status_code, 302)
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.admin)
+        self.assertEqual(csrf_client.post(url + '1/change/', fields, HTTP_ORIGIN='http://testserver').status_code, 403)
+
+    def test_smtp_settings_validate_complete_configuration_and_retain_secret(self):
+        fields = {'use_database': 'on', 'host': 'https://smtp.example.com/path', 'port': '70000',
+                  'username': 'sender', 'from_email': 'sender@example.com', 'from_name': 'MySelfPay',
+                  'security': 'none', 'allowed_recipients': 'bad-email'}
+        response = self.client.post('/admin/api/smtpconfiguration/add/', fields, HTTP_ORIGIN='http://testserver')
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(SMTPConfiguration.objects.exists())
+        self.assertContains(response, 'Enter a port between')
+        self.assertContains(response, 'Enter a password before enabling')
 
     def test_approved_requests_and_complete_details_are_superuser_only(self):
         import test_booking

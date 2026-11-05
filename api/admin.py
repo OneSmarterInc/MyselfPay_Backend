@@ -16,7 +16,7 @@ import admin_bookings
 import booking
 import sqlite3
 import psycopg
-from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration
+from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration, SMTPConfiguration
 from admin_settings import secret_cipher
 import accounts
 
@@ -221,3 +221,77 @@ class TwilioConfigurationAdmin(admin.ModelAdmin):
 
 admin_site.register(PortalAccount, PortalAccountAdmin)
 admin_site.register(TwilioConfiguration, TwilioConfigurationAdmin)
+
+
+class SMTPConfigurationForm(forms.ModelForm):
+    password = forms.CharField(required=False, strip=False, widget=forms.PasswordInput(render_value=False, attrs={'autocomplete': 'new-password'}), help_text='Write-only. Leave blank to keep the saved password. Use your provider’s SMTP password or app password.')
+
+    class Meta:
+        model = SMTPConfiguration
+        fields = ('use_database', 'host', 'port', 'username', 'password', 'from_email', 'from_name', 'security', 'booking_email_enabled', 'allowed_recipients', 'test_recipient')
+
+    def clean(self):
+        data = super().clean()
+        if not 1 <= (data.get('port') or 0) <= 65535:
+            self.add_error('port', 'Enter a port between 1 and 65535.')
+        for field in ('host', 'username', 'from_name'):
+            if any(ord(c) < 32 for c in data.get(field, '')):
+                self.add_error(field, 'Remove line breaks and control characters.')
+        host = data.get('host', '')
+        if host and (any(c.isspace() for c in host) or '://' in host or '/' in host or '@' in host):
+            self.add_error('host', 'Enter the SMTP hostname only, for example smtp.gmail.com.')
+        password = data.get('password', '')
+        if password and (len(password) > 4096 or any(c in password for c in '\r\n\0')):
+            self.add_error('password', 'Enter the password without line breaks; maximum 4096 characters.')
+        addresses = [value.strip() for value in data.get('allowed_recipients', '').split(',') if value.strip()]
+        for address in addresses:
+            try:
+                forms.EmailField().clean(address)
+            except ValidationError:
+                self.add_error('allowed_recipients', 'Use valid email addresses separated by commas.')
+                break
+        data['allowed_recipients'] = ','.join(addresses)
+        if data.get('use_database'):
+            for field in ('host', 'username', 'from_email'):
+                if not data.get(field):
+                    self.add_error(field, 'Required when using saved SMTP settings.')
+            if not password and not self.instance.password_encrypted:
+                self.add_error('password', 'Enter a password before enabling saved SMTP settings.')
+        return data
+
+
+class SMTPConfigurationAdmin(admin.ModelAdmin):
+    form = SMTPConfigurationForm
+    readonly_fields = ('password_status', 'updated_at', 'updated_by')
+    list_display = ('__str__', 'use_database', 'host', 'password_status', 'updated_at', 'updated_by')
+    fieldsets = (
+        ('Configuration source', {'fields': ('use_database',), 'description': 'Saved settings take effect on the next email. Turn this off to use the server environment. Secure Mail has a separate sending configuration.'}),
+        ('SMTP connection', {'fields': ('host', 'port', 'security', 'username', 'password', 'password_status')}),
+        ('Sender identity', {'fields': ('from_email', 'from_name')}),
+        ('Booking delivery', {'fields': ('booking_email_enabled', 'allowed_recipients', 'test_recipient'), 'description': 'These controls affect direct MySelfPay emails. Secure Mail invitations are sent by the Secure Mail service.'}),
+        ('Last updated', {'fields': ('updated_at', 'updated_by')}),
+    )
+
+    def has_add_permission(self, request):
+        return not SMTPConfiguration.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def render_change_form(self, request, context, *args, **kwargs):
+        context['show_save_and_add_another'] = False
+        return super().render_change_form(request, context, *args, **kwargs)
+
+    @admin.display(description='Saved password')
+    def password_status(self, obj):
+        return 'Configured (hidden)' if obj and obj.password_encrypted else 'Not saved'
+
+    def save_model(self, request, obj, form, change):
+        obj.pk = 1
+        if form.cleaned_data.get('password'):
+            obj.password_encrypted = secret_cipher('smtp').encrypt(form.cleaned_data['password'].encode()).decode()
+        obj.updated_by = request.user.get_username()
+        super().save_model(request, obj, form, change)
+
+
+admin_site.register(SMTPConfiguration, SMTPConfigurationAdmin)

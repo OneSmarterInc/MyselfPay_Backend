@@ -16,13 +16,18 @@ class MailDeliveryUncertain(MailUnavailable):
     pass
 
 
+def configuration():
+    try:
+        from admin_settings import smtp_configuration
+        return smtp_configuration()
+    except Exception:
+        raise MailUnavailable('Email settings could not be loaded. Please contact support.') from None
+
+
 def send_message(message, recipient):
-    host = os.environ.get('SMTP_HOST', '')
-    username = os.environ.get('SMTP_USERNAME', '')
-    password = os.environ.get('SMTP_PASSWORD', '')
-    sender = os.environ.get('SMTP_FROM', username)
-    use_ssl = os.getenv('SMTP_USE_SSL', 'false').lower() == 'true'
-    use_tls = os.getenv('SMTP_USE_TLS', 'true').lower() == 'true'
+    values = configuration()
+    host, username, password, sender = (values[key] for key in ('host', 'username', 'password', 'sender'))
+    use_ssl, use_tls = values['ssl'], values['tls']
     if not all((host, username, password, sender)):
         raise MailUnavailable('Email delivery is not configured. Please contact support.')
     if use_ssl == use_tls:
@@ -30,7 +35,7 @@ def send_message(message, recipient):
     if not recipient or '\r' in recipient or '\n' in recipient:
         raise MailUnavailable('A valid email recipient is required.')
     try:
-        address = Address(os.getenv('SMTP_FROM_NAME', 'MySelfPay'), addr_spec=sender)
+        address = Address(values['name'], addr_spec=sender)
         if not address.domain or not address.username:
             raise ValueError('Sender address requires a domain.')
         if 'From' in message:
@@ -54,7 +59,7 @@ def send_message(message, recipient):
         message['Date'] = formatdate(localtime=False)
     accepted = False
     try:
-        port = int(os.getenv('SMTP_PORT', '465' if use_ssl else '587'))
+        port = int(values['port'])
         context = ssl.create_default_context()
         transport = smtplib.SMTP_SSL(host, port, timeout=15, context=context) if use_ssl else smtplib.SMTP(host, port, timeout=15)
         with transport as smtp:
