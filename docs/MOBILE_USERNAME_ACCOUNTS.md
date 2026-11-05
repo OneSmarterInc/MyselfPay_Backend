@@ -13,7 +13,7 @@ This flow supersedes patient email registration, booking email verification and 
 
 ## Existing accounts
 
-No account or request is deleted by migration `0013`. Existing sessions show an account-setup prompt. On the login page, choose **Already have an account from before? Set up your username**.
+No account or request is deleted by migration `0013`. Existing signed-in accounts can still complete the account-setup prompt. The public login page no longer displays the legacy setup link. Contact support if an older account is signed out and does not yet have a username.
 
 Choose a username, enter the existing password and verify the saved mobile number. A signed-in legacy patient may verify a replacement mobile while proving the existing password. Setup keeps the same member ID, profile, ZIP, preferences and request ownership, and revokes previous sessions. The old account email is replaced by an opaque internal identifier in the legacy identity columns. Old encrypted booking records and historical verification records are retained; they are not used for new patient authentication, contact or notifications.
 
