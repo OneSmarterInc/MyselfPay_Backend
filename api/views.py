@@ -163,7 +163,8 @@ class AccountSetupView(AuthenticationView):
 
 class RegistrationMobileView(ResourceView):
     permission_classes = [AllowAny]
-    throttle_classes = [GuestThrottle]
+    # Match the existing OTP policy: no application-level send/check quotas.
+    throttle_classes = []
 
     def post(self, request, action):
         data = self.validated(request)

@@ -44,7 +44,6 @@ def owner(token):
 
 def request_code(path, data, ip):
     phone = booking_phone.phone_number(data.get('phone'))
-    accounts.throttle(path, 'registration-code', ip, booking.digest(phone))
     token = secrets.token_urlsafe(32)
     result = booking_phone.request_code(path, owner(token), phone)
     return {**result, 'challenge': token}

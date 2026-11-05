@@ -68,6 +68,13 @@ class MobileAccountTests(unittest.TestCase):
         with core.connect(self.db) as db:
             self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM mobile_accounts').fetchone()['n'],0)
 
+    def test_registration_otp_keeps_the_no_application_quota_policy(self):
+        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'1'*32) as send:
+            for _ in range(25):
+                result=self.post('registration/mobile/code',{'phone':'+15550123333'})
+                self.assertEqual(result.status_code,200,result.content)
+            self.assertEqual(send.call_count,25)
+
     def test_legacy_setup_preserves_member_requests_password_and_revokes_old_session(self):
         legacy = accounts.authenticate(self.db, {'name':'Existing Patient','email':'historical@example.com','phone':'+1 (555) 012-3333',
                                                'password':'Synthetic-only-passphrase!'}, 'register','test')
