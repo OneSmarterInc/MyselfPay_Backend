@@ -46,13 +46,13 @@ def issue(path, data):
         if row and mobile_accounts.disabled(db, row['id']):
             row = None
     if not row:
-        return {'challenge':challenge,'verification_id':secrets.token_urlsafe(24),'message':MESSAGE,'expires_in':600}
+        return {'challenge':challenge,'verification_id':secrets.token_urlsafe(24),'message':MESSAGE,'expires_in':600,'resend_after':0}
     issued = booking_phone.request_code(path, owner(challenge), row['phone'])
     with core.connect(path) as db:
         db.execute('DELETE FROM password_reset_requests WHERE expires<=?', (time.time(),))
         db.execute('INSERT INTO password_reset_requests VALUES(?,?,?,?,?,?)',
                    (booking.digest(challenge),row['id'],issued['verification_id'],booking.digest(row['phone']),stamp(row),time.time()+900))
-    return {**issued,'challenge':challenge,'message':MESSAGE}
+    return {'challenge':challenge,'verification_id':issued['verification_id'],'message':MESSAGE,'expires_in':issued['expires_in'],'resend_after':issued['resend_after']}
 
 
 def context(db, data, *, lock=False):

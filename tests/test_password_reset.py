@@ -58,11 +58,13 @@ class PasswordResetTests(unittest.TestCase):
         self.assertEqual(self.post('password/reset',data).status_code,410)
 
     def test_unknown_or_mismatched_details_do_not_send_or_disclose_account(self):
+        expected_fields=list(self.issue())
         with patch('booking_sms.send_code') as send:
             for data in ({'username':'unknown_user','phone':self.phone},{'username':'reset_user','phone':'+15550129999'}):
                 response=self.post('password/code',data)
                 self.assertEqual(response.status_code,200,response.content)
                 self.assertEqual(response.json()['message'],password_reset.MESSAGE)
+                self.assertEqual(list(response.json()),expected_fields)
             send.assert_not_called()
         self.assertEqual(self.post('password/verify',{**response.json(),'code':'123456'}).status_code,410)
 
