@@ -176,6 +176,21 @@ class RegistrationMobileView(ResourceView):
         return request.data
 
 
+class MobileOTPView(ResourceView):
+    permission_classes = [AllowAny]
+    throttle_classes = []  # Preserve the existing application OTP policy.
+
+    def post(self, request, action):
+        import phone_accounts
+        if len(request.body) > 4096 or not isinstance(request.data, dict):
+            raise ValueError('Invalid mobile authentication request.')
+        if action == 'code':
+            return Response(phone_accounts.issue(database(), request.data))
+        result = phone_accounts.finish(database(), request.data, session_token(request))
+        token = result.pop('token')
+        return session_response(result, status=201 if request.data.get('intent') == 'register' else 200, token=token)
+
+
 class GuestView(ResourceView):
     permission_classes = [AllowAny]
     throttle_classes = [GuestThrottle]

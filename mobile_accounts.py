@@ -31,7 +31,7 @@ def profile(db, member):
     member = dict(member)
     member.pop('email', None)
     row = db.execute('SELECT username,phone,verified_at FROM mobile_accounts WHERE member_id=?', (member['id'],)).fetchone()
-    member.update(username=row['username'] if row else '', phone=row['phone'] if row else '',
+    member.update(username=row['username'] if row and not row['username'].startswith('otp:') else '', phone=row['phone'] if row else '',
                   mobile_verified=bool(row), setup_required=not bool(row))
     return member
 
@@ -134,7 +134,7 @@ def normalize_saved(value):
 def booking_phone_for(db, ident):
     row = db.execute('SELECT phone FROM mobile_accounts WHERE member_id=?', (ident,)).fetchone()
     if not row:
-        raise booking.BookingError('Complete your username and mobile verification setup before requesting a time.', 403)
+        raise booking.BookingError('Verify your mobile number before requesting a time.', 403)
     if disabled(db, ident):
         raise booking.BookingError('Account unavailable.', 403)
     return row['phone']

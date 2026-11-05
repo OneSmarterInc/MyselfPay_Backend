@@ -1,3 +1,5 @@
+> Current patient flow: registration asks only first name and mobile; login asks only mobile. Both complete with SMS OTP. No patient username, password, ZIP or email is collected in the UI. See PHONE_ONLY_AUTH.md. The earlier username/password contract below remains available only for older clients and account compatibility. Center Secure Mail delivery is unchanged.
+
 # Patient accounts: username and verified mobile
 
 This flow supersedes patient email registration, booking email verification and patient Secure Mail links. Center email login, center OTP verification and center notification emails remain supported.
