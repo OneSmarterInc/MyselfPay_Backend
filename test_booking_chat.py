@@ -33,79 +33,43 @@ class ChatTests(unittest.TestCase):
                 if isinstance(error, HTTPError):
                     error.close()
 
-    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true', 'SECURE_MAIL_PORTAL_URL':'https://mail.example.test', 'SECURE_MAIL_KEY_ID':'selfpay'})
-    def test_submission_queues_chat_and_delivery_is_idempotent(self):
-        import center_portal
+    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
+    def test_retired_patient_chat_never_queues_or_exposes_a_link(self):
+        self.assertFalse(booking_chat.enabled())
         item=self.create()
         with booking.connection(self.db) as con:
             self.assertNotIn('secure_chat_url',booking.receipt(booking.get_row(con,item['id']),con))
-            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'],1)
-        token,csrf=self.login()
-        center_portal.open_request(self.db,token,csrf,item['id'],'scheduled')
-        center_portal.open_request(self.db,token,csrf,item['id'],'scheduled')
-        with patch('booking_chat.create_thread',return_value='12345678-1234-1234-1234-123456789abc') as send:
-            self.assertTrue(booking_chat.dispatch(self.db,item['id']))
-            self.assertFalse(booking_chat.dispatch(self.db,item['id']))
-            send.assert_called_once()
-        with booking.connection(self.db) as con:
-            receipt=booking.receipt(booking.get_row(con,item['id']),con)
-            self.assertTrue(receipt['secure_chat_url'].startswith('https://mail.example.test/recipient/inbox'))
-            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'],1)
+            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'],0)
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
-    def test_failure_remains_retryable_without_undoing_approval(self):
-        import center_portal
+    def test_historical_queued_handoff_is_not_dispatched(self):
         item=self.create()
-        token,csrf=self.login()
-        center_portal.open_request(self.db,token,csrf,item['id'],'scheduled')
-        with patch('booking_chat.create_thread',side_effect=TimeoutError):
+        with booking.connection(self.db,write=True) as con:
+            con.execute('INSERT INTO booking_chat(request_id,created) VALUES(?,0)',(item['id'],))
+        with patch('booking_chat.create_thread') as send:
             self.assertFalse(booking_chat.dispatch(self.db,item['id']))
+            send.assert_not_called()
         with booking.connection(self.db) as con:
-            self.assertEqual(booking.get_row(con,item['id'])['status'],'scheduled')
-            self.assertEqual(con.execute('SELECT state FROM booking_chat').fetchone()['state'],'retry')
+            self.assertEqual(con.execute('SELECT state FROM booking_chat').fetchone()['state'],'queued')
 
     def test_insecure_remote_origin_is_rejected(self):
         with patch.dict(os.environ,{'SECURE_MAIL_URL':'http://mail.example.test','SECURE_MAIL_ALLOW_LOOPBACK_HTTP':'true'}):
             with self.assertRaises(ValueError): booking_chat.origin('SECURE_MAIL_URL')
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true', 'BOOKING_EMAIL_ENABLED':'true'})
-    def test_submission_never_sends_direct_clinic_email(self):
-        import booking_delivery
-        with patch('booking_mail.send_message') as smtp:
+    def test_mobile_request_notifies_only_the_center(self):
+        with patch('booking_mail.send_message') as send,patch('booking_chat.create_thread') as chat:
             item=self.create()
-            self.assertEqual(item['status'],'requested')
-            self.assertEqual(item['secure_chat_status'],'pending')
-            with booking.connection(self.db,write=True) as con:
-                self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_outbox').fetchone()['n'],0)
-                booking_delivery.enqueue(con,item['id'])
-            self.assertFalse(booking_delivery.deliver(self.db,item['id']))
-            smtp.assert_not_called()
-        with patch('booking_chat.create_thread',return_value='12345678-1234-1234-1234-123456789abc'):
-            self.assertTrue(booking_chat.dispatch(self.db,item['id']))
+        self.assertEqual(item['delivery'],'sent')
+        self.assertNotIn('secure_chat_url',item)
+        send.assert_called_once()
+        self.assertEqual(send.call_args.args[1],'appointments@example.test')
+        self.assertNotIn('patient@example.test',send.call_args.args[0].as_string())
+        chat.assert_not_called()
 
-    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED': 'true'})
-    def test_private_confirmation_is_durable_and_deduplicated(self):
-        import center_portal
-        item = self.create()
-        token, csrf = self.login()
-        center_portal.open_request(self.db, token, csrf, item['id'], 'scheduled')
-        center_portal.open_request(self.db, token, csrf, item['id'], 'scheduled')
-        with booking.connection(self.db) as con:
-            rows = con.execute('SELECT * FROM booking_chat_events').fetchall()
-            self.assertEqual(len(rows), 1)
-            self.assertNotIn('#request/', rows[0]['payload'])
-        self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
-        with patch('booking_chat.create_thread', return_value='12345678-1234-1234-1234-123456789abc'):
-            self.assertTrue(booking_chat.dispatch(self.db, item['id']))
-        with patch('booking_chat.signed_request', side_effect=TimeoutError):
-            self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
-        with booking.connection(self.db, write=True) as con:
-            con.execute('UPDATE booking_chat_events SET next_attempt=0')
-        with patch('booking_chat.signed_request', return_value={'id': '12345678-1234-1234-1234-123456789abc'}) as send:
-            self.assertTrue(booking_chat.dispatch_confirmation(self.db, item['id']))
-            self.assertFalse(booking_chat.dispatch_confirmation(self.db, item['id']))
-            send.assert_called_once()
-            event = send.call_args.args[0]
-            self.assertEqual(event['event_type'], 'booking_confirmed')
-            self.assertIn('/#request/', event['actions'][0]['url'])
-            self.assertNotIn('/#clinic/', str(event))
+    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
+    def test_historical_patient_confirmation_is_not_dispatched(self):
+        item=self.create()
+        with patch('booking_chat.signed_request') as send:
+            self.assertFalse(booking_chat.dispatch_confirmation(self.db,item['id']))
+            send.assert_not_called()

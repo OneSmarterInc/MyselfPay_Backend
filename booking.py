@@ -379,9 +379,11 @@ def verified_patient_email(con: Any, owner_hash: str, ident: Any, proof: Any) ->
 
 
 def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact: dict | None = None) -> dict:
-    if not data.get('timezone'):
-        with connection(path) as con:
-            data = {**data, 'timezone': default_timezone(resolve_center(con, data.get('clinic_id', '')))}
+    import mobile_accounts
+    with connection(path) as con:
+        data = {**data, 'phone': mobile_accounts.booking_phone_for(con, owner)}
+        if not data.get('timezone'):
+            data['timezone'] = default_timezone(resolve_center(con, data.get('clinic_id', '')))
     validated = validate(data)
     key = text_field(data, 'idempotency_key', 80)
     center_key = text_field(data, 'clinic_id', 200)
@@ -389,14 +391,10 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
     offer_id = data.get('offer_id', '')
     if not isinstance(offer_id, str) or len(offer_id) > 200:
         raise BookingError('Invalid price offer.')
-    verification_id = data.get('verification_id')
     input_hash = digest(core.canonical({'clinic': center_key, 'offer_id': offer_id,
-                                      'email': data.get('email'), 'verification_id': verification_id, 'phone_verification_id': data.get('phone_verification_id'), **validated}))
+                                      **validated}))
     now = time.time()
     with connection(path, write=True) as con:
-        if not isinstance(con, sqlite3.Connection) and isinstance(verification_id, str):
-            con.execute('SELECT id FROM booking_email_checks WHERE id=? AND owner_hash=? FOR UPDATE',
-                        (verification_id, owner_hash)).fetchone()
         # Unique owner/key and the transaction make retries safe on SQLite and Postgres.
         prior = con.execute('SELECT * FROM booking_requests WHERE owner_hash=? AND idempotency_hash=?',
                             (owner_hash, key_hash)).fetchone()
@@ -404,15 +402,9 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             if prior['input_hash'] != input_hash:
                 raise BookingError('This submission key was already used for different details.', 409)
             return receipt(prior, con)
-        patient_email = (require_saved_email(con, owner_hash, data['email']) if data.get('email')
-                         else verified_patient_email(con, owner_hash, verification_id, data.get('verification_token')))
-        import booking_phone
-        has_phone_proof = bool(data.get('phone_verification_id') or data.get('phone_verification_token'))
-        if has_phone_proof:
-            validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
+        # Recheck verification in the submission transaction.
+        validated['phone'] = mobile_accounts.booking_phone_for(con, owner)
         center = resolve_center(con, center_key)
-        if booking_chat.enabled() and patient_email.strip().casefold() == appointment_email(center).strip().casefold():
-            raise BookingError('Use a different patient email address from the center email. Secure Mail requires separate patient and center mailboxes.', 400)
         if booking_delivery.mode(appointment_email(center)) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
@@ -422,8 +414,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         ident = 'MSP-' + secrets.token_hex(8).upper()
         patient_token, clinic_token = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         payload = {**validated, 'clinic_id': center_key, 'clinic_name': center['name'],
-                   'patient_email': patient_email,
-                   'reply_email': patient_email,
+                   'delivery_route': 'center_email',
                    'reply_phone': validated['phone'],
                    'price_text': price_text,
                    'location': center.get('area', ''), 'recipient': appointment_email(center),
@@ -446,15 +437,10 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute('INSERT INTO center_request_routes(request_id,clinic_id,email_hash) VALUES(?,?,?) ON CONFLICT(request_id) DO NOTHING',
                     (row['id'], center_key, digest(payload['recipient'].strip().lower())))
-        con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
-        if has_phone_proof:
-            con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
-        if booking_chat.enabled():
-            booking_chat.enqueue(con, row)
-        elif booking_delivery.enabled():
+        if booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
-    if booking_delivery.enabled() and not booking_chat.enabled():
+    if booking_delivery.enabled():
         booking_delivery.deliver(path, row['id'])
     with connection(path) as con:
         return receipt(get_row(con, row['id']), con)
@@ -463,10 +449,12 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
 def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
-    chat = booking_chat.summary(con, row)
-    if chat:
-        delivery = 'secure_mail_ready' if chat.get('secure_chat_url') else 'secure_mail_pending'
-    return {**chat, 'id': row['id'], 'status': row['status'], 'delivery': delivery,
+    # Historical handoffs remain diagnosable, without exposing patient chat links.
+    if con is not None and p.get('delivery_route') != 'center_email':
+        prior = con.execute('SELECT state FROM booking_chat WHERE request_id=?', (row['id'],)).fetchone()
+        if prior:
+            delivery = 'sent' if prior['state'] == 'ready' else 'suppressed'
+    return { 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
@@ -586,7 +574,7 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
         result.pop('tracking_token')
         result['expires_at'] = row['clinic_session_expires']
         if row['status'] not in TERMINAL:
-            result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'])
+            result.update(first_name=p['first_name'], phone=p['phone'])
         else:
             result['contact_hidden'] = True
         return result

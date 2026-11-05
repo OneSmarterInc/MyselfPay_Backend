@@ -121,7 +121,7 @@ def open_request(path, token, csrf, ident, status=None):
         result = booking.receipt(row, db)
         result.pop('tracking_token', None)
         if row['status'] not in booking.TERMINAL and row['link_expires'] > time.time():
-            result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'])
+            result.update(first_name=p['first_name'], phone=p['phone'])
         else:
             result['contact_hidden'] = True
             if row['status'] not in booking.TERMINAL:

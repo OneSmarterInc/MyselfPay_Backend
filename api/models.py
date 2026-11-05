@@ -29,7 +29,7 @@ class PortalAccount(models.Model):
         verbose_name_plural = 'registered portal users'
 
     def __str__(self):
-        return self.email
+        return self.phone or self.member_id
 
 
 class PortalMember(models.Model):

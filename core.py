@@ -496,7 +496,10 @@ def session(token,path=DB):
         row=db.execute('SELECT m.id,m.tenant,m.name,m.email,s.csrf FROM sessions s JOIN members m ON m.id=s.member_id WHERE s.token_hash=? AND s.expires>?',(hashlib.sha256(token.encode()).hexdigest(),time.time())).fetchone()
         if row and db.execute("SELECT value FROM settings WHERE key=? AND value='1'", ('account-disabled:' + row['id'],)).fetchone():
             return None
-        return dict(row) if row else None
+        if row:
+            import mobile_accounts
+            return mobile_accounts.profile(db, row) if row['tenant']=='selfpay' else dict(row)
+        return None
 
 def history(member,path=DB):
     if member['tenant']=='guest':return []

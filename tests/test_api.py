@@ -33,8 +33,9 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/booking-phone.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-verified-email.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-portal.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/booking-chat.sql').read_text())
             # CI database is disposable and must never point at production.
-            for table in ['booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
+            for table in ['mobile_accounts', 'booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
         self.client = Client(enforce_csrf_checks=True)
         self.csrf = ''
@@ -45,6 +46,15 @@ class APITests(unittest.TestCase):
         self.temp.cleanup()
 
     def post(self, route, data=None, client=None, csrf=None, origin='http://localhost:5173'):
+        if route in ('register', 'login') and data and 'email' in data:
+            import hashlib
+            from tests.mobile_fixtures import proof
+            data = dict(data)
+            fixture_email = data.pop('email')
+            data['username'] = fixture_email.split('@')[0]
+            if route == 'register':
+                phone = '+1555' + str(int(hashlib.sha256(fixture_email.encode()).hexdigest()[:8],16)).zfill(10)[-7:]
+                data.update(proof(self.db, phone))
         response = (client or self.client).post('/api/' + route, json.dumps(data or {}), content_type='application/json', HTTP_ORIGIN=origin, HTTP_X_CSRF_TOKEN=self.csrf if csrf is None else csrf)
         value = response.json()
         if value.get('csrf') and (client is None or client is self.client):
@@ -112,88 +122,42 @@ class APITests(unittest.TestCase):
         self.assertEqual(self.client.get('/api/preferences').json()['location'], 'Ohio')
         self.assertEqual(len(self.client.get('/api/conversations').json()['conversations']), 1)
 
-    def test_booking_email_verification_create_and_tracking(self):
-        registered = self.post('register', {'name': 'Synthetic Booker', 'email': 'booker@example.com', 'password': 'Synthetic-only-passphrase!'})
-        self.assertEqual(registered.status_code, 201, registered.content)
+    def test_mobile_account_booking_create_tracking_and_center_approval(self):
+        registered = self.post('register', {'name':'Synthetic Booker','email':'booker@example.com','password':'Synthetic-only-passphrase!'})
+        self.assertEqual(registered.status_code,201,registered.content)
         with core.connect(self.db) as con:
-            con.execute("INSERT INTO batches VALUES('api-test-batch','api-test-hash','synthetic',0,'test','{}') ON CONFLICT(id) DO NOTHING")
+            con.execute("INSERT INTO batches VALUES('api-test-batch','hash','test',0,'published','{}') ON CONFLICT(id) DO NOTHING")
             con.execute("INSERT INTO settings VALUES('active_batch','api-test-batch') ON CONFLICT(key) DO UPDATE SET value=excluded.value")
-            center = {'name': 'Synthetic Imaging', 'area': 'Test city', 'email': 'appointments@example.test', 'appointment_email_approved': True}
-            con.execute('INSERT INTO entries VALUES(?,?,?,?) ON CONFLICT(batch_id,entry_key) DO UPDATE SET payload=excluded.payload', ('api-test-batch', 'api-test-clinic', 'test', json.dumps(center)))
-        with patch('booking_mail.send_patient_code') as sender:
-            issued = self.post('booking/email-code', {'email': 'patient@example.test'})
-            self.assertEqual(issued.status_code, 200, issued.content)
-            code = sender.call_args.args[1]
-        verified = self.post('booking/email-verify', {'verification_id': issued.json()['verification_id'], 'code': code})
-        self.assertEqual(verified.status_code, 200)
-        from datetime import datetime, timedelta
-        data = {**verified.json(), 'clinic_id': 'api-test-clinic', 'idempotency_key': 'test-request', 'first_name': 'Synthetic', 'phone': '6145550142', 'service': 'MRI', 'exam': 'Knee', 'contrast': 'without', 'timezone': 'America/New_York', 'consent': True, 'slots': [{'date': (datetime.now() + timedelta(days=3)).date().isoformat(), 'period': 'morning'}]}
-        with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'1'*32):
-            phone=self.post('booking/phone-code',{'phone':'+16145550142'})
-        self.assertEqual(phone.status_code,200,phone.content)
-        with patch('booking_sms.check_code',return_value=True):
-            checked=self.post('booking/phone-verify',{'verification_id':phone.json()['verification_id'],'code':'123456'})
-        self.assertEqual(checked.status_code,200,checked.content)
-        data.update(phone='+16145550142',phone_verification_id=checked.json()['verification_id'],phone_verification_token=checked.json()['verification_token'])
-        result = self.post('booking/create', data)
-        self.assertEqual(result.status_code, 201, result.content)
-        self.assertEqual(result.json()['delivery'], 'suppressed')
-        self.assertEqual(self.post('booking/create', data).json()['id'], result.json()['id'])
-        tracking = self.post('booking/patient', {'id': result.json()['id'], 'token': result.json()['tracking_token']})
-        self.assertEqual(tracking.status_code, 200)
-        self.assertNotIn('phone', tracking.json())
-        self.assertEqual(self.post('booking/preview', {'id': result.json()['id'], 'token': result.json()['tracking_token']}).status_code, 404)
-        # Migration recovers verification from an earlier successfully consumed challenge.
-        with core.connect(self.db) as con:
-            con.execute('DELETE FROM booking_verified_emails')
-        from importlib import import_module
-        import_module('api.migrations.0007_saved_email_verification').create_schema(None, None)
-        # The verified address is retained across logout/login and no proof or SMS is needed.
-        self.assertEqual(self.post('logout').status_code, 200)
-        self.csrf = ''
-        self.assertEqual(self.post('login', {'email':'booker@example.com','password':'Synthetic-only-passphrase!'}).status_code, 200)
-        saved = self.post('booking/options', {'clinic_id':'api-test-clinic'})
-        self.assertEqual(saved.json()['verified_email'], 'patient@example.test')
-        repeat = {k:v for k,v in data.items() if 'verification_' not in k}
-        repeat.update(email='patient@example.test', phone='', idempotency_key='saved-email-repeat')
-        repeat.pop('timezone')
-        self.assertEqual(self.post('booking/create', repeat).status_code, 201)
-        dashboard=self.client.get('/api/dashboard').json()
-        self.assertEqual(dashboard['profile']['email'],'booker@example.com')
-        self.assertEqual(dashboard['total'],2)
-        self.assertEqual(dashboard['stats']['requested'],2)
-        self.assertEqual(self.client.get('/api/dashboard?filter=open').json()['total'],2)
-        other=Client(enforce_csrf_checks=True)
-        self.assertEqual(other.get('/api/dashboard').status_code,401)
-        self.post('register',{'name':'Other Dashboard User','email':'dashboard-other@example.com','password':'Synthetic-only-passphrase!'},client=other,csrf='')
-        private=other.get('/api/dashboard').json()
-        self.assertEqual(private['total'],0)
-        self.assertNotIn('Synthetic Imaging',str(private))
-
-        repeat.update(email='unverified@example.test', idempotency_key='forged-email')
-        self.assertEqual(self.post('booking/create', repeat).status_code, 403)
-        # Email-link approval cannot be performed before center OTP verification.
+            con.execute('INSERT INTO entries VALUES(?,?,?,?) ON CONFLICT(batch_id,entry_key) DO UPDATE SET payload=excluded.payload',('api-test-batch','api-test-clinic','hash',json.dumps({'name':'Synthetic Imaging','email':'appointments@example.test','appointment_email_approved':True})))
+        self.assertEqual(self.post('booking/email-code',{'email':'ignored@example.test'}).status_code,410)
+        options=self.post('booking/options',{'clinic_id':'api-test-clinic'})
+        self.assertEqual(options.status_code,200,options.content)
+        self.assertEqual(options.json()['phone'],registered.json()['member']['phone'])
+        self.assertNotIn('verified_email',options.json())
+        from datetime import datetime,timedelta
+        data={'clinic_id':'api-test-clinic','idempotency_key':'mobile-booking','first_name':'Synthetic','service':'MRI','consent':True,'slots':[{'date':(datetime.now()+timedelta(days=3)).date().isoformat(),'period':'morning'}]}
+        result=self.post('booking/create',data)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(self.post('booking/create',data).json()['id'],result.json()['id'])
+        self.assertNotIn('secure_chat_url',result.json())
         request_id=result.json()['id']
         with booking.connection(self.db) as con:
-            clinic_token=booking.unpack(booking.get_row(con,request_id))['clinic_token']
-        self.assertEqual(self.post('booking/status',{'id':request_id,'session':'unverified','status':'scheduled'}).status_code,404)
-        with patch('booking_delivery.mode',return_value='enabled'), patch('booking_mail.send_clinic_code') as center_sender:
-            issued=self.post('booking/code',{'id':request_id,'token':clinic_token})
-            self.assertEqual(issued.status_code,200,issued.content)
-            self.assertEqual(center_sender.call_args.args[0],'appointments@example.test')
-            center_code=center_sender.call_args.args[2]
-        checked=self.post('booking/verify',{'id':request_id,'token':clinic_token,'code':center_code})
-        self.assertEqual(checked.status_code,200)
+            payload=booking.unpack(booking.get_row(con,request_id))
+        self.assertNotIn('patient_email',payload)
+        self.assertEqual(payload['phone'],registered.json()['member']['phone'])
+        self.assertEqual(self.post('booking/status',{'id':request_id,'session':'forged','status':'scheduled'}).status_code,404)
+        with patch('booking_delivery.mode',return_value='enabled'),patch('booking_mail.send_clinic_code') as send:
+            issued=self.post('booking/code',{'id':request_id,'token':payload['clinic_token']})
+        self.assertEqual(issued.status_code,200,issued.content)
+        checked=self.post('booking/verify',{'id':request_id,'token':payload['clinic_token'],'code':send.call_args.args[2]})
+        self.assertEqual(checked.status_code,200,checked.content)
         approved=self.post('booking/status',{'id':request_id,'session':checked.json()['session'],'status':'scheduled'})
         self.assertEqual(approved.status_code,200,approved.content)
         dashboard=self.client.get('/api/dashboard?filter=approved').json()
         self.assertEqual(dashboard['total'],1)
-        self.assertEqual(dashboard['stats']['scheduled'],1)
-        self.assertEqual(dashboard['requests'][0]['status'],'scheduled')
-        self.assertEqual(dashboard['requests'][0]['contact_email'],'patient@example.test')
+        self.assertNotIn('email',dashboard['profile'])
+        self.assertNotIn('contact_email',dashboard['requests'][0])
         self.assertIsNotNone(dashboard['requests'][0]['approved_at'])
-
-
 
     def test_bad_payload_limits_and_secure_production_cookie(self):
         response = self.client.post('/api/guest', '[]', content_type='application/json', HTTP_ORIGIN='http://localhost:5173')
@@ -335,10 +299,9 @@ class APITests(unittest.TestCase):
     def test_patient_otp_requests_are_not_rate_limited_by_the_application(self):
         self.post('register',{'name':'OTP Test','email':'otp@example.com','password':'Synthetic-only-passphrase!'})
         with patch('booking_mail.send_patient_code') as send:
-            for _ in range(8):
-                response=self.post('booking/email-code',{'email':'patient@example.test'})
-                self.assertEqual(response.status_code,200,response.content)
-            self.assertEqual(send.call_count,8)
+            response=self.post('booking/email-code',{'email':'patient@example.test'})
+            self.assertEqual(response.status_code,410,response.content)
+            send.assert_not_called()
         with patch('booking_sms.configuration',return_value={}),patch('booking_sms.send_code',return_value='VE'+'1'*32) as send:
             for _ in range(8):
                 response=self.post('booking/phone-code',{'phone':'+15550102222'})

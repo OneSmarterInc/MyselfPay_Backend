@@ -118,10 +118,14 @@ class SpatialTests(unittest.TestCase):
             self.assertIsNone(spatial.prepare_location({'latitude': latitude, 'longitude': 0, 'precision': 'city'}))
 
     def test_registration_zip_is_optional_validated_and_saved_across_login(self):
-        credentials = {'name': 'Synthetic ZIP User', 'email': f'zip-{uuid.uuid4().hex}@example.com', 'password': 'Synthetic-only-passphrase!', 'zip_code': '45202'}
+        credentials = {'name': 'Synthetic ZIP User', 'username': 'zip_'+uuid.uuid4().hex[:15], 'password': 'Synthetic-only-passphrase!', 'zip_code': '45202'}
         for bad in ('4520', '452021234', '45202-1234', 'ABCDE'):
             response = self.client.post('/api/register', {**credentials, 'zip_code': bad}, format='json', HTTP_ORIGIN='http://localhost:5173')
             self.assertEqual(response.status_code, 400)
+        import booking
+        from tests.mobile_fixtures import proof
+        booking.initialize_local(self.path)
+        credentials.update(proof(self.path, '+15550129998'))
         response = self.client.post('/api/register', credentials, format='json', HTTP_ORIGIN='http://localhost:5173')
         self.assertEqual(response.status_code, 201, response.content)
         self.assertEqual(response.json()['member']['zip_code'], '45202')

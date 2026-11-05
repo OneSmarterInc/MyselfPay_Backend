@@ -50,7 +50,7 @@ class CenterPortalTests(unittest.TestCase):
         with self.assertRaises(booking.BookingError):
             center_portal.open_request(self.db, token, 'bad-csrf', result['id'])
         detail = center_portal.open_request(self.db, token, csrf, result['id'])
-        self.assertEqual(detail['patient_email'], 'patient@example.test')
+        self.assertNotIn('patient_email', detail)
         with booking.connection(self.db) as db:
             other = {**self.center, 'email':'other@example.test'}
             db.execute('INSERT INTO entries VALUES(?,?,?,?)', ('batch','clinic-2','h2',json.dumps(other)))

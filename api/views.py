@@ -12,6 +12,7 @@ from api.authentication import AccountMemberOnly
 from api import serializers as inputs
 from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, BookingCreateThrottle
 import accounts
+import mobile_accounts
 import booking
 import core
 import chat_questions
@@ -43,7 +44,7 @@ def session_response(data, status=200, token=None):
 
 
 def session_details(member):
-    return {'member': {key: value for key, value in member.items() if key != 'csrf'}, 'csrf': member['csrf']}
+    return {'member': {key: value for key, value in member.items() if key not in ('csrf', 'email')}, 'csrf': member['csrf']}
 
 
 class ResourceView(APIView):
@@ -77,6 +78,7 @@ class HealthView(ResourceView):
                 con.execute('SELECT member_id FROM account_zip_codes LIMIT 0')
                 con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
                 con.execute('SELECT id FROM booking_phone_checks LIMIT 0')
+                con.execute('SELECT member_id FROM mobile_accounts LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
             return Response({'status': 'unavailable'}, status=503)
@@ -143,8 +145,8 @@ class AuthenticationView(ResourceView):
     serializer_class = inputs.LoginSerializer
 
     def post(self, request):
-        data = accounts.authenticate(database(), self.validated(request), self.action,
-                                     client_ip(request), session_token(request))
+        data = mobile_accounts.authenticate(database(), self.validated(request), self.action,
+                                     client_ip(request), session_token(request), request.auth)
         token = data.pop('token')
         return session_response(data, 201 if self.action == 'register' else 200, token)
 
@@ -152,6 +154,27 @@ class AuthenticationView(ResourceView):
 class RegistrationView(AuthenticationView):
     action = 'register'
     serializer_class = inputs.RegistrationSerializer
+
+
+class AccountSetupView(AuthenticationView):
+    action = 'setup'
+    serializer_class = inputs.RegistrationSerializer
+
+
+class RegistrationMobileView(ResourceView):
+    permission_classes = [AllowAny]
+    throttle_classes = [GuestThrottle]
+
+    def post(self, request, action):
+        data = self.validated(request)
+        result = (mobile_accounts.request_code(database(), data, client_ip(request)) if action == 'code'
+                  else mobile_accounts.verify_code(database(), data))
+        return Response(result)
+
+    def validated(self, request):
+        if len(request.body) > 4096 or not isinstance(request.data, dict):
+            raise ValueError('Invalid verification request.')
+        return request.data
 
 
 class GuestView(ResourceView):
@@ -333,11 +356,10 @@ class BookingView(ResourceView):
         db, data = database(), self.validated(request)
         if action == 'options':
             result = booking.options(db, data['clinic_id'], data['offer_id'])
-            result['verified_email'] = booking.saved_verified_email(db, request.auth['id'])
-        elif action == 'email-code':
-            result = booking.request_patient_code(db, request.auth['id'], data['email'])
-        elif action == 'email-verify':
-            result = booking.verify_patient_code(db, request.auth['id'], data['verification_id'], data['code'])
+            with core.connect(db) as con:
+                result['phone'] = mobile_accounts.booking_phone_for(con, request.auth['id'])
+        elif action in ('email-code', 'email-verify'):
+            return Response({'error':'Patient email verification has been retired. Use mobile verification at registration.'}, status=410)
         elif action == 'phone-code':
             import booking_phone
             result = booking_phone.request_code(db, request.auth['id'], data['phone'])
@@ -372,7 +394,7 @@ class DashboardView(ResourceView):
             return Response({'error':'Invalid request filter.'}, status=400)
         owner, now = booking.digest(request.auth['id']), time.time()
         with core.connect(database()) as con:
-            profile = con.execute('SELECT m.name,a.email,a.phone,a.created FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE m.id=?', (request.auth['id'],)).fetchone()
+            profile = con.execute('SELECT m.id,m.name,a.phone,a.created FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE m.id=?', (request.auth['id'],)).fetchone()
             if not profile:
                 return Response({'error':'Account profile unavailable.'}, status=404)
             stats = {row['status']:row['n'] for row in con.execute("""SELECT CASE WHEN status IN ('requested','voicemail') AND link_expires<=? THEN 'expired' ELSE status END AS status,COUNT(*) AS n FROM booking_requests WHERE owner_hash=? GROUP BY 1""", (now,owner)).fetchall()}
@@ -390,13 +412,13 @@ class DashboardView(ResourceView):
             for row in rows:
                 item = booking.receipt(row,con)
                 payload = booking.unpack(row)
-                item.update(contact_name=payload['first_name'],contact_email=payload['patient_email'],contact_phone=payload.get('phone',''),consent=payload.get('consent',False),approved_at=row['closed'] if row['status']=='scheduled' else None)
+                item.update(contact_name=payload['first_name'],contact_phone=payload.get('phone',''),consent=payload.get('consent',False),approved_at=row['closed'] if row['status']=='scheduled' else None)
                 if item['status'] in ('requested','voicemail') and row['link_expires']<=now:
                     item['status']='expired'
                 requests.append(item)
-            account = dict(profile)
+            account = mobile_accounts.profile(con, profile)
             account['zip_code'] = accounts.saved_zip(con,request.auth['id'])
-        return Response({'profile':account,'verified_email':booking.saved_verified_email(database(),request.auth['id']),
+        return Response({'profile':account,
                          'requests':requests,'stats':stats,'total':total,'page':page,'pages':pages})
 
 

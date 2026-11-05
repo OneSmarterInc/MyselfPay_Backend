@@ -37,10 +37,15 @@ def log_handoff_failure(operation: str, error: Exception) -> None:
 
 
 def enabled():
-    return os.getenv('SECURE_MAIL_ENABLED', 'false').lower() == 'true'
+    # Patient-email workflows are retired, including already queued handoffs.
+    # Keep historical records for diagnostics, but never dispatch new patient mail.
+    return False
 
 
 def enqueue(con, row):
+    import booking
+    if booking.unpack(row).get('delivery_route') == 'center_email':
+        return
     if enabled() and row['status'] in ('requested', 'voicemail', 'scheduled'):
         con.execute("INSERT INTO booking_chat(request_id,created) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING", (row['id'], time.time()))
         if row['status'] == 'scheduled':

@@ -29,6 +29,11 @@ class BookingTests(unittest.TestCase):
         self.env.start()
         core.initialize(self.db)
         booking.initialize_local(self.db)
+        import accounts, mobile_accounts
+        accounts.initialize(self.db)
+        with core.connect(self.db) as db:
+            db.execute("INSERT INTO members(id,tenant,email,name,salt,password_hash) VALUES('guest-owner','selfpay','mobile:guest-owner','Synthetic','00','unused')")
+            db.execute("INSERT INTO mobile_accounts VALUES('guest-owner','synthetic','synthetic','+16145550142',1)")
         self.center = {'name': 'Synthetic Imaging', 'area': 'Test city',
                        'email': 'appointments@example.test', 'appointment_email_approved': True}
         with booking.connection(self.db) as con:
@@ -106,10 +111,10 @@ class BookingTests(unittest.TestCase):
 
     def test_recipient_cannot_be_overridden(self):
         data = {**self.data, 'email': 'attacker@example.test', 'recipient': 'attacker@example.test'}
-        with self.assertRaises(booking.BookingError):
-            self.create(data)
-        data.pop('email')
         r = self.create(data)
+        with booking.connection(self.db) as db:
+            payload = booking.unpack(booking.get_row(db, r['id']))
+        self.assertNotIn('patient_email', payload)
         preview = booking.patient(self.db, r['id'], r['tracking_token'], preview=True)
         self.assertNotIn('attacker', preview['notification'])
 
@@ -131,7 +136,7 @@ class BookingTests(unittest.TestCase):
             self.create({**self.data, 'first_name': 'Other'})
 
     def test_validation(self):
-        bad = [{'consent': False}, {'first_name': '\r\nInjected'}, {'phone': 'bad'},
+        bad = [{'consent': False}, {'first_name': '\r\nInjected'},
                {'slots': []}, {'slots': self.data['slots'] * 2},
                {'slots': [self.data['slots'][0]] * 2}, {'timezone': 'made-up'},
                {'slots': [{'date': '2000-01-01', 'period': 'morning'}]},
@@ -208,16 +213,15 @@ class BookingTests(unittest.TestCase):
         self.assertEqual(booking.appointment_email({'email': 'x@example.test?bcc=y@example.test', 'appointment_email_approved': True}), '')
 
 
-    def test_patient_verification_required_owner_bound_and_single_use(self):
-        missing = dict(self.data)
-        missing.pop('verification_token')
+    def test_registered_mobile_is_required_and_reused_for_bookings(self):
+        data = {k:v for k,v in self.data.items() if 'verification' not in k}
         with self.assertRaises(booking.BookingError):
-            self.create(missing)
-        with self.assertRaises(booking.BookingError):
-            booking.create(self.db, 'other-owner', self.data, 'http://127.0.0.1:8765')
-        self.create()
-        with self.assertRaises(booking.BookingError):
-            self.create({**self.data, 'idempotency_key': 'new-key'})
+            booking.create(self.db, 'other-owner', data, 'http://127.0.0.1:8765')
+        first = self.create(data)
+        second = self.create({**data, 'idempotency_key':'new-key'})
+        self.assertNotEqual(first['id'], second['id'])
+        with booking.connection(self.db) as db:
+            self.assertEqual(booking.unpack(booking.get_row(db, first['id']))['phone'], '+16145550142')
 
     def test_patient_code_wrong_attempts_expiry_and_no_code_disclosure(self):
         with patch('booking_mail.send_patient_code') as send:

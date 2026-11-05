@@ -15,6 +15,8 @@ urlpatterns = [
     re_path(r'^api/center/(?P<action>code|verify|dashboard|request|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),
+    re_path(r'^api/registration/mobile/(?P<action>code|verify)$', views.RegistrationMobileView.as_view()),
+    path('api/account/setup', views.AccountSetupView.as_view()),
     path('api/register', views.RegistrationView.as_view(), name='register'),
     path('api/login', views.AuthenticationView.as_view(), name='login'),
     path('api/logout', views.LogoutView.as_view(), name='logout'),
