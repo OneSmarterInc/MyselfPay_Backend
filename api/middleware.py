@@ -1,6 +1,15 @@
 from django.conf import settings
 from django.http import JsonResponse
 from django.core.exceptions import DisallowedHost
+from django.middleware.gzip import GZipMiddleware
+
+
+class DirectoryCompressionMiddleware(GZipMiddleware):
+    """Compress large directory responses, never account/OTP/admin payloads."""
+    def process_response(self, request, response):
+        if request.path in ('/api/catalog', '/api/search', '/api/directory-summary') or request.path.startswith('/api/v1/spatial-bundle/'):
+            return super().process_response(request, response)
+        return response
 
 class RequestSecurityMiddleware:
     """Require explicit trusted browser origin on every state-changing request.
