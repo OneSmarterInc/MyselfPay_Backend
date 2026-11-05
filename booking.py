@@ -411,6 +411,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         if has_phone_proof:
             validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
         center = resolve_center(con, center_key)
+        if booking_chat.enabled() and patient_email.strip().casefold() == appointment_email(center).strip().casefold():
+            raise BookingError('Use a different patient email address from the center email. Secure Mail requires separate patient and center mailboxes.', 400)
         if booking_delivery.mode(appointment_email(center)) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])

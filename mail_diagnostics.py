@@ -27,7 +27,7 @@ def request_status(path, ident):
         notes.append('The center email changed after submission. This request retains its original recipient.')
     if secure:
         if recipient.strip().casefold() == payload['patient_email'].strip().casefold():
-            notes.append('Patient and center use the same email. Secure Mail may reject duplicate participants; test with separate inboxes.')
+            notes.append('Patient and center use the same email. Secure Mail requires separate patient and center mailboxes; test with separate inboxes.')
         if state == 'ready':
             notes.append('Secure Mail accepted the handoff. Check its notification outbox and recipient delivery logs; MySelfPay SMTP does not send these invitations.')
         elif not booking_chat.enabled():
