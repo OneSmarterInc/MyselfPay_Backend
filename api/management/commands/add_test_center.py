@@ -19,6 +19,9 @@ class Command(BaseCommand):
     center_name = CENTER_NAME
     offer_prefix = 'portal-geetesh-test-'
     include_website = True
+    city = "Dayton"
+    state = "OH"
+    state_name = "Ohio"
     help = 'Preview a clearly labeled synthetic MRI/CT center; --publish adds it while preserving the active directory.'
 
     def add_arguments(self, parser):
@@ -30,28 +33,28 @@ class Command(BaseCommand):
             email = booking.email_address(options['email'] or os.getenv('TEST_CENTER_EMAIL', ''))
         except booking.BookingError as exc:
             raise CommandError('Set TEST_CENTER_EMAIL to the confirmed center booking recipient.') from exc
-        places = [p for p in lookup('Dayton, OH') if p['match'] == 'exact']
+        places = [p for p in lookup(f"{self.city}, {self.state}") if p['match'] == 'exact']
         if len(places) != 1:
-            raise CommandError('The bundled Dayton geography reference is unavailable.')
+            raise CommandError(f"The bundled {self.city} geography reference is unavailable.")
         place = places[0]
         center = {
-            'name': self.center_name, 'area': 'Dayton', 'states': 'OH',
+            'name': self.center_name, 'area': self.city, 'states': self.state,
             'entity': 'Synthetic portal test center', 'category': 'TEST CENTER — not a medical facility',
             'mri': 'MRI test booking workflow only; no medical care is provided.',
             'ct': 'CT test booking workflow only; no medical care is provided.',
             'other': 'Appointment request, email verification and clinic status workflow testing.',
-            'coverage': 'Dayton, Ohio — fictional test location. Do not travel to this center.',
+            'coverage': f"{self.city}, {self.state_name} — fictional test location. Do not travel to this center.",
             'notes': 'TEST CENTER. Synthetic booking workflow only. This center does not perform exams or provide medical care. Use synthetic patient details.',
             'source': settings.FRONTEND_ORIGIN if self.include_website else '', 'additional': '', 'checked': date.today().isoformat(),
             'email': email, 'email_scope': 'appointments and scheduling', 'appointment_email_approved': True,
             'is_test_center': True, 'location_type': 'site',
-            'locations': [{'city': 'Dayton', 'state': 'OH', 'zip': '', 'latitude': place['latitude'], 'longitude': place['longitude'], 'precision': 'city'}],
+            'locations': [{'city': self.city, 'state': self.state, 'zip': '', 'latitude': place['latitude'], 'longitude': place['longitude'], 'precision': 'city'}],
         }
         center_hash = core.digest(center)
         offers = [{
             'id': self.offer_prefix + mod.lower(), 'entry_name': self.center_name,
             'entry_hash': center_hash, 'mod': mod, 'contrast': 'unknown', 'type': 'quote',
-            'region': 'Dayton, OH', 'scope': mod + ' test booking — no clinical exam',
+            "region": f"{self.city}, {self.state}", 'scope': mod + ' test booking — no clinical exam',
             'included': 'Synthetic appointment workflow only. No clinical service or price is offered.',
             'order': 'Use synthetic patient details. This is not a medical facility.',
             'source': settings.FRONTEND_ORIGIN if self.include_website else '',
@@ -61,7 +64,7 @@ class Command(BaseCommand):
             with core.connect(db) as con:
                 active = core.active_batch(con)
                 count = con.execute('SELECT COUNT(*) AS n FROM entries WHERE batch_id=?', (active,)).fetchone()['n']
-            self.stdout.write(f'Preview only: {self.center_name}; Dayton, OH; MRI/CT test services; current listings: {count}. No data changed. Use --publish after reviewing the target database and backup.')
+            self.stdout.write(f'Preview only: {self.center_name}; {self.city}, {self.state}; MRI/CT test services; current listings: {count}. No data changed. Use --publish after reviewing the target database and backup.')
             return
         with core.connect(db) as con:
             con.execute("INSERT INTO settings(key,value) VALUES('portal-test-center-lock','1') ON CONFLICT(key) DO UPDATE SET value=excluded.value")
