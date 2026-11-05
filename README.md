@@ -44,6 +44,7 @@ DRF serializers validate fields and nested booking slots before domain operation
 | `/guest`, `/register`, `/login`, `/logout` | POST, session lifecycle; patient login uses username/password |
 | `/registration/mobile/code`, `/registration/mobile/verify` | POST, mobile OTP before registration |
 | `/account/setup` | POST, one-time username/mobile setup for existing accounts |
+| `/password/code`, `/password/verify`, `/password/reset` | POST, mobile OTP password recovery |
 | `/me`, `/catalog`, `/guest-usage` | GET, authenticated |
 | `/search`, `/agent` | POST, directory search / deterministic guided search |
 | `/conversations` | GET / POST, account-owned saved searches and history |
@@ -54,7 +55,7 @@ DRF serializers validate fields and nested booking slots before domain operation
 | `/booking/patient` | POST, patient tracking capability |
 | `/booking/code`, `/booking/verify`, `/booking/details`, `/booking/status`, `/booking/lock` | POST, clinic capability flow |
 
-Guests have three chat conversations, five messages each, 500 characters per message. Guest chat text is not saved. Accounts support saved history. Password reset, payment processing, insurance calculations, external AI and speech are not implemented in the source and are not invented here.
+Guests have three chat conversations, five messages each, 500 characters per message. Guest chat text is not saved. Accounts support saved history. Password reset uses the registered mobile number and SMS OTP through Forgot password. Payment processing, insurance calculations, external AI and speech are not implemented.
 
 ## Booking and email
 
@@ -86,3 +87,5 @@ Original source informational pages are retained in the frontend. Application/da
 ## Predefined chat questions
 
 `POST /api/agent` accepts only the three labels in `chat_questions.py` (case and whitespace variations are accepted). Unlisted questions return 400 before consuming guest conversation quota. Each question uses a fixed exam, contrast, budget and unambiguous city/state search; incoming free-form search values do not override it. Responses use the live indexed directory and explicitly report no matches when applicable. Guest conversation/message limits remain enforced. Updating this feature requires pulling the backend and restarting the service; it needs no migration or new environment variables.
+
+Password recovery requires migration `0014_password_reset`. Apply it before restarting the backend and releasing the matching frontend. Reset OTPs are purpose-bound, expire, and can be consumed once. A reset invalidates other outstanding reset requests and signs out existing sessions.

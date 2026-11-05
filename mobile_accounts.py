@@ -66,8 +66,12 @@ def authenticate(path, data, action, ip, previous_token='', existing_member=None
     if not isinstance(password, str) or not 1 <= len(password) <= 128:
         raise accounts.AccountError('Enter a password of no more than 128 characters.')
     if action == 'login':
-        with core.connect(path) as db:
-            row = db.execute('SELECT m.* FROM members m JOIN mobile_accounts a ON a.member_id=m.id WHERE a.username_key=?', (name.casefold(),)).fetchone()
+        with booking.connection(path, write=True) as db:
+            sql = 'SELECT m.* FROM members m JOIN mobile_accounts a ON a.member_id=m.id WHERE a.username_key=?'
+            import sqlite3
+            if not isinstance(db, sqlite3.Connection):
+                sql += ' FOR UPDATE OF m'
+            row = db.execute(sql, (name.casefold(),)).fetchone()
             if not password_matches(row, password) or disabled(db, row['id'] if row else ''):
                 raise accounts.AccountError('Username or password is incorrect.', 401)
             return accounts.new_session(db, row['id'], previous_token)

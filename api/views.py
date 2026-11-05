@@ -79,6 +79,7 @@ class HealthView(ResourceView):
                 con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
                 con.execute('SELECT id FROM booking_phone_checks LIMIT 0')
                 con.execute('SELECT member_id FROM mobile_accounts LIMIT 0')
+                con.execute('SELECT challenge_hash FROM password_reset_requests LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
             return Response({'status': 'unavailable'}, status=503)
@@ -190,9 +191,15 @@ class GuestView(ResourceView):
 
 class PasswordView(ResourceView):
     permission_classes = [AllowAny]
+    throttle_classes = []  # Same application OTP quota policy as registration.
 
-    def post(self, request):
-        return Response({'error': 'Password recovery is not available yet.'}, status=410)
+    def post(self, request, action='reset'):
+        import password_reset
+        if len(request.body)>4096 or not isinstance(request.data,dict):
+            raise ValueError('Invalid password reset request.')
+        functions={'code':password_reset.issue,'verify':password_reset.verify,'reset':password_reset.save}
+        result=functions[action](database(),request.data)
+        return session_response(result,token='' if action=='reset' else None)
 
 
 class MeView(ResourceView):

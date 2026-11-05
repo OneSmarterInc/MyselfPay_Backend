@@ -27,6 +27,8 @@ class APITests(unittest.TestCase):
         self.env.start()
         core.initialize(self.db)
         accounts.initialize(self.db)
+        import password_reset
+        password_reset.initialize(self.db)
         with core.connect(self.db) as con:
             con.executescript((Path(core.__file__).parent / 'ops/booking-schema.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-outbox.sql').read_text())

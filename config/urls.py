@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/register', views.RegistrationView.as_view(), name='register'),
     path('api/login', views.AuthenticationView.as_view(), name='login'),
     path('api/logout', views.LogoutView.as_view(), name='logout'),
+    re_path(r'^api/password/(?P<action>code|verify|reset)$', views.PasswordView.as_view()),
     path('api/password', views.PasswordView.as_view(), name='password'),
     path('api/dashboard', views.DashboardView.as_view(), name='dashboard'),
     path('api/me', views.MeView.as_view(), name='me'),

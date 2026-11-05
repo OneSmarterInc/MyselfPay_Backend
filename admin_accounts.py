@@ -21,7 +21,7 @@ def delete_registered_user(member_id):
             row = cursor.fetchone()
             if row:
                 cursor.execute('DELETE FROM booking_phone_checks WHERE phone_hash=%s', [hashlib.sha256(row[0].encode()).hexdigest()])
-        for table in ('guest_usage', 'sessions', 'conversations', 'preferences', 'corrections', 'account_zip_codes', 'mobile_accounts', 'user_accounts'):
+        for table in ('password_reset_requests', 'guest_usage', 'sessions', 'conversations', 'preferences', 'corrections', 'account_zip_codes', 'mobile_accounts', 'user_accounts'):
             if table in tables:
                 cursor.execute(f'DELETE FROM {table} WHERE member_id=%s', [member_id])
         for key in ('account-disabled:' + member_id, 'booking-phone-owner:' + owner, 'booking-email-owner:' + owner):
