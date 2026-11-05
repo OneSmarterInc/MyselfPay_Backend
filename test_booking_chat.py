@@ -51,7 +51,7 @@ class ChatTests(unittest.TestCase):
             self.assertFalse(booking_chat.dispatch(self.db,item['id']))
             send.assert_not_called()
         with booking.connection(self.db) as con:
-            self.assertEqual(con.execute('SELECT state FROM booking_chat').fetchone()['state'],'queued')
+            self.assertEqual(con.execute('SELECT state FROM booking_chat').fetchone()['state'],'retired')
 
     def test_insecure_remote_origin_is_rejected(self):
         with patch.dict(os.environ,{'SECURE_MAIL_URL':'http://mail.example.test','SECURE_MAIL_ALLOW_LOOPBACK_HTTP':'true'}):

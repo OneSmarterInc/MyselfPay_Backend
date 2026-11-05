@@ -126,6 +126,8 @@ def dispatch(path, ident):
     with booking.connection(path, write=True) as con:
         row = booking.get_row(con, ident, lock=True)
         if booking.unpack(row).get('delivery_route') != 'center_secure_mail':
+            # Retire unsupported historical jobs so they cannot starve new center requests.
+            con.execute("UPDATE booking_chat SET state='retired',lease=NULL WHERE request_id=? AND state<>'ready'", (ident,))
             return False
         if row['status'] not in ('requested', 'voicemail', 'scheduled') or (row['status'] != 'scheduled' and row['link_expires'] <= time.time()):
             return False
