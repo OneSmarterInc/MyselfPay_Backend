@@ -16,6 +16,7 @@ import h3
 import accounts
 import core
 import spatial
+from cryptography.fernet import Fernet
 
 
 class SpatialTests(unittest.TestCase):
@@ -24,6 +25,8 @@ class SpatialTests(unittest.TestCase):
         self.path = os.getenv('SPATIAL_TEST_DATABASE_URL') or str(Path(self.temp.name) / 'spatial.db')
         self.settings = override_settings(DOMAIN_DATABASE=self.path, DEBUG=True, FRONTEND_ORIGIN='http://localhost:5173', ALLOWED_HOSTS=['testserver'])
         self.settings.enable()
+        self.env = patch.dict(os.environ, {'BOOKING_ENCRYPTION_KEY':Fernet.generate_key().decode()})
+        self.env.start()
         core.initialize(self.path)
         accounts.initialize(self.path)
         self.center = h3.latlng_to_cell(39.1, -84.5, 7)
@@ -47,6 +50,7 @@ class SpatialTests(unittest.TestCase):
         self.client = APIClient()
 
     def tearDown(self):
+        self.env.stop()
         self.settings.disable()
         self.temp.cleanup()
 
