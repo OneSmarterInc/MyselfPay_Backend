@@ -168,7 +168,7 @@ def options(path: Any, key: str, offer_id: str = '') -> dict:
         'name': center['name'], 'location': center.get('area', ''),
         'timezone': default_timezone(center),
         'price_text': price_text,
-        'delivery': booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
+        'delivery': ('enabled' if appointment_email(center) else 'unavailable') if booking_chat.enabled() else booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
         'is_test_center': bool(center.get('is_test_center')),
         'zones': ZONES, 'periods': PERIODS,
         'today': {z: datetime.now(ZoneInfo(z)).date().isoformat() for z in ZONES},
@@ -405,7 +405,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         # Recheck verification in the submission transaction.
         validated['phone'] = mobile_accounts.booking_phone_for(con, owner)
         center = resolve_center(con, center_key)
-        if booking_delivery.mode(appointment_email(center)) == 'unavailable':
+        if (booking_chat.enabled() and not appointment_email(center)) or (not booking_chat.enabled() and booking_delivery.mode(appointment_email(center)) == 'unavailable'):
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
         if con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE owner_hash=? AND created>?',
@@ -414,7 +414,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         ident = 'MSP-' + secrets.token_hex(8).upper()
         patient_token, clinic_token = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         payload = {**validated, 'clinic_id': center_key, 'clinic_name': center['name'],
-                   'delivery_route': 'center_email',
+                   'delivery_route': 'center_secure_mail' if booking_chat.enabled() else 'center_email',
                    'reply_phone': validated['phone'],
                    'price_text': price_text,
                    'location': center.get('area', ''), 'recipient': appointment_email(center),
@@ -423,7 +423,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
                    'patient_token': patient_token, 'clinic_token': clinic_token,
                    'clinic_url': f'{base_url}/#clinic/{ident}/{clinic_token}'}
         # Only server catalog values may become clinic routing destinations.
-        if not booking_delivery.enabled():
+        if not booking_chat.enabled() and not booking_delivery.enabled():
             suppress(notification(payload, ident))
         con.execute('''INSERT INTO booking_requests
             (id,owner_hash,idempotency_hash,input_hash,payload,patient_hash,clinic_hash,
@@ -437,10 +437,12 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute('INSERT INTO center_request_routes(request_id,clinic_id,email_hash) VALUES(?,?,?) ON CONFLICT(request_id) DO NOTHING',
                     (row['id'], center_key, digest(payload['recipient'].strip().lower())))
-        if booking_delivery.enabled():
+        if booking_chat.enabled():
+            booking_chat.enqueue(con, row)
+        elif booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
-    if booking_delivery.enabled():
+    if not booking_chat.enabled() and booking_delivery.enabled():
         booking_delivery.deliver(path, row['id'])
     with connection(path) as con:
         return receipt(get_row(con, row['id']), con)
@@ -453,7 +455,7 @@ def receipt(row: Any, con: Any = None) -> dict:
     if con is not None and p.get('delivery_route') != 'center_email':
         prior = con.execute('SELECT state FROM booking_chat WHERE request_id=?', (row['id'],)).fetchone()
         if prior:
-            delivery = 'sent' if prior['state'] == 'ready' else 'suppressed'
+            delivery = 'sent' if prior['state'] == 'ready' else 'queued'
     return { 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),

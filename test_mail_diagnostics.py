@@ -43,4 +43,4 @@ class MailDiagnosticsTests(unittest.TestCase):
             db.execute('UPDATE entries SET payload=? WHERE entry_key=?', (json.dumps(center), 'clinic-1'))
         self.assertTrue(self.fixture.create()['id'])
         with booking.connection(self.fixture.db) as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'], 1)

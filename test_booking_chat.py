@@ -34,18 +34,19 @@ class ChatTests(unittest.TestCase):
                     error.close()
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
-    def test_retired_patient_chat_never_queues_or_exposes_a_link(self):
-        self.assertFalse(booking_chat.enabled())
+    def test_center_secure_mail_queues_without_exposing_patient_link(self):
+        self.assertTrue(booking_chat.enabled())
         item=self.create()
         with booking.connection(self.db) as con:
             self.assertNotIn('secure_chat_url',booking.receipt(booking.get_row(con,item['id']),con))
-            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'],0)
+            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'],1)
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
     def test_historical_queued_handoff_is_not_dispatched(self):
         item=self.create()
         with booking.connection(self.db,write=True) as con:
-            con.execute('INSERT INTO booking_chat(request_id,created) VALUES(?,0)',(item['id'],))
+            row=booking.get_row(con,item['id']); payload=booking.unpack(row); payload['delivery_route']='center_email'
+            con.execute('UPDATE booking_requests SET payload=? WHERE id=?',(booking.pack(payload),item['id']))
         with patch('booking_chat.create_thread') as send:
             self.assertFalse(booking_chat.dispatch(self.db,item['id']))
             send.assert_not_called()
@@ -60,12 +61,13 @@ class ChatTests(unittest.TestCase):
     def test_mobile_request_notifies_only_the_center(self):
         with patch('booking_mail.send_message') as send,patch('booking_chat.create_thread') as chat:
             item=self.create()
-        self.assertEqual(item['delivery'],'sent')
+        self.assertEqual(item['delivery'],'queued')
         self.assertNotIn('secure_chat_url',item)
-        send.assert_called_once()
-        self.assertEqual(send.call_args.args[1],'appointments@example.test')
-        self.assertNotIn('patient@example.test',send.call_args.args[0].as_string())
+        send.assert_not_called()
         chat.assert_not_called()
+        with booking.connection(self.db) as con:
+            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_outbox').fetchone()['n'],0)
+            self.assertNotIn('patient_email',booking.unpack(booking.get_row(con,item['id'])))
 
     @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
     def test_historical_patient_confirmation_is_not_dispatched(self):
@@ -73,3 +75,26 @@ class ChatTests(unittest.TestCase):
         with patch('booking_chat.signed_request') as send:
             self.assertFalse(booking_chat.dispatch_confirmation(self.db,item['id']))
             send.assert_not_called()
+
+    @patch.dict(os.environ, {'SECURE_MAIL_ENABLED':'true'})
+    def test_center_only_payload_retry_and_approval(self):
+        import center_portal
+        item=self.create()
+        result={'id':'12345678-1234-1234-1234-123456789abc','provider_notification':'queued'}
+        with patch('booking_chat.signed_request',side_effect=[TimeoutError(),result]) as send:
+            self.assertFalse(booking_chat.dispatch(self.db,item['id']))
+            with booking.connection(self.db,write=True) as con:
+                con.execute('UPDATE booking_chat SET next_attempt=0')
+            self.assertTrue(booking_chat.dispatch(self.db,item['id']))
+            self.assertFalse(booking_chat.dispatch(self.db,item['id']))
+        payload=send.call_args.args[0]
+        self.assertEqual(payload['delivery_mode'],'provider_only')
+        self.assertEqual(payload['participants'],[{'email':'appointments@example.test','name':'Synthetic Imaging','role':'provider'}])
+        self.assertNotIn('patient@example.test',str(payload))
+        self.assertIn('/#clinic/',payload['provider_action']['url'])
+        self.assertNotIn('secure_chat_url',booking.patient(self.db,item['id'],item['tracking_token']))
+        token,csrf=self.login()
+        approved=center_portal.open_request(self.db,token,csrf,item['id'],'scheduled')
+        self.assertEqual(approved['status'],'scheduled')
+        with booking.connection(self.db) as con:
+            self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat_events').fetchone()['n'],0)

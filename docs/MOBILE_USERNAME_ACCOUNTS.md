@@ -8,8 +8,8 @@ This flow supersedes patient email registration, booking email verification and 
 - A real Twilio Verify approval is required before registration succeeds. Challenges are bound to the mobile number and consumed once when the account is saved. Failed or expired checks cannot create accounts.
 - Log in using username/password. Usernames are case insensitive and unique; a verified mobile number belongs to one account.
 - A logged-in, verified account can request times directly. The server takes the contact mobile from the saved account, rather than trusting booking form fields. No patient email or email proof is needed or saved in new requests.
-- New booking notifications go only to the center, through the existing SMTP outbox. The center must verify its own email before opening and approving the request. Patient and admin dashboards retain request status updates.
-- Patient and center request screens no longer offer secure chat. Historical Secure Mail jobs are retained for diagnostics but no longer dispatch, even when SECURE_MAIL_ENABLED was previously true. New mobile-only requests never create those jobs. Already delivered center request links still require center verification.
+- With SECURE_MAIL_ENABLED=true, new booking notifications go only to the center through the signed Secure Mail integration (provider-only thread). With the integration disabled, existing direct SMTP delivery remains available. The center must verify its own email before opening and approving the request. Patient and admin dashboards retain request status updates.
+- Patient screens never offer Secure Mail or replies. New Secure Mail jobs contain a single provider participant and an encrypted approval action; no patient email or mailbox is created. Historical two-party jobs remain undispatched. The center verifies its email in Secure Mail, then uses the approval action to update MySelfPay status. Already delivered center request links still require center verification.
 
 ## Existing accounts
 

@@ -37,14 +37,12 @@ def log_handoff_failure(operation: str, error: Exception) -> None:
 
 
 def enabled():
-    # Patient-email workflows are retired, including already queued handoffs.
-    # Keep historical records for diagnostics, but never dispatch new patient mail.
-    return False
+    return os.getenv('SECURE_MAIL_ENABLED', 'false').lower() == 'true'
 
 
 def enqueue(con, row):
     import booking
-    if booking.unpack(row).get('delivery_route') == 'center_email':
+    if booking.unpack(row).get('delivery_route') != 'center_secure_mail':
         return
     if enabled() and row['status'] in ('requested', 'voicemail', 'scheduled'):
         con.execute("INSERT INTO booking_chat(request_id,created) VALUES(?,?) ON CONFLICT(request_id) DO NOTHING", (row['id'], time.time()))
@@ -84,13 +82,14 @@ def create_thread(ident, payload):
     import booking
     slots = '\n'.join(f"- {slot['date']}: {booking.PERIODS[slot['period']]}" for slot in payload['slots'])
     body = (f"Appointment request: {ident}\nClinic: {payload['clinic_name']}\n"
-            f"Patient: {payload['first_name']}\nEmail: {payload['patient_email']}\nPhone: {payload.get('phone', '')}\n"
-            f"Service: {payload['service']}\nExam: {payload['exam']}\nContrast: {payload['contrast']}\n"
-            f"Requested slots ({payload['timezone']}):\n{slots}\nThe clinic confirms final scheduling with the patient.")
-    data = {'external_id': ident, 'subject': 'Appointment request - ' + payload['clinic_name'], 'body': body,
+            f"Patient: {payload['first_name']}\nPhone: {payload.get('phone', '')}\n"
+            f"Requested slots ({payload['timezone']}):\n{slots}\n"
+            f"Price: {payload['price_text']}\n"
+            "Open the clinic action to review and approve this request in MySelfPay.")
+    data = {'external_id': ident, 'subject': 'Appointment request - ' + payload['clinic_name'],
+            'body': body, 'delivery_mode': 'provider_only',
             'provider_action': {'url': payload['clinic_url'], 'expires_at': payload['clinic_link_expires']},
-            'participants': [{'email': payload['patient_email'], 'name': payload['first_name'], 'role': 'requester'},
-                             {'email': payload['recipient'], 'name': payload['clinic_name'], 'role': 'provider'}]}
+            'participants': [{'email': payload['recipient'], 'name': payload['clinic_name'], 'role': 'provider'}]}
     result = signed_request(data)
     if result.get('provider_notification') != 'queued':
         raise ValueError('Clinic notifications are suppressed in Secure Mail')
@@ -126,6 +125,8 @@ def dispatch(path, ident):
     lease = secrets.token_hex(16)
     with booking.connection(path, write=True) as con:
         row = booking.get_row(con, ident, lock=True)
+        if booking.unpack(row).get('delivery_route') != 'center_secure_mail':
+            return False
         if row['status'] not in ('requested', 'voicemail', 'scheduled') or (row['status'] != 'scheduled' and row['link_expires'] <= time.time()):
             return False
         claimed = con.execute("UPDATE booking_chat SET state='sending',lease=?,attempts=attempts+1,next_attempt=? WHERE request_id=? AND state<>'ready' AND next_attempt<=? RETURNING request_id", (lease,time.time()+120,ident,time.time())).fetchone()
@@ -147,59 +148,9 @@ def dispatch(path, ident):
 
 
 def enqueue_confirmation(con, row):
-    """Freeze a patient-only confirmation in the same transaction as approval."""
-    import booking
-    payload = booking.unpack(row)
-    base = payload['clinic_url'].split('/#clinic/', 1)[0]
-    tracking = base + '/#request/' + quote(row['id'], safe='') + '/' + quote(payload['patient_token'], safe='')
-    content = {
-        'body': (f"Your appointment request {row['id']} has been marked scheduled by "
-                 f"{payload['clinic_name']}.\nService: {payload['service']}\n"
-                 f"Exam: {payload['exam']}\nClinic: {payload['location']}\n"
-                 f"Clinic phone: {payload.get('phone_clinic', '')}\n"
-                 "Use the request link to review your booking. Confirm the exact appointment time with the clinic."),
-        'actions': [{'label': 'View my booking', 'url': tracking,
-                     'expires_at': (row['closed'] or time.time()) + 30 * 86400}],
-    }
-    con.execute(
-        "INSERT INTO booking_chat_events(request_id,event_id,payload,created) VALUES(?,?,?,?) "
-        "ON CONFLICT(request_id,event_id) DO NOTHING",
-        (row['id'], 'booking-confirmed-v1', booking.pack(content), time.time()),
-    )
+    """Patient Secure Mail notifications are retired; status stays in MySelfPay."""
+    return
 
 
 def dispatch_confirmation(path, ident):
-    import booking
-    if not enabled():
-        return False
-    lease = secrets.token_hex(16)
-    with booking.connection(path, write=True) as con:
-        row = booking.get_row(con, ident, lock=True)
-        if row['status'] != 'scheduled':
-            return False
-        chat = con.execute('SELECT state FROM booking_chat WHERE request_id=?', (ident,)).fetchone()
-        if not chat or chat['state'] != 'ready':
-            return False
-        claimed = con.execute(
-            "UPDATE booking_chat_events SET state='sending',lease=?,attempts=attempts+1,next_attempt=? "
-            "WHERE request_id=? AND event_id='booking-confirmed-v1' AND state<>'ready' "
-            "AND next_attempt<=? RETURNING payload,event_id",
-            (lease, time.time()+120, ident, time.time()),
-        ).fetchone()
-        if not claimed:
-            return False
-        content = booking.unpack(claimed)
-    try:
-        result = signed_request({**content, 'event_type': 'booking_confirmed',
-                                 'external_id': ident, 'event_id': claimed['event_id']})
-        str(uuid.UUID(result['id']))
-    except Exception as error:
-        log_handoff_failure('booking_confirmed', error)
-        with booking.connection(path, write=True) as con:
-            con.execute("UPDATE booking_chat_events SET state='retry',next_attempt=? WHERE request_id=? AND lease=?",
-                        (time.time()+60, ident, lease))
-        return False
-    with booking.connection(path, write=True) as con:
-        con.execute("UPDATE booking_chat_events SET state='ready',lease=NULL WHERE request_id=? AND lease=?",
-                    (ident, lease))
-    return True
+    return False
