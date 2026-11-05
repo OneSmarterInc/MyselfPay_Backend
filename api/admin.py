@@ -13,6 +13,7 @@ from django.urls import reverse, path
 from django.template.response import TemplateResponse
 from django.http import Http404
 import admin_bookings
+import admin_accounts
 import booking
 import sqlite3
 import psycopg
@@ -122,7 +123,22 @@ class PortalAccountAdmin(admin.ModelAdmin):
     actions = ('suspend_accounts', 'restore_accounts')
 
     def has_add_permission(self, request): return False
-    def has_delete_permission(self, request, obj=None): return False
+    def has_delete_permission(self, request, obj=None):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        actions.pop('delete_selected', None)  # Confirm one account at a time.
+        return actions
+
+    def get_deleted_objects(self, objs, request):
+        deleted, counts, permissions, protected = super().get_deleted_objects(objs, request)
+        deleted.append('Their profile, verified mobile identity, sessions, saved searches and owned appointment requests. Center notifications and private request links will also be removed. This cannot be undone.')
+        return deleted, counts, permissions, protected
+
+    def delete_model(self, request, obj):
+        admin_accounts.delete_registered_user(obj.member_id)
+
 
     @admin.display(description='Username')
     def username(self, obj):
