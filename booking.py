@@ -1,7 +1,7 @@
 """Email-verified appointment requests with encrypted details.
 
-Patient and clinic verification use SMTP. Clinic notifications use an explicit
-delivery switch and committed outbox. Recipients come from the catalog only.
+Clinic verification uses SMTP. Notifications use an explicit delivery switch
+and committed outbox. Recipients come from the catalog or approved support.
 """
 from __future__ import annotations
 
@@ -106,6 +106,11 @@ def appointment_email(center: dict) -> str:
     return address if len(address) <= 254 and EMAIL.fullmatch(address) else ''
 
 
+def request_recipient(center: dict) -> str:
+    """Use a scheduling contact or the operator-approved support mailbox."""
+    return appointment_email(center) or 'patientcare@onesmarterhealthweb.com'
+
+
 def resolve_center(con: Any, key: str) -> dict:
     row = con.execute(
         'SELECT payload FROM entries WHERE batch_id=? AND entry_key=?',
@@ -168,7 +173,9 @@ def options(path: Any, key: str, offer_id: str = '') -> dict:
         'name': center['name'], 'location': center.get('area', ''),
         'timezone': default_timezone(center),
         'price_text': price_text,
-        'delivery': ('enabled' if appointment_email(center) else 'unavailable') if booking_chat.enabled() else booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
+        'delivery': 'enabled' if booking_chat.enabled() else booking_delivery.mode(request_recipient(center)),
+        'recipient_available': True,
+        'notification_target': 'center' if appointment_email(center) else 'support',
         'is_test_center': bool(center.get('is_test_center')),
         'zones': ZONES, 'periods': PERIODS,
         'today': {z: datetime.now(ZoneInfo(z)).date().isoformat() for z in ZONES},
@@ -251,7 +258,9 @@ def notification(payload: dict, ident: str) -> EmailMessage:
     slots = [datetime.strptime(slot['date'], '%Y-%m-%d').strftime('%a, %d %b %Y') + ' · ' + PERIODS[slot['period']] for slot in payload['slots']]
     slot_html = ''.join('<div style="padding:12px 14px;margin:8px 0;background:#f5f5f4;border-radius:8px;font-size:15px;line-height:1.6">' + escape(slot) + '</div>' for slot in slots)
     request_url = payload['clinic_url']
-    description = 'MySelfPay connects patients with imaging centers for self-pay appointment requests.'
+    description = ('MySelfPay Patient Care: contact this center to confirm availability before approving the request.'
+                   if payload.get('notification_target') == 'support' else
+                   'MySelfPay connects patients with imaging centers for self-pay appointment requests.')
     message.set_content('MySelfPay\nPreferred appointment times (' + zone + '):\n' + '\n'.join(slots)
                         + '\n\nOpen request: ' + request_url + '\n\n' + description + '\n')
     message.add_alternative(f'''<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
@@ -405,7 +414,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         # Recheck verification in the submission transaction.
         validated['phone'] = mobile_accounts.booking_phone_for(con, owner)
         center = resolve_center(con, center_key)
-        if (booking_chat.enabled() and not appointment_email(center)) or (not booking_chat.enabled() and booking_delivery.mode(appointment_email(center)) == 'unavailable'):
+        recipient = request_recipient(center)
+        if not booking_chat.enabled() and booking_delivery.mode(recipient) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
         if con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE owner_hash=? AND created>?',
@@ -417,7 +427,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
                    'delivery_route': 'center_secure_mail' if booking_chat.enabled() else 'center_email',
                    'reply_phone': validated['phone'],
                    'price_text': price_text,
-                   'location': center.get('area', ''), 'recipient': appointment_email(center),
+                   'location': center.get('area', ''), 'recipient': recipient,
+                   'notification_target': 'center' if appointment_email(center) else 'support',
                    'phone_clinic': center.get('phone', ''),
                    'is_test_center': bool(center.get('is_test_center')),
                    'patient_token': patient_token, 'clinic_token': clinic_token,
@@ -458,6 +469,7 @@ def receipt(row: Any, con: Any = None) -> dict:
             delivery = 'sent' if prior['state'] == 'ready' else 'queued'
     return { 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
+            'notification_target': p.get('notification_target', 'center'),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],

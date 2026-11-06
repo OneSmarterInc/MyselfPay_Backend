@@ -81,15 +81,18 @@ class NoRedirect(HTTPRedirectHandler):
 def create_thread(ident, payload):
     import booking
     slots = '\n'.join(f"- {slot['date']}: {booking.PERIODS[slot['period']]}" for slot in payload['slots'])
-    body = (f"Appointment request: {ident}\nClinic: {payload['clinic_name']}\n"
+    support = payload.get('notification_target') == 'support'
+    body = (("Support follow-up: this center has no approved scheduling email. Contact the center to arrange the requested time.\n" if support else '')
+            + f"Appointment request: {ident}\nClinic: {payload['clinic_name']}\n"
             f"Patient: {payload['first_name']}\nPhone: {payload.get('phone', '')}\n"
             f"Requested slots ({payload['timezone']}):\n{slots}\n"
             f"Price: {payload['price_text']}\n"
-            "Open the clinic action to review and approve this request in MySelfPay.")
+            + ("Open the request in MySelfPay. Approve only after confirming availability with the center."
+               if support else "Open the clinic action to review and approve this request in MySelfPay."))
     data = {'external_id': ident, 'subject': 'Appointment request - ' + payload['clinic_name'],
             'body': body, 'delivery_mode': 'provider_only',
             'provider_action': {'url': payload['clinic_url'], 'expires_at': payload['clinic_link_expires']},
-            'participants': [{'email': payload['recipient'], 'name': payload['clinic_name'], 'role': 'provider'}]}
+            'participants': [{'email': payload['recipient'], 'name': 'MySelfPay Patient Care' if support else payload['clinic_name'], 'role': 'provider'}]}
     result = signed_request(data)
     if result.get('provider_notification') != 'queued':
         raise ValueError('Clinic notifications are suppressed in Secure Mail')
