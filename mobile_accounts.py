@@ -8,6 +8,7 @@ import accounts
 import booking
 import booking_phone
 import core
+import us_phone
 
 SCHEMA = '''CREATE TABLE IF NOT EXISTS mobile_accounts (
  member_id TEXT PRIMARY KEY REFERENCES members(id),
@@ -32,7 +33,8 @@ def profile(db, member):
     member.pop('email', None)
     row = db.execute('SELECT username,phone,verified_at FROM mobile_accounts WHERE member_id=?', (member['id'],)).fetchone()
     member.update(username=row['username'] if row and not row['username'].startswith('otp:') else '', phone=row['phone'] if row else '',
-                  mobile_verified=bool(row), setup_required=not bool(row))
+                  mobile_verified=bool(row), setup_required=not bool(row),
+                  booking_eligible=bool(row) and us_phone.eligible(row['phone']))
     return member
 
 
@@ -137,7 +139,7 @@ def booking_phone_for(db, ident):
         raise booking.BookingError('Verify your mobile number before requesting a time.', 403)
     if disabled(db, ident):
         raise booking.BookingError('Account unavailable.', 403)
-    return row['phone']
+    return us_phone.normalize(row['phone'])
 
 
 def legacy_candidates(db, phone):

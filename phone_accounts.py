@@ -8,12 +8,13 @@ import booking
 import booking_phone
 import core
 import mobile_accounts
+import us_phone
 
 
 def intent(data):
     value = data.get('intent')
-    if value not in ('register', 'login'):
-        raise accounts.AccountError('Choose registration or login.')
+    if value not in ('register', 'login', 'request'):
+        raise accounts.AccountError('Choose a valid mobile verification flow.')
     return value
 
 
@@ -43,7 +44,7 @@ def identity(db, phone):
 
 def issue(path, data):
     action = intent(data)
-    phone = booking_phone.phone_number(data.get('phone'))
+    phone = us_phone.normalize(data.get('phone')) if action == 'request' else booking_phone.phone_number(data.get('phone'))
     if action == 'register':
         first_name(data.get('name'))
     with core.connect(path) as db:
@@ -56,12 +57,12 @@ def issue(path, data):
             raise accounts.AccountError('This mobile number is not registered. Create an account first.', 404)
     challenge = secrets.token_urlsafe(32)
     result = booking_phone.request_code(path, challenge_owner({'intent':action, 'challenge':challenge}), phone)
-    return {**result, 'challenge':challenge}
+    return {**result, 'challenge':challenge, **({'phone':phone} if action == 'request' else {})}
 
 
 def finish(path, data, previous_token=''):
     action = intent(data)
-    phone = booking_phone.phone_number(data.get('phone'))
+    phone = us_phone.normalize(data.get('phone')) if action == 'request' else booking_phone.phone_number(data.get('phone'))
     name = first_name(data.get('name')) if action == 'register' else ''
     owner = challenge_owner(data)
     checked = booking_phone.verify_code(path, owner, data.get('verification_id'), data.get('code'))
@@ -72,7 +73,8 @@ def finish(path, data, previous_token=''):
         ident, legacy = identity(db, phone)
         if ident and mobile_accounts.disabled(db, ident):
             raise accounts.AccountError('Account unavailable. Contact support.', 403)
-        if action == 'register':
+        created = action == 'register' or (action == 'request' and not ident)
+        if created:
             if ident:
                 raise accounts.AccountError('This mobile number is already registered. Please log in.', 409)
             ident, salt = str(uuid.uuid4()), secrets.token_hex(16)
@@ -84,7 +86,7 @@ def finish(path, data, previous_token=''):
             db.execute('INSERT INTO account_zip_codes(member_id,zip_code) VALUES(?,?)', (ident,''))
         elif not ident:
             raise accounts.AccountError('Account unavailable. Create an account first.', 404)
-        if action == 'register' or legacy:
+        if created or legacy:
             internal_name = 'otp:' + uuid.uuid4().hex
             db.execute('INSERT INTO mobile_accounts VALUES(?,?,?,?,?)', (ident,internal_name,internal_name,phone,time.time()))
             if legacy:

@@ -10,3 +10,4 @@ cryptography>=46,<51
 python-dotenv>=1.2,<2
 tzdata>=2025.2
 h3>=4.5,<5
+phonenumberslite>=9.0.43,<10

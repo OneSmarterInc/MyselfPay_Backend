@@ -55,7 +55,7 @@ class APITests(unittest.TestCase):
             fixture_email = data.pop('email')
             data['username'] = fixture_email.split('@')[0]
             if route == 'register':
-                phone = '+1555' + str(int(hashlib.sha256(fixture_email.encode()).hexdigest()[:8],16)).zfill(10)[-7:]
+                phone = '+1614555' + str(int(hashlib.sha256(fixture_email.encode()).hexdigest()[:8],16)).zfill(4)[-4:]
                 data.update(proof(self.db, phone))
         response = (client or self.client).post('/api/' + route, json.dumps(data or {}), content_type='application/json', HTTP_ORIGIN=origin, HTTP_X_CSRF_TOKEN=self.csrf if csrf is None else csrf)
         value = response.json()

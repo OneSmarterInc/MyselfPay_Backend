@@ -134,7 +134,7 @@ class SlotSerializer(serializers.Serializer):
 
 class BookingCreateSerializer(BookingOptionsSerializer):
     idempotency_key = serializers.CharField(max_length=80)
-    first_name = serializers.CharField(max_length=80)
+    first_name = serializers.CharField(max_length=80, allow_blank=True, default='')
     phone = serializers.CharField(max_length=30, allow_blank=True, default='')
     timezone = serializers.ChoiceField(choices=tuple(booking.ZONES), required=False)
     service = serializers.ChoiceField(choices=('MRI', 'CT', 'Other imaging', 'Please contact me'))

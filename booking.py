@@ -192,7 +192,13 @@ def text_field(data: dict, field: str, limit: int) -> str:
 
 
 def validate(data: dict) -> dict:
-    name = text_field(data, 'first_name', 80)
+    name = data.get('first_name', '')
+    if name:
+        name = text_field(data, 'first_name', 80)
+    elif name is None:
+        name = ''
+    if not isinstance(name, str):
+        raise BookingError('Enter a valid first name or leave it blank.')
     phone = text_field(data, 'phone', 30) if data.get('phone') else ''
     if phone and (not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 8 <= len(re.sub(r'\D', '', phone)) <= 15):
         raise BookingError('Enter a valid phone number, including area code.')
