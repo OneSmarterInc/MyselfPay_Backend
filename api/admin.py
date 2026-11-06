@@ -37,7 +37,11 @@ class SelfPayAdminSite(AdminSite):
         return bool(request.user.is_active and request.user.is_superuser)
 
     def get_urls(self):
-        return [path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
+        import admin_mailer
+        return [path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
+                path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
+                path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
+                path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
 
     def requests_view(self, request):

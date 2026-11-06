@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -93,3 +94,80 @@ class SMTPConfiguration(models.Model):
 
     def __str__(self):
         return 'MySelfPay email settings'
+
+
+class MailerMailbox(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    enabled = models.BooleanField(default=False)
+    host = models.CharField(max_length=253, default='imap.ionos.com')
+    port = models.PositiveIntegerField(default=993)
+    username = models.EmailField(blank=True, default='patientcare@onesmarterhealthweb.com')
+    password_encrypted = models.TextField(blank=True, editable=False)
+    folder = models.CharField(max_length=100, default='INBOX')
+    reply_to = models.EmailField(blank=True, default='patientcare@onesmarterhealthweb.com')
+    cursor_identity = models.CharField(max_length=64, blank=True, editable=False)
+    uid_validity = models.CharField(max_length=100, blank=True, editable=False)
+    last_uid = models.PositiveBigIntegerField(default=0, editable=False)
+    last_sync = models.DateTimeField(null=True, editable=False)
+    sync_status = models.CharField(max_length=200, blank=True, editable=False)
+    sync_requested = models.BooleanField(default=False, editable=False)
+
+
+class MailerContact(models.Model):
+    email = models.EmailField(unique=True)
+    centers = models.JSONField(default=list)
+    imported_at = models.DateTimeField(db_index=True)
+    active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ['-imported_at', 'email']
+
+
+class MailerTemplate(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class MailerCampaign(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    selection = models.CharField(max_length=40)
+    reply_to = models.EmailField()
+    created_by = models.CharField(max_length=150)
+    created_at = models.DateTimeField(auto_now_add=True)
+    queued_at = models.DateTimeField(null=True)
+    state = models.CharField(max_length=20, default='draft', db_index=True)
+
+
+class MailerMessage(models.Model):
+    campaign = models.ForeignKey(MailerCampaign, on_delete=models.CASCADE, related_name='messages')
+    contact = models.ForeignKey(MailerContact, on_delete=models.PROTECT, related_name='outbound')
+    email = models.EmailField()
+    center_names = models.TextField()
+    position = models.PositiveIntegerField()
+    message_id = models.CharField(max_length=254, unique=True)
+    state = models.CharField(max_length=20, default='draft', db_index=True)
+    sent_at = models.DateTimeField(null=True)
+    attempted_at = models.DateTimeField(null=True)
+    error = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['campaign', 'email'], name='mailer_campaign_email_unique')]
+
+
+class MailerReply(models.Model):
+    message = models.ForeignKey(MailerMessage, on_delete=models.CASCADE, related_name='replies')
+    identity = models.CharField(max_length=64, unique=True)
+    sender = models.EmailField()
+    subject = models.CharField(max_length=500)
+    body_encrypted = models.TextField()
+    received_at = models.DateTimeField()
+
+
+class MailerLease(models.Model):
+    name = models.CharField(max_length=40, primary_key=True)
+    token = models.CharField(max_length=64, blank=True)
+    expires = models.DateTimeField()
