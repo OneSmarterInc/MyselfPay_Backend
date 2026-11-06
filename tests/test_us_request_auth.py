@@ -30,6 +30,7 @@ class USRequestTests(unittest.TestCase):
         self.assertEqual(result.status_code, 200, result.content)
         ident = result.json()['member']['id']
         self.assertTrue(result.json()['member']['booking_eligible'])
+        self.assertEqual(result.json()['member']['username'], '+16145550142')
         self.assertNotIn('email', result.json()['member'])
         self.post('logout'); self.csrf=''
         again = self.finish(self.issue('+1 614 555 0142'))

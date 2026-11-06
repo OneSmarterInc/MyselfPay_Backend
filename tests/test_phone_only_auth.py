@@ -32,7 +32,7 @@ class PhoneOnlyTests(unittest.TestCase):
         self.assertEqual(member['phone'],data['phone'])
         self.assertTrue(member['mobile_verified'])
         self.assertNotIn('email',member)
-        self.assertEqual(member['username'],'')
+        self.assertEqual(member['username'],data['phone'])
         with core.connect(self.db) as db:
             self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM members').fetchone()['n'],1)
             self.assertTrue(db.execute('SELECT password_hash FROM members').fetchone()['password_hash'].startswith('otp-only$'))

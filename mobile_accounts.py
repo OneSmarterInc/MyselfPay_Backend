@@ -32,7 +32,7 @@ def profile(db, member):
     member = dict(member)
     member.pop('email', None)
     row = db.execute('SELECT username,phone,verified_at FROM mobile_accounts WHERE member_id=?', (member['id'],)).fetchone()
-    member.update(username=row['username'] if row and not row['username'].startswith('otp:') else '', phone=row['phone'] if row else '',
+    member.update(username=(row['phone'] if row['username'].startswith('otp:') else row['username']) if row else '', phone=row['phone'] if row else '',
                   mobile_verified=bool(row), setup_required=not bool(row),
                   booking_eligible=bool(row) and us_phone.eligible(row['phone']))
     return member
