@@ -94,7 +94,7 @@ class ChatTests(unittest.TestCase):
         self.assertIn('/#clinic/',payload['provider_action']['url'])
         self.assertNotIn('secure_chat_url',booking.patient(self.db,item['id'],item['tracking_token']))
         token,csrf=self.login()
-        approved=center_portal.open_request(self.db,token,csrf,item['id'],'scheduled')
+        approved=center_portal.open_request(self.db,token,csrf,item['id'],'scheduled',{'preferred_index':0})
         self.assertEqual(approved['status'],'scheduled')
         with booking.connection(self.db) as con:
             self.assertEqual(con.execute('SELECT COUNT(*) AS n FROM booking_chat_events').fetchone()['n'],0)

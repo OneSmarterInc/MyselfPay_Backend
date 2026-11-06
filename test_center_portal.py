@@ -57,8 +57,8 @@ class CenterPortalTests(unittest.TestCase):
         other_token, other_csrf = self.login('other@example.test')
         self.assertEqual(center_portal.dashboard(self.db, other_token)['requests'], [])
         with self.assertRaises(booking.BookingError):
-            center_portal.open_request(self.db, other_token, other_csrf, result['id'], 'scheduled')
-        approved = center_portal.open_request(self.db, token, csrf, result['id'], 'scheduled')
+            center_portal.open_request(self.db, other_token, other_csrf, result['id'], 'scheduled', {'preferred_index':0})
+        approved = center_portal.open_request(self.db, token, csrf, result['id'], 'scheduled', {'preferred_index':0})
         self.assertEqual(approved['status'], 'scheduled')
         self.assertTrue(approved['contact_hidden'])
         self.assertEqual(booking.patient(self.db, result['id'], result['tracking_token'])['status'], 'scheduled')

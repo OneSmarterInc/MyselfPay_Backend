@@ -153,13 +153,14 @@ class APITests(unittest.TestCase):
         self.assertEqual(issued.status_code,200,issued.content)
         checked=self.post('booking/verify',{'id':request_id,'token':payload['clinic_token'],'code':send.call_args.args[2]})
         self.assertEqual(checked.status_code,200,checked.content)
-        approved=self.post('booking/status',{'id':request_id,'session':checked.json()['session'],'status':'scheduled'})
+        approved=self.post('booking/status',{'id':request_id,'session':checked.json()['session'],'status':'scheduled','appointment':{'preferred_index':0}})
         self.assertEqual(approved.status_code,200,approved.content)
         dashboard=self.client.get('/api/dashboard?filter=approved').json()
         self.assertEqual(dashboard['total'],1)
         self.assertNotIn('email',dashboard['profile'])
         self.assertNotIn('contact_email',dashboard['requests'][0])
         self.assertIsNotNone(dashboard['requests'][0]['approved_at'])
+        self.assertEqual(dashboard['requests'][0]['approved_slot']['period'], 'morning')
 
     def test_bad_payload_limits_and_secure_production_cookie(self):
         response = self.client.post('/api/guest', '[]', content_type='application/json', HTTP_ORIGIN='http://localhost:5173')

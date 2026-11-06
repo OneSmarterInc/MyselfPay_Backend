@@ -91,7 +91,7 @@ class LiveDeliveryTests(unittest.TestCase):
         session = booking.verify_code(self.fixture.db, result['id'], token, code)['session']
         details = booking.clinic_details(self.fixture.db, result['id'], session)
         self.assertNotIn('patient_email', details)
-        closed = booking.clinic_details(self.fixture.db, result['id'], session, 'scheduled')
+        closed = booking.clinic_details(self.fixture.db, result['id'], session, 'scheduled', {'preferred_index':0})
         self.assertNotIn('patient_email',closed)
         self.assertNotIn('phone',closed)
         self.assertNotIn('first_name',closed)

@@ -88,7 +88,7 @@ class BookingTests(unittest.TestCase):
         self.assertEqual(details['phone'], self.data['phone'])
         self.assertEqual(len(details['slots']), 3)
         booking.clinic_details(self.db, request['id'], session, 'voicemail')
-        booking.clinic_details(self.db, request['id'], session, 'scheduled')
+        booking.clinic_details(self.db, request['id'], session, 'scheduled', {'preferred_index':0})
         result = booking.patient(self.db, request['id'], request['tracking_token'])
         self.assertEqual(result['status'], 'scheduled')
         self.assertNotIn('phone', result)

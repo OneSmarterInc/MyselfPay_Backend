@@ -52,7 +52,7 @@ class SupportRoutingTests(unittest.TestCase):
             self.assertIn('Synthetic no-contact center', data['body'])
             direct_mail.assert_not_called()
         session = self.fixture.authorize_clinic(item)
-        booking.clinic_details(self.fixture.db, item['id'], session, 'scheduled')
+        booking.clinic_details(self.fixture.db, item['id'], session, 'scheduled', {'preferred_index':0})
         receipt = booking.patient(self.fixture.db, item['id'], item['tracking_token'])
         self.assertEqual(receipt['status'], 'scheduled')
 

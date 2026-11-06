@@ -117,7 +117,7 @@ class CenterPortalView(ResourceView):
                                 httponly=True, samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
             return response
         if action == 'request':
-            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status')))
+            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment')))
         if action == 'logout':
             with booking.connection(database(), write=True) as db:
                 center_portal.identity(db, token, csrf)
@@ -395,7 +395,7 @@ class BookingView(ResourceView):
         elif action == 'verify':
             result = booking.verify_code(db, data['id'], data['token'], data['code'])
         elif action in ('details', 'status'):
-            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'))
+            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'), data.get('appointment'))
         else:
             result = booking.lock_session(db, data['id'], data['session'])
         return Response(result, status=201 if action == 'create' else 200)

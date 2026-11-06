@@ -25,6 +25,7 @@ class CenterVerifySerializer(serializers.Serializer):
 class CenterRequestSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
+    appointment = serializers.JSONField(required=False)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -160,3 +161,4 @@ class ClinicSessionSerializer(serializers.Serializer):
 
 class ClinicStatusSerializer(ClinicSessionSerializer):
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'))
+    appointment = serializers.JSONField(required=False)

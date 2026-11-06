@@ -194,7 +194,7 @@ class AdminTests(TransactionTestCase):
         try:
             item=fixture.create()
             session=fixture.authorize_clinic(item)
-            booking.clinic_details(fixture.db,item['id'],session,'scheduled')
+            booking.clinic_details(fixture.db,item['id'],session,'scheduled',{'preferred_index':0})
             with override_settings(DOMAIN_DATABASE=str(fixture.db)):
                 dashboard=self.client.get('/admin/')
                 self.assertContains(dashboard,'Approved requests')

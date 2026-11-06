@@ -476,6 +476,7 @@ def receipt(row: Any, con: Any = None) -> dict:
     return { 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
             'notification_target': p.get('notification_target', 'center'),
+            'approved_slot': p.get('approved_slot'),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],
@@ -572,7 +573,7 @@ def verify_code(path: Any, ident: str, token: str, code: str) -> dict:
     return {'session': session, 'expires_at': now + 900}
 
 
-def clinic_details(path: Any, ident: str, session: str, status: str | None = None) -> dict:
+def clinic_details(path: Any, ident: str, session: str, status: str | None = None, appointment=None) -> dict:
     with connection(path, write=status is not None) as con:
         row = get_row(con, ident, lock=status is not None)
         authorize(row, session, 'clinic_session_hash')
@@ -581,13 +582,8 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
         if row['link_expires'] <= time.time():
             raise BookingError('This request link has expired.', 410)
         if status is not None:
-            if status not in ('scheduled', 'voicemail', 'unable'):
-                raise BookingError('Choose a valid outcome.')
-            if row['status'] in TERMINAL and row['status'] != status:
-                raise BookingError('This request is already closed.', 409)
-            closed = row['closed'] or (time.time() if status in TERMINAL else None)
-            con.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
-            row = get_row(con, ident)
+            import appointment_slots
+            row = appointment_slots.update(con, row, status, appointment)
             booking_chat.enqueue(con, row)
         p = unpack(row)
         result = receipt(row, con)
