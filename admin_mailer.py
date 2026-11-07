@@ -278,7 +278,7 @@ If you would like a quick walkthrough, I am glad to set up 15 minutes with you. 
 Thank you,
 MySelfPay Team,
 One Smarter, Inc.
-patientcare@onesmarterhealthweb.com
+myselfpay@onesmarter.com
 
 {{mailing_address}}
 To stop receiving these messages, use this link: {{opt_out_link}}"""
