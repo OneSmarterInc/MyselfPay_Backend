@@ -266,7 +266,7 @@ class MailerTests(TestCase):
         message=campaign.messages.get()
         self.assertEqual(admin_mailer.personalize(campaign.subject,message), 'Synthetic center 1 is now searchable on MySelfPay')
         body=admin_mailer.personalize(campaign.body,message)
-        for value in ('Dayton, OH','STE 223','/#center','/api/mailer/unsubscribe/'):
+        for value in ('Dayton, OH','STE 223','/#center','/api/mailer/unsubscribe?'):
             self.assertIn(value,body)
         self.assertNotIn('{{',body)
         item.city='Changed';item.save()
@@ -296,7 +296,7 @@ class MailerTests(TestCase):
         self.assertNotIn(item.pk, admin_mailer.mailer_contacts().values_list('pk',flat=True))
         with patch('booking_mail.send_message') as send:
             admin_mailer.send_pending();send.assert_not_called()
-        self.assertEqual(client.get(url+'bad').status_code,404)
+        self.assertEqual(client.get(url+'bad').status_code,400)
         self.assertContains(client.post(url,{'csrfmiddlewaretoken':csrf},HTTP_ORIGIN='http://testserver'),'You are unsubscribed')
         admin_mailer.suppress_email(item.email)
         self.assertEqual(MailerSuppression.objects.count(),1)
@@ -354,3 +354,31 @@ class MailerTests(TestCase):
         self.assertIn('>Unsubscribe</a>',html)
         self.assertIn('href="'+context['claim_link']+'"',html)
         self.assertNotIn('>'+context['opt_out_link'],html)
+
+    def test_select_all_filtered_includes_every_page_and_respects_suppression(self):
+        from api.models import MailerSuppression
+        blocked=MailerContact.objects.first()
+        admin_mailer.suppress_email(blocked.email)
+        response=self.client.post('/admin/mailer/',{**self.data,'action':'preview','email_filter':'@example.test','audience_filter':'never','select_all_filtered':'1','selection':''})
+        self.assertEqual(response.status_code,302)
+        campaign=MailerCampaign.objects.get()
+        self.assertEqual(campaign.messages.count(),204)
+        self.assertFalse(campaign.messages.filter(email=blocked.email).exists())
+        self.assertEqual(campaign.selection,'All 204 matching centers')
+        response=self.client.get('/admin/mailer/',{'audience':'never','all_matching':'1','page':'2'})
+        self.assertTrue(response.context['all_matching'])
+        self.assertContains(response,'Select all 204 matching centers across every page')
+        self.assertContains(response,'all_matching=1&amp;page=3')
+
+    def test_query_unsubscribe_link_and_legacy_path_with_or_without_slash(self):
+        from django.core import signing
+        from urllib.parse import urlsplit
+        campaign=self.preview('1');item=campaign.messages.get()
+        url=admin_mailer.variables(item)['opt_out_link']
+        local=urlsplit(url).path+'?'+urlsplit(url).query
+        self.assertContains(self.client.get(local),'Email preferences')
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        for path in ('/api/mailer/unsubscribe/'+token, '/api/mailer/unsubscribe/'+token+'/'):
+            self.assertContains(self.client.get(path),'Email preferences')
+        self.assertEqual(self.client.get('/api/mailer/unsubscribe?token=invalid').status_code,400)
+        self.assertFalse(__import__('api.models',fromlist=['MailerSuppression']).MailerSuppression.objects.exists())

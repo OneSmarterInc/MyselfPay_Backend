@@ -186,3 +186,21 @@ sudo ./venv/bin/python manage.py check
 sudo systemctl restart myselfpay-backend.service
 sudo systemctl start myselfpay-mailer.service
 ```
+
+
+## Complete filtered selection and unsubscribe routing
+
+Select all matching centers selects the entire filtered queryset, across every
+page, not just the 50 visible rows. The selected total appears above the table
+and beside the preview action. Pagination retains complete-filter selection.
+Changing a row or the page checkbox returns to individual page selection. Count
+and range inputs show their selected count too. The server recomputes and freezes
+eligible recipients at preview, excluding unsubscribed addresses; no email sends
+until confirmation.
+
+New unsubscribe URLs use `/api/mailer/unsubscribe?token=...` to avoid frontend
+trailing-slash canonicalization. Previously sent path-token links remain supported
+with or without a final slash. Explicit Vercel rewrites cover both formats; deploy
+the frontend routing commit as well as the backend. Invalid links return a branded
+400 confirmation/help page rather than a generic proxy 404. GET never changes
+preferences; signed token validation and CSRF-protected confirmation still apply.

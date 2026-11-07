@@ -10,6 +10,7 @@ import json
 import re
 import secrets
 import ssl
+from urllib.parse import urlencode
 
 from django import forms
 from django.conf import settings
@@ -42,7 +43,7 @@ def mailer_view(site, request):
     audience = request.POST.get('audience_filter', 'all') if request.POST.get('action') == 'preview' else request.GET.get('audience', 'all')
     audience = audience if audience in ('all', 'never', 'no_reply', 'unsubscribed') else 'all'
     email_search = (request.POST.get('email_filter', '') if request.POST.get('action') == 'preview' else request.GET.get('email', '')).strip()[:254]
-    compose, mailbox_form = ComposeForm(initial={'email_filter': email_search, 'audience_filter': audience, 'subject':OUTREACH_SUBJECT, 'body':OUTREACH_BODY}), MailboxForm(instance=mailbox)
+    compose, mailbox_form = ComposeForm(initial={'email_filter': email_search, 'audience_filter': audience, 'subject':OUTREACH_SUBJECT, 'body':OUTREACH_BODY, 'select_all_filtered':request.GET.get('all_matching') == '1'}), MailboxForm(instance=mailbox)
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'disable':
@@ -93,7 +94,7 @@ def mailer_view(site, request):
             for n, contact in enumerate(page)]
     return TemplateResponse(request, 'admin/mailer.html', {**site.each_context(request), 'title': 'Mailer',
         'compose': compose, 'mailbox_form': mailbox_form, 'mailbox': mailbox, 'rows': rows, 'page': page,
-        'total': contacts.count(), 'email_search': email_search, 'audience': audience, 'suppression_count':MailerSuppression.objects.count(), 'templates': MailerTemplate.objects.order_by('name'),
+        'total': contacts.count(), 'email_search': email_search, 'audience': audience, 'suppression_count':MailerSuppression.objects.count(), 'all_matching': (request.POST.get('select_all_filtered') in ('1','on','true') if request.method == 'POST' else request.GET.get('all_matching') == '1'), 'templates': MailerTemplate.objects.order_by('name'),
         'campaigns': MailerCampaign.objects.annotate(recipient_count=Count('messages')).order_by('-created_at')[:10]})
 
 
@@ -189,6 +190,7 @@ def selection_range(value, total):
 
 
 class ComposeForm(forms.Form):
+    select_all_filtered = forms.BooleanField(required=False, widget=forms.HiddenInput)
     audience_filter = forms.ChoiceField(choices=[('all','All enabled centers'),('never','Never emailed'),('no_reply','Emailed, no reply'),('unsubscribed','Unsubscribed / disabled')], initial='all', required=False, widget=forms.HiddenInput)
     email_filter = forms.CharField(max_length=254, required=False, widget=forms.HiddenInput)
     selection = forms.CharField(max_length=40, required=False, label='Recipient count or range (optional)',
@@ -202,7 +204,7 @@ class ComposeForm(forms.Form):
 
     def clean(self):
         data = super().clean()
-        if not data.get('selected_contacts') and not data.get('selection'):
+        if not data.get('select_all_filtered') and not data.get('selected_contacts') and not data.get('selection'):
             raise ValidationError('Select center checkboxes or enter a recipient count/range.')
         if data.get('audience_filter') == 'unsubscribed':
             raise ValidationError('Unsubscribed addresses cannot receive campaigns.')
@@ -285,7 +287,7 @@ def variables(item):
     saved = item.template_context or {}
     if 'opt_out_link' not in saved:
         token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
-        saved={**saved, 'opt_out_link':settings.FRONTEND_ORIGIN.rstrip('/')+'/api/mailer/unsubscribe/'+token+'/'}
+        saved={**saved, 'opt_out_link':settings.FRONTEND_ORIGIN.rstrip('/')+'/api/mailer/unsubscribe?'+urlencode({'token':token})}
     return {'center_name':item.center_names, 'facility_name':item.center_names, 'email':item.email, **saved}
 
 
@@ -313,13 +315,14 @@ def suppress_email(email, source='unsubscribe', actor=''):
 
 
 @csrf_protect
-def unsubscribe_view(request, token):
+def unsubscribe_view(request, token=None):
+    token = token or request.GET.get("token", "")
     try:
         payload=signing.loads(token, salt='mailer-unsubscribe-v1')
         email=payload['email']
         validate_email(email)
-    except (signing.BadSignature, KeyError, TypeError, ValidationError):
-        raise Http404('Invalid unsubscribe link') from None
+    except (signing.BadSignature, KeyError, TypeError, ValueError, ValidationError):
+        return TemplateResponse(request, 'emails/unsubscribe.html', {'invalid':True}, status=400)
     done=MailerSuppression.objects.filter(email=email.casefold()).exists()
     if request.method == 'POST':
         suppress_email(email)
@@ -331,7 +334,13 @@ def preview_campaign(data, user):
     contacts = mailer_contacts(data.get('email_filter', ''), data.get('audience_filter','all') or 'all')
     selected = data.get('selected_contacts')
     ids = [item.pk if hasattr(item, 'pk') else int(item) for item in selected] if selected is not None else []
-    if ids:
+    if data.get('select_all_filtered'):
+        chosen = list(contacts)
+        if not chosen:
+            raise ValidationError('No enabled centers match these filters.')
+        positions = {item.pk:n for n,item in enumerate(chosen,1)}
+        selection = f'All {len(chosen)} matching centers'
+    elif ids:
         chosen = list(contacts.filter(pk__in=ids))
         if len(chosen) != len(set(ids)):
             raise ValidationError('A selected center is no longer active. Refresh and select again.')
@@ -357,7 +366,7 @@ def preview_campaign(data, user):
     def snapshot(item):
         token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
         return {'city':item.city, 'state':item.state, 'mailing_address':address,
-                'claim_link':origin+'/#center', 'opt_out_link':origin+'/api/mailer/unsubscribe/'+token+'/'}
+                'claim_link':origin+'/#center', 'opt_out_link':origin+'/api/mailer/unsubscribe?'+urlencode({'token':token})}
     with transaction.atomic():
         campaign = MailerCampaign.objects.create(subject=data['subject'], body=data['body'],
             selection=selection, reply_to=reply_to, created_by=user)
