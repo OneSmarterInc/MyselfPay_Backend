@@ -7,11 +7,13 @@ import booking
 import booking_mail
 import booking_chat
 import core
+from directory_policy import visible_sql
 
 
 def centers(db, email):
     found = []
-    for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=?', (core.active_batch(db),)).fetchall():
+    predicate, values = visible_sql()
+    for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate, (core.active_batch(db),*values)).fetchall():
         item = json.loads(row['payload'])
         if str(item.get('email', '')).strip().lower() == email:
             found.append({'id': row['entry_key'], **{key: item.get(key, '') for key in

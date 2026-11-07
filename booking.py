@@ -116,7 +116,8 @@ def resolve_center(con: Any, key: str) -> dict:
         'SELECT payload FROM entries WHERE batch_id=? AND entry_key=?',
         (core.active_batch(con), key),
     ).fetchone()
-    if not row:
+    from directory_policy import blocked
+    if not row or blocked(row['payload']):
         raise BookingError('This listing is no longer available. Refresh the directory.', 409)
     return json.loads(row['payload'])
 
@@ -126,7 +127,8 @@ def price_snapshot(con: Any, key: str, offer_id: str, service: str = '') -> str:
         return 'Clinic will confirm the exact total.'
     row = con.execute('SELECT payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND entry_key=? AND id=?',
                       (core.active_batch(con), key, offer_id)).fetchone()
-    if not row:
+    from directory_policy import blocked
+    if not row or blocked(row['payload']):
         raise BookingError('This price offer changed. Refresh the listing.', 409)
     offer = json.loads(row['payload'])
     if service and offer.get('mod') != service:

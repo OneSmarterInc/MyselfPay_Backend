@@ -140,11 +140,13 @@ def message_view(site, request, ident):
 
 def sync_contacts():
     """One center/email per row, preserving shared addresses and import order."""
+    from directory_policy import visible_sql
+    predicate, policy_params = visible_sql('e.payload')
     with core.connect(settings.DOMAIN_DATABASE) as db:
         rows = db.execute('''SELECT e.entry_key, e.payload, h.first_created FROM entries e JOIN
             (SELECT entry_key,MIN(b.created) AS first_created FROM entries x
              JOIN batches b ON b.id=x.batch_id WHERE b.status='published' GROUP BY entry_key) h
-            ON h.entry_key=e.entry_key WHERE e.batch_id=?''', (core.active_batch(db),)).fetchall()
+            ON h.entry_key=e.entry_key WHERE e.batch_id=? AND '''+predicate, (core.active_batch(db),*policy_params)).fetchall()
     contacts = []
     for row in rows:
         entry = json.loads(row['payload'])
