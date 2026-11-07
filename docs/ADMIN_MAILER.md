@@ -204,3 +204,10 @@ with or without a final slash. Explicit Vercel rewrites cover both formats; depl
 the frontend routing commit as well as the backend. Invalid links return a branded
 400 confirmation/help page rather than a generic proxy 404. GET never changes
 preferences; signed token validation and CSRF-protected confirmation still apply.
+
+
+Center portal links now open `/center-login`, a real frontend route, rather than
+a URL fragment. The center email/OTP form opens directly; successful verification
+continues to the existing center dashboard. Old unsent draft contexts using
+`/#center` are upgraded when rendered. Previously delivered messages cannot be
+rewritten. Deploy the paired frontend route before updating AWS mailer links.

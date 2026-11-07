@@ -288,6 +288,8 @@ def variables(item):
     if 'opt_out_link' not in saved:
         token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
         saved={**saved, 'opt_out_link':settings.FRONTEND_ORIGIN.rstrip('/')+'/api/mailer/unsubscribe?'+urlencode({'token':token})}
+    if str(saved.get('claim_link','')).endswith('/#center'):
+        saved={**saved, 'claim_link':settings.FRONTEND_ORIGIN.rstrip('/')+'/center-login'}
     return {'center_name':item.center_names, 'facility_name':item.center_names, 'email':item.email, **saved}
 
 
@@ -366,7 +368,7 @@ def preview_campaign(data, user):
     def snapshot(item):
         token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
         return {'city':item.city, 'state':item.state, 'mailing_address':address,
-                'claim_link':origin+'/#center', 'opt_out_link':origin+'/api/mailer/unsubscribe?'+urlencode({'token':token})}
+                'claim_link':origin+'/center-login', 'opt_out_link':origin+'/api/mailer/unsubscribe?'+urlencode({'token':token})}
     with transaction.atomic():
         campaign = MailerCampaign.objects.create(subject=data['subject'], body=data['body'],
             selection=selection, reply_to=reply_to, created_by=user)

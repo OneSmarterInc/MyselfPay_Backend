@@ -266,7 +266,7 @@ class MailerTests(TestCase):
         message=campaign.messages.get()
         self.assertEqual(admin_mailer.personalize(campaign.subject,message), 'Synthetic center 1 is now searchable on MySelfPay')
         body=admin_mailer.personalize(campaign.body,message)
-        for value in ('Dayton, OH','STE 223','/#center','/api/mailer/unsubscribe?'):
+        for value in ('Dayton, OH','STE 223','/center-login','/api/mailer/unsubscribe?'):
             self.assertIn(value,body)
         self.assertNotIn('{{',body)
         item.city='Changed';item.save()
@@ -382,3 +382,8 @@ class MailerTests(TestCase):
             self.assertContains(self.client.get(path),'Email preferences')
         self.assertEqual(self.client.get('/api/mailer/unsubscribe?token=invalid').status_code,400)
         self.assertFalse(__import__('api.models',fromlist=['MailerSuppression']).MailerSuppression.objects.exists())
+
+    def test_previous_draft_claim_links_use_the_direct_center_login(self):
+        item=self.preview('1').messages.get()
+        item.template_context={'claim_link':'http://testserver/#center'}
+        self.assertEqual(admin_mailer.variables(item)['claim_link'],'http://testserver/center-login')
