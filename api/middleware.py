@@ -38,7 +38,7 @@ class RequestSecurityMiddleware:
         response['Cache-Control'] = 'private, no-store' if request.path.startswith('/api/v1/spatial-bundle/') else 'no-store'
         response['X-Frame-Options'] = 'DENY'
         if request.path.startswith('/api/mailer/unsubscribe'):
-            response['Referrer-Policy'] = 'no-referrer'
+            response['Referrer-Policy'] = 'strict-origin'
         if request.path.startswith('/admin'):
             response['Referrer-Policy'] = 'same-origin'
         response['Content-Security-Policy'] = ("default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; form-action 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'" if request.path.startswith(('/admin', '/api/mailer/unsubscribe')) else "default-src 'none'; frame-ancestors 'none'; base-uri 'none'")
