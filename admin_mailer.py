@@ -275,9 +275,9 @@ To correct an address, phone number, hours, exams offered, or how requests reach
 If you would like a quick walkthrough, I am glad to set up 15 minutes with you. You can see the app at myselfpay.onesmarter.com.
 
 Thank you,
-Vikram Sethi
+MySelfPay Team,
 One Smarter, Inc.
-vikram.sethi@onesmarter.com
+patientcare@onesmarterhealthweb.com
 
 {{mailing_address}}
 To stop receiving these messages, use this link: {{opt_out_link}}"""
