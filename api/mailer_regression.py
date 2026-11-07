@@ -234,3 +234,27 @@ class MailerTests(TestCase):
         response=self.client.post('/admin/mailer/', {**self.data, 'action':'preview', 'email_filter':'no-match.invalid', 'selected_contacts':[str(item.pk)]})
         self.assertEqual(response.status_code,200)
         self.assertEqual(MailerCampaign.objects.count(),0)
+
+    def test_campaign_email_has_branded_html_and_safe_plain_text(self):
+        data={**self.data, 'selection':'1', 'subject':'Hello {{center_name}} <script>bad</script>', 'body':'First line\nSecond line <img src=x onerror=bad()> & welcome {{center_name}}'}
+        campaign=admin_mailer.preview_campaign(data, 'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending()
+            message, recipient=send.call_args.args
+        self.assertEqual(message.get_content_type(),'multipart/alternative')
+        plain=message.get_body(preferencelist=('plain',)).get_content()
+        html=message.get_body(preferencelist=('html',)).get_content()
+        self.assertIn('MySelfPay by One Smarter, Inc.',plain)
+        self.assertIn('A message from MySelfPay',html)
+        self.assertIn('background:#a71930',html)
+        self.assertIn('Hello Synthetic center 1,',html)
+        self.assertIn('First line<br>',html)
+        self.assertNotIn('<script>bad</script>',html)
+        self.assertNotIn('<img src=x',html)
+        self.assertIn('&lt;img',html)
+        self.assertIn('mailto:patientcare@onesmarterhealthweb.com',html)
+        self.assertEqual(message['Reply-To'],'patientcare@onesmarterhealthweb.com')
+        response=self.client.get(f'/admin/mailer/campaign/{campaign.pk}/')
+        self.assertContains(response,'A message from MySelfPay')
+        self.assertNotContains(response,'<script>bad</script>')

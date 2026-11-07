@@ -129,3 +129,10 @@ Email search accepts a partial address or domain, case-insensitively. Results st
 newest center import first; pagination retains the filter. Count/range previews
 use that same filtered order. Selected checkboxes must belong to the filtered
 results. Clear removes the filter. This update requires no new migration.
+
+
+Mailer campaigns are sent as multipart/alternative: a branded, inline-styled HTML
+email plus a plain-text fallback. Subject and message are personalized and escaped;
+the composer accepts plain text, not arbitrary HTML. The confirmation screen shows
+the same HTML card as delivery. The footer introduces MySelfPay, links to the
+portal, and uses the saved campaign Reply-To. Previously sent emails are unchanged.

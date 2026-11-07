@@ -21,6 +21,7 @@ from django.db import transaction
 from django.db.models import Count, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -109,6 +110,7 @@ def campaign_view(site, request, ident):
         'page': page, 'count': campaign.messages.count(),
         'preview_subject': personalize(campaign.subject, first) if first else '',
         'preview_body': personalize(campaign.body, first) if first else '',
+        'preview_center': first.center_names if first else '',
         'counts': campaign.messages.values('state').annotate(total=Count('pk')).order_by('state')})
 
 
@@ -304,7 +306,12 @@ def send_pending(limit=20):
                 message['Subject'] = personalize(item.campaign.subject, item)
                 message['Message-ID'] = item.message_id
                 message['Reply-To'] = item.campaign.reply_to
-                message.set_content(personalize(item.campaign.body, item))
+                body = personalize(item.campaign.body, item)
+                message.set_content(f"MySelfPay by One Smarter, Inc.\n\nHello {item.center_names},\n\n{body}\n\nBest regards,\nThe MySelfPay team\n\nMySelfPay helps people find and compare self-pay imaging options and connect with imaging centers.\nhttps://myselfpay.onesmarter.com\nReply to: {item.campaign.reply_to}")
+                message.add_alternative(render_to_string('emails/mailer_campaign.html', {
+                    'email_subject': message['Subject'], 'email_body': body,
+                    'email_center': item.center_names, 'email_reply_to': item.campaign.reply_to,
+                }), subtype='html')
             except Exception:
                 MailerMessage.objects.filter(pk=ident).update(state='failed', error='Check SMTP settings, recipient allowlist and template.')
                 continue

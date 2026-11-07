@@ -11,3 +11,5 @@
 .mailer-directory .sp-table-scroll{overflow-x:auto}.mailer-selection-status{padding:0 24px 16px}
 
 .mailer-email-search{padding:20px 24px;border-bottom:1px solid #e6e8ee}.mailer-email-search label{display:block;font-weight:600;margin-bottom:8px}.mailer-email-search input{flex:1;min-width:180px;min-height:44px}.mailer-email-search .mailer-note{margin-bottom:0}@media(max-width:600px){.mailer-email-search{padding:16px}.mailer-email-search input{width:100%;flex-basis:100%}}
+
+.mailer-email-preview{padding:24px 12px;background:#f2f4f7;border-radius:10px;margin:24px 0;min-width:0}.mailer-email-preview table{max-width:100%}.mailer-plain-preview summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}@media(max-width:600px){.mailer-email-preview{padding:16px 0;margin:18px 0}}
