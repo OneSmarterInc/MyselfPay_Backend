@@ -1,37 +1,29 @@
-# MDsave directory exclusion
+# Hide MDsave branding, keep centers and prices
 
-MDsave-linked listings and offers are excluded from all live directory read paths:
-full catalog, lightweight metadata and counts, search, H3 bundles, center portal
-listings, new booking resolution and mailer contact refresh. The exclusion applies
-to stored payloads containing MDsave, MD Save, or MD-save, case-insensitively,
-including source URLs and pricing notes. Maryland's state abbreviation MD alone
-is not excluded. Independent entries remain if only a separate mapped offer is
-linked to MDsave; only the linked offer is withheld in that case.
+The earlier listing exclusion has been revoked. Marketplace-linked centers and
+offers remain visible and bookable. The frontend replaces the MDsave brand name
+with the generic word marketplace in display text; it preserves prices, prepaid
+conditions, booking IDs and original source/website URLs. No provider links are
+rewritten to incorrect URLs. Existing appointment records remain unchanged.
 
-The remove_mdsave management command defaults to preview. With --publish it clones
-the active directory without the linked records, rebuilds spatial locations and
-publishes the filtered batch transactionally. It preserves old batches and all
-appointment history. Mailer contacts for removed centers are deactivated and their
-queued/draft campaign messages are cancelled. Raw import files and historical
-request/price snapshots remain as provenance; no clinical or booking data is erased.
-Runtime filtering prevents future imports or a historical rollback from exposing
-MDsave records again.
-
-Deploy and apply on AWS:
+If the previous removal command was run, restore the missing records by merging
+from its preserved parent batch. The restore command keeps current records and
+newly added centers, never overwrites a newer existing center, and only restores
+mapped offers if their entry's content hash still matches the old source. It is
+idempotent and does not reactivate cancelled or suppressed email campaigns.
+The old remove_mdsave command now refuses to run.
 
 ```bash
 cd /var/www/MyselfPay_Backend
 sudo systemctl stop myselfpay-mailer.service
 sudo git pull --ff-only origin codex/mobile-username-accounts
-sudo ./venv/bin/python manage.py migrate --noinput
-sudo ./venv/bin/python manage.py remove_mdsave --publish
+sudo ./venv/bin/python manage.py restore_mdsave --publish
 sudo ./venv/bin/python manage.py sync_mailer_contacts
 sudo ./venv/bin/python manage.py check
 sudo systemctl restart myselfpay-backend.service
 sudo systemctl start myselfpay-mailer.service
 ```
 
-Run remove_mdsave without --publish to see affected counts without changing data.
-Refresh the website after publication to discard previously loaded result cards.
-No frontend/Vercel deployment or new database migration is needed for this policy.
-If the optional mailer service is not installed, omit its stop/start commands.
+If no earlier removal happened, restore_mdsave reports that no restoration is
+needed; removing the backend exclusion is sufficient. No migration is needed.
+Deploy the paired frontend change and refresh the website.
