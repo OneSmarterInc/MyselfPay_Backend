@@ -7,11 +7,13 @@ import booking
 import booking_mail
 import booking_chat
 import core
+from directory_policy import visible_sql
 
 
 def centers(db, email):
     found = []
-    for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=?', (core.active_batch(db),)).fetchall():
+    predicate, values = visible_sql()
+    for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate, (core.active_batch(db),*values)).fetchall():
         item = json.loads(row['payload'])
         if str(item.get('email', '')).strip().lower() == email:
             found.append({'id': row['entry_key'], **{key: item.get(key, '') for key in
@@ -100,7 +102,7 @@ def dashboard(path, token):
         return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf}
 
 
-def open_request(path, token, csrf, ident, status=None):
+def open_request(path, token, csrf, ident, status=None, appointment=None):
     with booking.connection(path, write=True) as db:
         email, listings, _ = identity(db, token, csrf)
         row = booking.get_row(db, ident, lock=True)
@@ -108,20 +110,15 @@ def open_request(path, token, csrf, ident, status=None):
         if p['clinic_id'] not in {item['id'] for item in listings} or p['recipient'].strip().lower() != email:
             raise booking.BookingError('Request unavailable.', 404)
         if status is not None:
-            if status not in ('scheduled', 'voicemail', 'unable'):
-                raise booking.BookingError('Choose a valid outcome.')
             if row['link_expires'] <= time.time():
                 raise booking.BookingError('This request has expired.', 410)
-            if row['status'] in booking.TERMINAL and row['status'] != status:
-                raise booking.BookingError('This request is already closed.', 409)
-            closed = row['closed'] or (time.time() if status in booking.TERMINAL else None)
-            db.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
-            row = booking.get_row(db, ident)
+            import appointment_slots
+            row = appointment_slots.update(db, row, status, appointment)
             booking_chat.enqueue(db, row)
         result = booking.receipt(row, db)
         result.pop('tracking_token', None)
         if row['status'] not in booking.TERMINAL and row['link_expires'] > time.time():
-            result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'])
+            result.update(first_name=p['first_name'], phone=p['phone'])
         else:
             result['contact_hidden'] = True
             if row['status'] not in booking.TERMINAL:

@@ -25,20 +25,22 @@ def page(number,mode):
             payload=booking.unpack(row)
             status='expired' if row['status'] not in booking.TERMINAL and row['link_expires']<=time.time() else row['status']
             items.append({'id':row['id'],'clinic':payload['clinic_name'],'patient':payload['first_name'],
-                          'email':payload['patient_email'],'status':LABELS[status],
+                          'phone':payload.get('phone',''),'status':LABELS[status],
                           'submitted':date_text(row['created']),'approved':date_text(row['closed']) if status=='scheduled' else '—'})
     return {'requests':items,'page':number,'pages':pages,'total':total,'mode':mode,
             'previous':number-1 if number>1 else None,'next':number+1 if number<pages else None}
 
 def detail(ident):
     from mail_diagnostics import request_status
+    import appointment_slots
     with booking.connection(settings.DOMAIN_DATABASE) as db:
         row=booking.get_row(db,ident)
         data=booking.unpack(row)
         status='expired' if row['status'] not in booking.TERMINAL and row['link_expires']<=time.time() else row['status']
         return {'mail_diagnostic': request_status(settings.DOMAIN_DATABASE, ident), 'id':row['id'],'status':LABELS[status],'clinic':data['clinic_name'],
                 'location':data.get('location',''),'center_email':data['recipient'],
-                'first_name':data['first_name'],'email':data['patient_email'],'phone':data.get('phone',''),
+                'approved_slot': appointment_slots.label(data.get('approved_slot')) if status == 'scheduled' else 'Not approved yet',
+                'first_name':data['first_name'],'phone':data.get('phone',''),
                 'service':data['service'],'exam':data.get('exam',''),'contrast':data.get('contrast','unknown'),
                 'timezone':booking.ZONES[data['timezone']], 'price':data['price_text'],
                 'slots':[{'date':s['date'],'period':booking.PERIODS[s['period']]} for s in data['slots']],

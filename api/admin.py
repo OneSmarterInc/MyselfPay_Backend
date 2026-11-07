@@ -13,12 +13,16 @@ from django.urls import reverse, path
 from django.template.response import TemplateResponse
 from django.http import Http404
 import admin_bookings
+import admin_accounts
 import booking
 import sqlite3
 import psycopg
 from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration, SMTPConfiguration
 from admin_settings import secret_cipher
 import accounts
+import core
+import mobile_accounts
+from django.conf import settings
 
 
 class SelfPayAdminSite(AdminSite):
@@ -33,7 +37,12 @@ class SelfPayAdminSite(AdminSite):
         return bool(request.user.is_active and request.user.is_superuser)
 
     def get_urls(self):
-        return [path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
+        import admin_mailer
+        return [path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
+                path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
+                path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
+                path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
+                path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
 
     def requests_view(self, request):
@@ -60,7 +69,7 @@ class SelfPayAdminSite(AdminSite):
         recent = list(PortalAccount.objects.order_by('-created')[:6])
         names = dict(PortalMember.objects.filter(pk__in=[a.pk for a in recent]).values_list('pk', 'name'))
         suspended = set(PortalSetting.objects.filter(key__in=['account-disabled:' + a.pk for a in recent], value='1').values_list('key', flat=True))
-        context['recent_accounts'] = [{'name': names.get(a.pk, 'Portal user'), 'email': a.email,
+        context['recent_accounts'] = [{'name': names.get(a.pk, 'Portal user'), 'phone': a.phone,
                                      'registered': datetime.fromtimestamp(a.created, timezone.utc).strftime('%d %b %Y'),
                                      'suspended': 'account-disabled:' + a.pk in suspended,
                                      'url': reverse('admin:api_portalaccount_change', args=[a.pk])} for a in recent]
@@ -80,7 +89,7 @@ class PortalAccountForm(forms.ModelForm):
 
     class Meta:
         model = PortalAccount
-        fields = ('name', 'email', 'phone', 'active', 'new_password')
+        fields = ('name', 'phone', 'active', 'new_password')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,19 +98,14 @@ class PortalAccountForm(forms.ModelForm):
             self.fields['name'].initial = member.name
             self.fields['active'].initial = not PortalSetting.objects.filter(key='account-disabled:' + member.pk, value='1').exists()
 
-    def clean_email(self):
-        try:
-            email = accounts.email_address(self.cleaned_data['email'])
-        except accounts.AccountError as exc:
-            raise ValidationError(str(exc)) from None
-        if PortalMember.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
-            raise ValidationError('An account already uses this email address.')
-        return email
-
     def clean_phone(self):
         value = self.cleaned_data.get('phone', '').strip()
         if value and not re.fullmatch(r'[+0-9 ()\-.]{7,30}', value):
             raise ValidationError('Enter a valid phone number or leave it blank.')
+        with core.connect(settings.DOMAIN_DATABASE) as db:
+            row = db.execute('SELECT phone FROM mobile_accounts WHERE member_id=?', (self.instance.pk,)).fetchone()
+        if row and value != row['phone']:
+            raise ValidationError('A verified mobile number cannot be edited without verifying the replacement. Contact support for account recovery.')
         return value
 
     def clean_new_password(self):
@@ -115,16 +119,37 @@ class PortalAccountForm(forms.ModelForm):
 
 class PortalAccountAdmin(admin.ModelAdmin):
     form = PortalAccountForm
-    list_display = ('email', 'user_name', 'phone', 'registered_at', 'account_status')
-    search_fields = ('email', 'phone', 'member_id')
+    list_display = ('username', 'user_name', 'phone', 'registered_at', 'account_status')
+    search_fields = ('phone', 'member_id')
     ordering = ('-created',)
     list_per_page = 50
-    fields = ('name', 'email', 'phone', 'active', 'new_password', 'registered_at', 'member_id')
-    readonly_fields = ('registered_at', 'member_id')
+    fields = ('name', 'username', 'phone', 'active', 'new_password', 'registered_at', 'member_id')
+    readonly_fields = ('registered_at', 'member_id', 'username')
     actions = ('suspend_accounts', 'restore_accounts')
 
     def has_add_permission(self, request): return False
-    def has_delete_permission(self, request, obj=None): return False
+    def has_delete_permission(self, request, obj=None):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        actions.pop('delete_selected', None)  # Confirm one account at a time.
+        return actions
+
+    def get_deleted_objects(self, objs, request):
+        deleted, counts, permissions, protected = super().get_deleted_objects(objs, request)
+        deleted.append('Their profile, verified mobile identity, sessions, saved searches and owned appointment requests. Center notifications and private request links will also be removed. This cannot be undone.')
+        return deleted, counts, permissions, protected
+
+    def delete_model(self, request, obj):
+        admin_accounts.delete_registered_user(obj.member_id)
+
+
+    @admin.display(description='Username')
+    def username(self, obj):
+        with core.connect(settings.DOMAIN_DATABASE) as db:
+            row = db.execute('SELECT username FROM mobile_accounts WHERE member_id=?', (obj.pk,)).fetchone()
+        return row['username'] if row else 'Setup required'
 
     @admin.display(description='Name')
     def user_name(self, obj):
@@ -144,18 +169,16 @@ class PortalAccountAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         member = PortalMember.objects.select_for_update().get(pk=obj.member_id)
-        changed_email = member.email != obj.email
         member.name = form.cleaned_data['name']
-        member.email = obj.email
         password = form.cleaned_data.get('new_password')
         if password:
             member.salt = secrets.token_hex(16)
             member.password_hash = 'scrypt-v1$' + accounts.password_hash(password, member.salt)
-        member.save(update_fields=['name', 'email', 'salt', 'password_hash'])
+        member.save(update_fields=['name', 'salt', 'password_hash'])
         obj.save()
         active = form.cleaned_data['active']
         PortalSetting.objects.update_or_create(key='account-disabled:' + obj.pk, defaults={'value': '0' if active else '1'})
-        if not active or password or changed_email:
+        if not active or password:
             self.revoke_sessions(obj.pk)
 
     @admin.action(description='Suspend selected users and revoke their sessions')

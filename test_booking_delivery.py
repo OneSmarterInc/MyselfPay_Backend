@@ -90,8 +90,8 @@ class LiveDeliveryTests(unittest.TestCase):
         self.assertNotIn('preview_code', issued)
         session = booking.verify_code(self.fixture.db, result['id'], token, code)['session']
         details = booking.clinic_details(self.fixture.db, result['id'], session)
-        self.assertEqual(details['patient_email'], 'patient@example.test')
-        closed = booking.clinic_details(self.fixture.db, result['id'], session, 'scheduled')
+        self.assertNotIn('patient_email', details)
+        closed = booking.clinic_details(self.fixture.db, result['id'], session, 'scheduled', {'preferred_index':0})
         self.assertNotIn('patient_email',closed)
         self.assertNotIn('phone',closed)
         self.assertNotIn('first_name',closed)
