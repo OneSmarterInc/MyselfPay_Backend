@@ -413,3 +413,14 @@ class MailerTests(TestCase):
             admin_mailer.send_pending();send.assert_not_called()
         fresh=admin_mailer.preview_campaign({**self.data,'selected_contacts':[item]},'mailer-admin')
         self.assertEqual(fresh.messages.count(),1)
+
+    def test_filtered_directory_exposes_inline_enable_for_disabled_address(self):
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first();admin_mailer.suppress_email(item.email)
+        response=self.client.get('/admin/mailer/',{'audience':'unsubscribed','email':item.email})
+        self.assertContains(response,'Enable email')
+        self.assertContains(response,'name="suppression_id" value="'+str(MailerSuppression.objects.get().pk)+'"')
+        self.assertContains(response,'name="return_to" value="mailer"')
+        response=self.client.post('/admin/mailer/unsubscribed/',{'action':'enable','suppression_id':MailerSuppression.objects.get().pk,'return_to':'mailer'})
+        self.assertEqual(response.url,'/admin/mailer/')
+        self.assertFalse(MailerSuppression.objects.exists())

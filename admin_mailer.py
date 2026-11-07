@@ -166,7 +166,8 @@ def sync_contacts():
 
 def mailer_contacts(email_search='', audience='all'):
     contacts = MailerContact.objects.filter(active=True).annotate(
-        suppressed=Exists(MailerSuppression.objects.filter(email=OuterRef('email'))))
+        suppressed=Exists(MailerSuppression.objects.filter(email=OuterRef('email'))),
+        suppression_id=Subquery(MailerSuppression.objects.filter(email=OuterRef('email')).values('pk')[:1]))
     contacts = contacts.filter(suppressed=(audience == 'unsubscribed'))
     if email_search:
         contacts = contacts.filter(email__icontains=email_search.strip())
@@ -575,7 +576,8 @@ def unsubscribed_view(site, request):
                 change_message='Enabled address for future mailer campaigns. Suppressed messages were not requeued.')
             item.delete()
         messages.success(request, 'Email enabled for future campaigns. Previously stopped emails will not be resent.')
-        return redirect(reverse('admin:mailer_unsubscribed') + ('?'+urlencode({'email':query}) if query else ''))
+        destination = 'admin:mailer' if request.POST.get('return_to') == 'mailer' else 'admin:mailer_unsubscribed'
+        return redirect(reverse(destination) + ('?'+urlencode({'email':query}) if query else ''))
     items=MailerSuppression.objects.order_by('-created_at','email')
     if query:
         items=items.filter(email__icontains=query)
