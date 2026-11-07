@@ -164,8 +164,7 @@ contacts too. Disable email is a superuser-only CSRF-protected POST. It adds the
 address to the same email-level suppression list as recipient unsubscribe.
 Queued and draft messages are suppressed, and sending checks the suppression
 list again just before SMTP. A message already in transit cannot be recalled.
-Directory refresh does not remove suppression records. No automatic re-enable
-or automated resends are provided.
+Directory refresh does not remove suppression records. No automatic re-enable or automated resends are provided.
 
 Recipient links are signed with a dedicated Django signing salt. GET displays a
 confirmation; only CSRF-protected POST changes preferences. This avoids accidental
@@ -211,3 +210,10 @@ a URL fragment. The center email/OTP form opens directly; successful verificatio
 continues to the existing center dashboard. Old unsent draft contexts using
 `/#center` are upgraded when rendered. Previously delivered messages cannot be
 rewritten. Deploy the paired frontend route before updating AWS mailer links.
+
+
+The unsubscribe list has an Enable email button. It requires a superuser and a
+CSRF-protected POST, removes the email-level sending block for every center sharing
+that address, and records the admin action in the Django log. It does not restore
+inactive directory entries or requeue suppressed campaigns. New campaigns require
+the normal preview and confirmation steps. No migration is needed for this button.

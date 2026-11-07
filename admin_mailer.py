@@ -565,6 +565,17 @@ def sync_replies():
 
 def unsubscribed_view(site, request):
     query=request.GET.get('email','').strip()[:254]
+    if request.method == 'POST' and request.POST.get('action') == 'enable':
+        item=get_object_or_404(MailerSuppression, pk=request.POST.get('suppression_id'))
+        with transaction.atomic():
+            from django.contrib.admin.models import LogEntry, CHANGE
+            from django.contrib.contenttypes.models import ContentType
+            LogEntry.objects.create(user_id=request.user.pk, content_type=ContentType.objects.get_for_model(MailerSuppression),
+                object_id=str(item.pk), object_repr=item.email, action_flag=CHANGE,
+                change_message='Enabled address for future mailer campaigns. Suppressed messages were not requeued.')
+            item.delete()
+        messages.success(request, 'Email enabled for future campaigns. Previously stopped emails will not be resent.')
+        return redirect(reverse('admin:mailer_unsubscribed') + ('?'+urlencode({'email':query}) if query else ''))
     items=MailerSuppression.objects.order_by('-created_at','email')
     if query:
         items=items.filter(email__icontains=query)

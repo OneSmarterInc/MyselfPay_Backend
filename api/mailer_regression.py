@@ -387,3 +387,29 @@ class MailerTests(TestCase):
         item=self.preview('1').messages.get()
         item.template_context={'claim_link':'http://testserver/#center'}
         self.assertEqual(admin_mailer.variables(item)['claim_link'],'http://testserver/center-login')
+
+    def test_enable_address_is_post_only_superuser_csrf_protected_and_does_not_resend(self):
+        from api.models import MailerSuppression
+        from django.contrib.admin.models import LogEntry
+        item=MailerContact.objects.first();campaign=self.preview('1')
+        admin_mailer.suppress_email(item.email)
+        suppression=MailerSuppression.objects.get()
+        url='/admin/mailer/unsubscribed/'
+        data={'action':'enable','suppression_id':suppression.pk}
+        self.assertContains(self.client.get(url),'Enable email')
+        self.assertTrue(MailerSuppression.objects.exists())
+        secure=Client(enforce_csrf_checks=True);secure.force_login(self.admin)
+        self.assertEqual(secure.post(url,data,HTTP_ORIGIN='http://testserver').status_code,403)
+        self.assertTrue(MailerSuppression.objects.exists())
+        anonymous=Client()
+        self.assertEqual(anonymous.post(url,data,HTTP_ORIGIN='http://testserver').status_code,302)
+        response=self.client.post(url+'?email='+item.email,data)
+        self.assertEqual(response.status_code,302)
+        self.assertFalse(MailerSuppression.objects.exists())
+        self.assertIn(item.pk,admin_mailer.mailer_contacts().values_list('pk',flat=True))
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+        self.assertTrue(LogEntry.objects.filter(user=self.admin,object_repr=item.email).exists())
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        fresh=admin_mailer.preview_campaign({**self.data,'selected_contacts':[item]},'mailer-admin')
+        self.assertEqual(fresh.messages.count(),1)
