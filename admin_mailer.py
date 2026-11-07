@@ -39,7 +39,7 @@ def mailer_view(site, request):
         action = request.POST.get('action')
         if action == 'contacts':
             count = sync_contacts()
-            messages.success(request, f'{count} unique directory email addresses refreshed.')
+            messages.success(request, f'{count} center email rows refreshed.')
             return redirect('admin:mailer')
         if action == 'mailbox':
             mailbox_form = MailboxForm(request.POST, instance=mailbox)
@@ -121,13 +121,13 @@ def message_view(site, request, ident):
 
 
 def sync_contacts():
-    """One address per row; derive center import dates from recorded batches."""
+    """One center/email per row, preserving shared addresses and import order."""
     with core.connect(settings.DOMAIN_DATABASE) as db:
-        rows = db.execute('''SELECT e.payload, h.first_created FROM entries e JOIN
+        rows = db.execute('''SELECT e.entry_key, e.payload, h.first_created FROM entries e JOIN
             (SELECT entry_key,MIN(b.created) AS first_created FROM entries x
              JOIN batches b ON b.id=x.batch_id WHERE b.status='published' GROUP BY entry_key) h
             ON h.entry_key=e.entry_key WHERE e.batch_id=?''', (core.active_batch(db),)).fetchall()
-    grouped = {}
+    contacts = []
     for row in rows:
         entry = json.loads(row['payload'])
         address = str(entry.get('email') or '').strip().casefold()
@@ -135,16 +135,15 @@ def sync_contacts():
             validate_email(address)
         except ValidationError:
             continue
-        stamp = datetime.fromtimestamp(row['first_created'], dt_timezone.utc)
-        item = grouped.setdefault(address, {'names': set(), 'date': stamp})
-        item['names'].add(str(entry.get('name') or 'Unnamed center')[:300])
-        item['date'] = max(item['date'], stamp)
+        contacts.append((row['entry_key'], address, str(entry.get('name') or 'Unnamed center')[:300],
+                         datetime.fromtimestamp(row['first_created'], dt_timezone.utc)))
     with transaction.atomic():
         MailerContact.objects.update(active=False)
-        for address, item in grouped.items():
-            MailerContact.objects.update_or_create(email=address, defaults={
-                'centers': sorted(item['names']), 'imported_at': item['date'], 'active': True})
-    return len(grouped)
+        for key, address, name, stamp in contacts:
+            MailerContact.objects.update_or_create(center_key=key, email=address, defaults={
+                'centers': [name], 'imported_at': stamp, 'active': True})
+    return len(contacts)
+
 
 
 def selection_range(value, total):
@@ -159,12 +158,20 @@ def selection_range(value, total):
 
 
 class ComposeForm(forms.Form):
-    selection = forms.CharField(max_length=40, label='Recipient count or range',
+    selection = forms.CharField(max_length=40, required=False, label='Recipient count or range (optional)',
                                help_text='100 selects rows 1–100. 100-200 selects rows 100–200, including both ends (101 emails).')
+    selected_contacts = forms.ModelMultipleChoiceField(queryset=MailerContact.objects.filter(active=True),
+        required=False, widget=forms.MultipleHiddenInput)
     subject = forms.CharField(max_length=200)
     body = forms.CharField(max_length=30000, widget=forms.Textarea(attrs={'rows': 10}), label='Message',
                            help_text='Use {{center_name}} and {{email}} for personalization. Messages are sent separately.')
     template_name = forms.CharField(max_length=100, required=False, label='Save as template (optional)')
+
+    def clean(self):
+        data = super().clean()
+        if not data.get('selected_contacts') and not data.get('selection'):
+            raise ValidationError('Select center checkboxes or enter a recipient count/range.')
+        return data
 
     def clean_subject(self):
         value = self.cleaned_data['subject']
@@ -214,19 +221,30 @@ def personalize(value, item):
 
 def preview_campaign(data, user):
     contacts = MailerContact.objects.filter(active=True)
-    start, end = selection_range(data['selection'], contacts.count())
+    selected = data.get('selected_contacts')
+    ids = [item.pk if hasattr(item, 'pk') else int(item) for item in selected] if selected is not None else []
+    if ids:
+        chosen = list(contacts.filter(pk__in=ids))
+        if len(chosen) != len(set(ids)):
+            raise ValidationError('A selected center is no longer active. Refresh and select again.')
+        positions = {pk: n for n, pk in enumerate(contacts.values_list('pk', flat=True), 1)}
+        selection = f'{len(chosen)} selected centers'
+    else:
+        start, end = selection_range(data.get('selection', ''), contacts.count())
+        chosen = list(contacts[start - 1:end])
+        if len(chosen) != end - start + 1:
+            raise ValidationError('The directory changed. Refresh recipients and preview again.')
+        positions = {item.pk: start+n for n,item in enumerate(chosen)}
+        selection = data['selection']
     smtp = smtp_configuration()
     mailbox = MailerMailbox.objects.filter(pk=1).first()
     reply_to = (mailbox.reply_to if mailbox else 'patientcare@onesmarterhealthweb.com') or smtp['sender']
     validate_email(reply_to)
     with transaction.atomic():
         campaign = MailerCampaign.objects.create(subject=data['subject'], body=data['body'],
-            selection=data['selection'], reply_to=reply_to, created_by=user)
-        chosen = list(contacts[start - 1:end])
-        if len(chosen) != end - start + 1:
-            raise ValidationError('The directory changed. Refresh recipients and preview again.')
+            selection=selection, reply_to=reply_to, created_by=user)
         MailerMessage.objects.bulk_create([MailerMessage(campaign=campaign, contact=item, email=item.email,
-            center_names='; '.join(item.centers), position=start + n,
+            center_names='; '.join(item.centers), position=positions[item.pk],
             message_id=make_msgid(domain=reply_to.rsplit('@', 1)[-1])) for n, item in enumerate(chosen)])
         if data.get('template_name'):
             MailerTemplate.objects.update_or_create(name=data['template_name'], defaults={

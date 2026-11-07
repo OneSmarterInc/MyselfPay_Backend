@@ -2,11 +2,10 @@
 
 Open `/admin/mailer/` using a Django superuser. Refresh directory emails to load
 valid addresses from the active published directory. Patient account emails are
-never included. Shared addresses are deduplicated and all associated center names
-are shown. The date is the center's earliest recorded published batch date; the
-legacy schema cannot establish the exact date an email was originally added.
-For shared emails the most recently imported associated center determines order.
-Rows sort descending by this date, then alphabetically by email for stable ties.
+never included. Each directory center has its own row even when centers share an
+email. The date is the center's earliest recorded published batch date; the legacy
+schema cannot establish the exact date an email was originally added. Rows sort
+newest first, then by center key, email and ID for stable ties.
 
 Enter `100` for positions 1–100 or `100-200` for positions 100–200 inclusive (101
 addresses). Select a saved template or enter subject/message; `{{center_name}}`
@@ -92,3 +91,35 @@ sudo systemctl status myselfpay-mailer.service --no-pager
 The service user needs read access to the existing environment file. No secrets
 are embedded in the unit, campaign pages or command output. This worker can send
 already-confirmed campaigns; tests use mocked SMTP and IMAP only.
+
+
+## One center per row and checkbox selection
+
+Directory recipients now use the directory entry key plus email, not email alone.
+Centers sharing a mailbox remain separate rows and receive separate personalized
+messages if both are selected. All prior campaigns, messages, and replies remain
+available. Migration 0016 retires grouped contacts; run `python manage.py
+sync_mailer_contacts` after migration (or Refresh directory emails in the admin)
+to populate the current center rows. No emails are sent by refreshing contacts.
+
+Select individual checkboxes or Select all centers on this page. Checkboxes apply
+to the current page and override an entered count/range. The preview lists exactly
+which center rows will receive mail. Preview never sends; Confirm and queue does.
+Each message keeps its own Message-ID so replies attach to the corresponding
+center email thread, even when recipients share an address.
+
+Deploy on AWS:
+
+```bash
+cd /var/www/MyselfPay_Backend
+sudo systemctl stop myselfpay-mailer.service
+sudo git pull --ff-only origin codex/mobile-username-accounts
+sudo ./venv/bin/python manage.py migrate --noinput
+sudo ./venv/bin/python manage.py sync_mailer_contacts
+sudo ./venv/bin/python manage.py collectstatic --noinput
+sudo ./venv/bin/python manage.py check
+sudo systemctl restart myselfpay-backend.service
+sudo systemctl start myselfpay-mailer.service
+```
+
+If the optional mailer service is not installed, omit its stop/start lines.

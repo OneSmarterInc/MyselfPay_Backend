@@ -114,13 +114,15 @@ class MailerMailbox(models.Model):
 
 
 class MailerContact(models.Model):
-    email = models.EmailField(unique=True)
+    center_key = models.CharField(max_length=300, blank=True, default="")
+    email = models.EmailField()
     centers = models.JSONField(default=list)
     imported_at = models.DateTimeField(db_index=True)
     active = models.BooleanField(default=True, db_index=True)
 
     class Meta:
-        ordering = ['-imported_at', 'email']
+        ordering = ['-imported_at', 'center_key', 'email', 'pk']
+        constraints = [models.UniqueConstraint(fields=['center_key', 'email'], name='mailer_center_email_unique')]
 
 
 class MailerTemplate(models.Model):
@@ -155,7 +157,7 @@ class MailerMessage(models.Model):
     error = models.CharField(max_length=200, blank=True)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=['campaign', 'email'], name='mailer_campaign_email_unique')]
+        constraints = [models.UniqueConstraint(fields=['campaign', 'contact'], name='mailer_campaign_contact_unique')]
 
 
 class MailerReply(models.Model):

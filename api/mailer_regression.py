@@ -151,18 +151,62 @@ class MailerTests(TestCase):
         self.assertContains(self.client.get('/admin/mailer/'), 'Welcome')
         self.assertContains(self.client.get(f'/admin/mailer/campaign/{campaign.pk}/'), 'center001@example.test')
 
-    def test_directory_sync_deduplicates_only_center_emails(self):
+    def test_directory_sync_keeps_each_center_with_shared_email(self):
         from types import SimpleNamespace
         import json
-        rows = [{'payload': json.dumps({'name': name, 'email': email}), 'first_created': stamp}
+        rows = [{'entry_key': name, 'payload': json.dumps({'name': name, 'email': email}), 'first_created': stamp}
                 for name, email, stamp in [('Older', 'shared@example.test', 1000),
                     ('Newer', 'SHARED@example.test', 2000), ('Invalid', 'not-an-email', 3000)]]
         db = MagicMock()
         db.execute.return_value.fetchall.return_value = rows
         with patch('core.connect') as connect, patch('core.active_batch', return_value='active'):
             connect.return_value.__enter__.return_value = db
-            self.assertEqual(admin_mailer.sync_contacts(), 1)
-        active = MailerContact.objects.get(active=True)
-        self.assertEqual(active.email, 'shared@example.test')
-        self.assertEqual(active.centers, ['Newer', 'Older'])
-        self.assertEqual(int(active.imported_at.timestamp()), 2000)
+            self.assertEqual(admin_mailer.sync_contacts(), 2)
+        active = list(MailerContact.objects.filter(active=True))
+        self.assertEqual([c.email for c in active], ['shared@example.test', 'shared@example.test'])
+        self.assertEqual([c.centers for c in active], [['Newer'], ['Older']])
+        self.assertEqual(int(active[0].imported_at.timestamp()), 2000)
+        with patch('core.connect') as connect, patch('core.active_batch', return_value='active'):
+            connect.return_value.__enter__.return_value = db
+            admin_mailer.sync_contacts()
+        self.assertEqual(MailerContact.objects.filter(active=True).count(), 2)
+
+    def test_checked_centers_override_range_and_shared_email_sends_separately(self):
+        now = timezone.now()
+        a = MailerContact.objects.create(center_key='branch-a', email='shared@example.test', centers=['Branch A'], imported_at=now)
+        b = MailerContact.objects.create(center_key='branch-b', email='shared@example.test', centers=['Branch B'], imported_at=now)
+        with patch('booking_mail.send_message') as send:
+            response = self.client.post('/admin/mailer/', {**self.data, 'action': 'preview',
+                'selection': '1', 'selected_contacts': [str(a.pk), str(b.pk)]})
+            self.assertEqual(response.status_code, 302)
+            campaign = MailerCampaign.objects.get()
+            self.assertEqual(campaign.messages.count(), 2)
+            self.assertEqual(set(campaign.messages.values_list('center_names', flat=True)), {'Branch A', 'Branch B'})
+            self.assertEqual(campaign.messages.values('message_id').distinct().count(), 2)
+            send.assert_not_called()
+            admin_mailer.queue_campaign(campaign.pk)
+            admin_mailer.send_pending()
+            self.assertEqual(send.call_count, 2)
+            for call in send.call_args_list:
+                self.assertEqual(call.args[1], 'shared@example.test')
+        target = campaign.messages.get(contact=a)
+        self.assertTrue(admin_mailer.import_reply(self.reply(target), 'shared-mailbox', '1', 1))
+        self.assertEqual(target.replies.count(), 1)
+        self.assertEqual(campaign.messages.get(contact=b).replies.count(), 0)
+        page = self.client.get('/admin/mailer/')
+        self.assertContains(page, 'Select Branch A')
+        self.assertContains(page, 'Select Branch B')
+        self.assertContains(page, 'form="mailer-compose"')
+
+    def test_checkbox_selection_rejects_inactive_or_unknown_center(self):
+        item = MailerContact.objects.first()
+        item.active=False
+        item.save()
+        for ids in ([str(item.pk)], ['99999999']):
+            response=self.client.post('/admin/mailer/', {**self.data, 'action':'preview', 'selected_contacts':ids})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(MailerCampaign.objects.count(), 0)
+
+    def test_blank_selection_requires_checkboxes_or_range(self):
+        form = admin_mailer.ComposeForm({**self.data, 'selection':''})
+        self.assertFalse(form.is_valid())
