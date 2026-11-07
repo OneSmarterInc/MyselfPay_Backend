@@ -14,31 +14,42 @@ import ssl
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core import signing
+from django.http import Http404
+from django.views.decorators.csrf import csrf_protect
 from django.core.validators import validate_email
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import transaction
-from django.db.models import Count, OuterRef, Subquery
+from django.db.models import Count, OuterRef, Subquery, Exists
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import strip_tags
+from django.utils.html import strip_tags, escape
+from django.utils.safestring import mark_safe
 
 from admin_settings import secret_cipher, smtp_configuration
 from api.models import (MailerCampaign, MailerContact, MailerLease, MailerMailbox,
-                        MailerMessage, MailerReply, MailerTemplate)
+                        MailerMessage, MailerReply, MailerTemplate, MailerSuppression)
 import booking_mail
 import core
 
 
 def mailer_view(site, request):
     mailbox = MailerMailbox.objects.filter(pk=1).first() or MailerMailbox(pk=1)
+    audience = request.POST.get('audience_filter', 'all') if request.POST.get('action') == 'preview' else request.GET.get('audience', 'all')
+    audience = audience if audience in ('all', 'never', 'no_reply', 'unsubscribed') else 'all'
     email_search = (request.POST.get('email_filter', '') if request.POST.get('action') == 'preview' else request.GET.get('email', '')).strip()[:254]
-    compose, mailbox_form = ComposeForm(initial={'email_filter': email_search}), MailboxForm(instance=mailbox)
+    compose, mailbox_form = ComposeForm(initial={'email_filter': email_search, 'audience_filter': audience, 'subject':OUTREACH_SUBJECT, 'body':OUTREACH_BODY}), MailboxForm(instance=mailbox)
     if request.method == 'POST':
         action = request.POST.get('action')
+        if action == 'disable':
+            contact = get_object_or_404(MailerContact, pk=request.POST.get('contact_id'))
+            suppress_email(contact.email, 'admin', request.user.get_username())
+            messages.success(request, 'Address disabled and added to the unsubscribe list. Unsent mail has been stopped.')
+            return redirect('admin:mailer')
         if action == 'contacts':
             count = sync_contacts()
             messages.success(request, f'{count} center email rows refreshed.')
@@ -69,9 +80,9 @@ def mailer_view(site, request):
                     return redirect('admin:mailer_campaign', ident=campaign.pk)
     elif request.GET.get('template'):
         template = get_object_or_404(MailerTemplate, pk=request.GET['template'])
-        compose = ComposeForm(initial={'subject': template.subject, 'body': template.body, 'template_name': template.name, 'email_filter':email_search})
+        compose = ComposeForm(initial={'subject': template.subject, 'body': template.body, 'template_name': template.name, 'email_filter':email_search, 'audience_filter':audience})
     latest = MailerMessage.objects.filter(contact=OuterRef('pk')).exclude(state='draft').order_by('-campaign__created_at')
-    contacts = mailer_contacts(email_search).annotate(latest_message=Subquery(latest.values('pk')[:1]))
+    contacts = mailer_contacts(email_search, audience).annotate(latest_message=Subquery(latest.values('pk')[:1]))
     page = Paginator(contacts, 50).get_page(request.GET.get('page'))
     sent = {m.pk: m for m in MailerMessage.objects.filter(pk__in=[c.latest_message for c in page if c.latest_message]).annotate(reply_count=Count('replies'))}
     reply_ids = MailerReply.objects.filter(message_id=OuterRef('pk')).order_by('-received_at', '-pk')
@@ -82,7 +93,7 @@ def mailer_view(site, request):
             for n, contact in enumerate(page)]
     return TemplateResponse(request, 'admin/mailer.html', {**site.each_context(request), 'title': 'Mailer',
         'compose': compose, 'mailbox_form': mailbox_form, 'mailbox': mailbox, 'rows': rows, 'page': page,
-        'total': contacts.count(), 'email_search': email_search, 'templates': MailerTemplate.objects.order_by('name'),
+        'total': contacts.count(), 'email_search': email_search, 'audience': audience, 'suppression_count':MailerSuppression.objects.count(), 'templates': MailerTemplate.objects.order_by('name'),
         'campaigns': MailerCampaign.objects.annotate(recipient_count=Count('messages')).order_by('-created_at')[:10]})
 
 
@@ -111,6 +122,9 @@ def campaign_view(site, request, ident):
         'preview_subject': personalize(campaign.subject, first) if first else '',
         'preview_body': personalize(campaign.body, first) if first else '',
         'preview_center': first.center_names if first else '',
+        'preview_opt_out': variables(first).get('opt_out_link', '') if first else '',
+        'preview_body_html': email_body_html(personalize(campaign.body, first), variables(first)) if first else '',
+        'preview_address': ('' if variables(first).get('mailing_address','') in personalize(campaign.body,first) else variables(first).get('mailing_address','')) if first else '',
         'counts': campaign.messages.values('state').annotate(total=Count('pk')).order_by('state')})
 
 
@@ -139,20 +153,27 @@ def sync_contacts():
         except ValidationError:
             continue
         contacts.append((row['entry_key'], address, str(entry.get('name') or 'Unnamed center')[:300],
-                         datetime.fromtimestamp(row['first_created'], dt_timezone.utc)))
+                         datetime.fromtimestamp(row['first_created'], dt_timezone.utc), str(entry.get('city') or entry.get('area') or '')[:200], str(entry.get('state') or entry.get('states') or '')[:100]))
     with transaction.atomic():
         MailerContact.objects.update(active=False)
-        for key, address, name, stamp in contacts:
+        for key, address, name, stamp, city, state in contacts:
             MailerContact.objects.update_or_create(center_key=key, email=address, defaults={
-                'centers': [name], 'imported_at': stamp, 'active': True})
+                'centers': [name], 'imported_at': stamp, 'active': True, 'city':city, 'state':state})
     return len(contacts)
 
 
 
-def mailer_contacts(email_search=''):
-    contacts = MailerContact.objects.filter(active=True)
+def mailer_contacts(email_search='', audience='all'):
+    contacts = MailerContact.objects.filter(active=True).annotate(
+        suppressed=Exists(MailerSuppression.objects.filter(email=OuterRef('email'))))
+    contacts = contacts.filter(suppressed=(audience == 'unsubscribed'))
     if email_search:
         contacts = contacts.filter(email__icontains=email_search.strip())
+    if audience == 'never':
+        contacts = contacts.annotate(touched=Exists(MailerMessage.objects.filter(email=OuterRef('email'), state__in=['sent','uncertain','sending']))).filter(touched=False)
+    elif audience == 'no_reply':
+        contacts = contacts.annotate(sent_before=Exists(MailerMessage.objects.filter(email=OuterRef('email'), state='sent')),
+            answered=Exists(MailerReply.objects.filter(message__email=OuterRef('email')))).filter(sent_before=True, answered=False)
     return contacts.order_by('-imported_at', 'center_key', 'email', 'pk')
 
 
@@ -168,6 +189,7 @@ def selection_range(value, total):
 
 
 class ComposeForm(forms.Form):
+    audience_filter = forms.ChoiceField(choices=[('all','All enabled centers'),('never','Never emailed'),('no_reply','Emailed, no reply'),('unsubscribed','Unsubscribed / disabled')], initial='all', required=False, widget=forms.HiddenInput)
     email_filter = forms.CharField(max_length=254, required=False, widget=forms.HiddenInput)
     selection = forms.CharField(max_length=40, required=False, label='Recipient count or range (optional)',
                                help_text='100 selects rows 1–100. 100-200 selects rows 100–200, including both ends (101 emails).')
@@ -175,13 +197,18 @@ class ComposeForm(forms.Form):
         required=False, widget=forms.MultipleHiddenInput)
     subject = forms.CharField(max_length=200)
     body = forms.CharField(max_length=30000, widget=forms.Textarea(attrs={'rows': 10}), label='Message',
-                           help_text='Use {{center_name}} and {{email}} for personalization. Messages are sent separately.')
+                           help_text='Variables: {{facility_name}}, {{city}}, {{state}}, {{claim_link}}, {{mailing_address}}, {{opt_out_link}}, {{email}}. Messages are sent separately.')
     template_name = forms.CharField(max_length=100, required=False, label='Save as template (optional)')
 
     def clean(self):
         data = super().clean()
         if not data.get('selected_contacts') and not data.get('selection'):
             raise ValidationError('Select center checkboxes or enter a recipient count/range.')
+        if data.get('audience_filter') == 'unsubscribed':
+            raise ValidationError('Unsubscribed addresses cannot receive campaigns.')
+        unknown = set(re.findall(r'{{\s*(\w+)\s*}}', data.get('subject','')+' '+data.get('body',''))) - TEMPLATE_VARIABLES
+        if unknown:
+            raise ValidationError('Unknown template variables: '+', '.join(sorted(unknown)))
         return data
 
     def clean_subject(self):
@@ -197,7 +224,7 @@ class MailboxForm(forms.ModelForm):
 
     class Meta:
         model = MailerMailbox
-        fields = ['enabled', 'host', 'port', 'username', 'password', 'folder', 'reply_to']
+        fields = ['enabled', 'host', 'port', 'username', 'password', 'folder', 'reply_to', 'mailing_address']
         help_texts = {'reply_to': 'Replies will be addressed to this mailbox. It must be the mailbox you monitor.',
                       'folder': 'Replies are read without deleting messages or marking them as read.'}
 
@@ -216,6 +243,12 @@ class MailboxForm(forms.ModelForm):
             self.add_error('reply_to', 'Use the same mailbox email for Reply-To so replies reach the monitored inbox.')
         return data
 
+    def clean_mailing_address(self):
+        value=self.cleaned_data.get('mailing_address','').strip()
+        if '@' in value:
+            raise ValidationError('Use a physical postal address, not an email address.')
+        return value
+
     def save(self, commit=True):
         item = super().save(commit=False)
         item.pk = 1
@@ -226,12 +259,76 @@ class MailboxForm(forms.ModelForm):
         return item
 
 
+TEMPLATE_VARIABLES = {'center_name','facility_name','email','city','state','claim_link','mailing_address','opt_out_link'}
+OUTREACH_SUBJECT = '{{facility_name}} is now searchable on MySelfPay'
+OUTREACH_BODY = """Hello {{facility_name}} team,
+
+MySelfPay is a free search app that helps people without insurance, or who prefer to pay directly, find imaging centers near them. We built it from public information, and {{facility_name}} in {{city}}, {{state}} is already listed so visitors can find you.
+
+The app is in beta and free for now. We would like visitors to be able to send you inquiries and appointment requests, and we want those to reach the right person on your team. Which email address should receive them? A reply to this message with that address is all we need.
+
+We also have a secure portal where you can review your listing and appointment requests. You can open it here: {{claim_link}}
+To correct an address, phone number, hours, exams offered, or how requests reach you, please reply to this email.
+
+If you would like a quick walkthrough, I am glad to set up 15 minutes with you. You can see the app at myselfpay.onesmarter.com.
+
+Thank you,
+Vikram Sethi
+One Smarter, Inc.
+vikram.sethi@onesmarter.com
+
+{{mailing_address}}
+To stop receiving these messages, use this link: {{opt_out_link}}"""
+
+
+def variables(item):
+    saved = item.template_context or {}
+    if 'opt_out_link' not in saved:
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        saved={**saved, 'opt_out_link':settings.FRONTEND_ORIGIN.rstrip('/')+'/api/mailer/unsubscribe/'+token+'/'}
+    return {'center_name':item.center_names, 'facility_name':item.center_names, 'email':item.email, **saved}
+
+
 def personalize(value, item):
-    return value.replace('{{center_name}}', item.center_names).replace('{{email}}', item.email)
+    context=variables(item)
+    return re.sub(r'{{\s*(\w+)\s*}}', lambda m: str(context.get(m[1], m[0])), value)
+
+
+def email_body_html(body, context):
+    # Only our server-created links become markup; composed text stays escaped.
+    html=str(escape(body))
+    for key,label in [('claim_link','Open your center portal'),('opt_out_link','Unsubscribe')]:
+        url=context.get(key,'')
+        if url and url.startswith(settings.FRONTEND_ORIGIN.rstrip('/')+'/'):
+            safe=str(escape(url))
+            html=html.replace(safe, '<a href="'+safe+'" style="color:#97172b;text-decoration:underline;">'+label+'</a>')
+    return mark_safe(html)
+
+
+def suppress_email(email, source='unsubscribe', actor=''):
+    email=email.strip().casefold()
+    with transaction.atomic():
+        MailerSuppression.objects.get_or_create(email=email,defaults={'source':source,'actor':actor})
+        MailerMessage.objects.filter(email__iexact=email,state__in=['draft','queued']).update(state='suppressed',error='Address unsubscribed or disabled.')
+
+
+@csrf_protect
+def unsubscribe_view(request, token):
+    try:
+        payload=signing.loads(token, salt='mailer-unsubscribe-v1')
+        email=payload['email']
+        validate_email(email)
+    except (signing.BadSignature, KeyError, TypeError, ValidationError):
+        raise Http404('Invalid unsubscribe link') from None
+    done=MailerSuppression.objects.filter(email=email.casefold()).exists()
+    if request.method == 'POST':
+        suppress_email(email)
+        done=True
+    return TemplateResponse(request,'emails/unsubscribe.html',{'done':done})
 
 
 def preview_campaign(data, user):
-    contacts = mailer_contacts(data.get('email_filter', ''))
+    contacts = mailer_contacts(data.get('email_filter', ''), data.get('audience_filter','all') or 'all')
     selected = data.get('selected_contacts')
     ids = [item.pk if hasattr(item, 'pk') else int(item) for item in selected] if selected is not None else []
     if ids:
@@ -247,15 +344,25 @@ def preview_campaign(data, user):
             raise ValidationError('The directory changed. Refresh recipients and preview again.')
         positions = {item.pk: start+n for n,item in enumerate(chosen)}
         selection = data['selection']
+    if data.get('audience_filter') == 'unsubscribed':
+        raise ValidationError('Unsubscribed addresses cannot receive campaigns.')
     smtp = smtp_configuration()
     mailbox = MailerMailbox.objects.filter(pk=1).first()
     reply_to = (mailbox.reply_to if mailbox else 'patientcare@onesmarterhealthweb.com') or smtp['sender']
     validate_email(reply_to)
+    address=(mailbox or MailerMailbox(pk=1)).mailing_address.strip()
+    if re.search(r'{{\s*mailing_address\s*}}', data['body']) and (not address or '@' in address):
+        raise ValidationError('Save your physical postal mailing address in mailbox settings before using {{mailing_address}}.')
+    origin=settings.FRONTEND_ORIGIN.rstrip('/')
+    def snapshot(item):
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        return {'city':item.city, 'state':item.state, 'mailing_address':address,
+                'claim_link':origin+'/#center', 'opt_out_link':origin+'/api/mailer/unsubscribe/'+token+'/'}
     with transaction.atomic():
         campaign = MailerCampaign.objects.create(subject=data['subject'], body=data['body'],
             selection=selection, reply_to=reply_to, created_by=user)
         MailerMessage.objects.bulk_create([MailerMessage(campaign=campaign, contact=item, email=item.email,
-            center_names='; '.join(item.centers), position=positions[item.pk],
+            center_names='; '.join(item.centers), template_context=snapshot(item), position=positions[item.pk],
             message_id=make_msgid(domain=reply_to.rsplit('@', 1)[-1])) for n, item in enumerate(chosen)])
         if data.get('template_name'):
             MailerTemplate.objects.update_or_create(name=data['template_name'], defaults={
@@ -268,6 +375,8 @@ def queue_campaign(ident):
         campaign = MailerCampaign.objects.select_for_update().get(pk=ident)
         if campaign.state != 'draft':
             return False
+        suppressed=MailerSuppression.objects.values_list('email',flat=True)
+        campaign.messages.filter(state='draft',email__in=suppressed).update(state='suppressed',error='Address unsubscribed or disabled.')
         campaign.messages.filter(state='draft').update(state='queued')
         campaign.state, campaign.queued_at = 'queued', timezone.now()
         campaign.save(update_fields=['state', 'queued_at'])
@@ -295,6 +404,9 @@ def send_pending(limit=20):
             if not MailerMessage.objects.filter(pk=ident, state='queued').update(state='sending', attempted_at=timezone.now()):
                 continue
             item = MailerMessage.objects.select_related('campaign').get(pk=ident)
+            if MailerSuppression.objects.filter(email=item.email.casefold()).exists():
+                MailerMessage.objects.filter(pk=ident).update(state='suppressed', error='Address unsubscribed or disabled.')
+                continue
             try:
                 config = smtp_configuration()
                 if not all(config[k] for k in ('host', 'username', 'password', 'sender')):
@@ -307,10 +419,18 @@ def send_pending(limit=20):
                 message['Message-ID'] = item.message_id
                 message['Reply-To'] = item.campaign.reply_to
                 body = personalize(item.campaign.body, item)
-                message.set_content(f"MySelfPay by One Smarter, Inc.\n\nHello {item.center_names},\n\n{body}\n\nBest regards,\nThe MySelfPay team\n\nMySelfPay helps people find and compare self-pay imaging options and connect with imaging centers.\nhttps://myselfpay.onesmarter.com\nReply to: {item.campaign.reply_to}")
+                context=variables(item)
+                opt_out=context.get('opt_out_link','')
+                plain="MySelfPay by One Smarter, Inc.\n\n"+body
+                if opt_out and opt_out not in plain:
+                    plain+='\n\nUnsubscribe: '+opt_out
+                message.set_content(plain)
+                if opt_out:
+                    message['List-Unsubscribe']='<'+opt_out+'>'
                 message.add_alternative(render_to_string('emails/mailer_campaign.html', {
-                    'email_subject': message['Subject'], 'email_body': body,
+                    'email_subject': message['Subject'], 'email_body': body, 'email_body_html':email_body_html(body,context),
                     'email_center': item.center_names, 'email_reply_to': item.campaign.reply_to,
+                    'email_opt_out':opt_out, 'email_address':('' if context.get('mailing_address','') in body else context.get('mailing_address','')),
                 }), subtype='html')
             except Exception:
                 MailerMessage.objects.filter(pk=ident).update(state='failed', error='Check SMTP settings, recipient allowlist and template.')
@@ -430,3 +550,13 @@ def sync_replies():
         return 0
     finally:
         MailerLease.objects.filter(name='imap', token=token).update(expires=timezone.now())
+
+
+def unsubscribed_view(site, request):
+    query=request.GET.get('email','').strip()[:254]
+    items=MailerSuppression.objects.order_by('-created_at','email')
+    if query:
+        items=items.filter(email__icontains=query)
+    page=Paginator(items,50).get_page(request.GET.get('page'))
+    return TemplateResponse(request,'admin/mailer_unsubscribed.html',{**site.each_context(request),
+        'title':'Unsubscribed emails','page':page,'total':items.count(),'email_search':query})

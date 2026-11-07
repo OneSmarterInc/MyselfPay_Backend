@@ -38,7 +38,8 @@ class SelfPayAdminSite(AdminSite):
 
     def get_urls(self):
         import admin_mailer
-        return [path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
+        return [path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
+                path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
                 path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
                 path('requests/',self.admin_view(self.requests_view),name='booking_requests'),

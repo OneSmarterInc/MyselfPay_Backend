@@ -105,6 +105,7 @@ class MailerMailbox(models.Model):
     password_encrypted = models.TextField(blank=True, editable=False)
     folder = models.CharField(max_length=100, default='INBOX')
     reply_to = models.EmailField(blank=True, default='patientcare@onesmarterhealthweb.com')
+    mailing_address = models.TextField(blank=True, max_length=1000, default="707 Miamisburg-Centerville Road, STE 223\nDayton, OH 45459")
     cursor_identity = models.CharField(max_length=64, blank=True, editable=False)
     uid_validity = models.CharField(max_length=100, blank=True, editable=False)
     last_uid = models.PositiveBigIntegerField(default=0, editable=False)
@@ -117,6 +118,8 @@ class MailerContact(models.Model):
     center_key = models.CharField(max_length=300, blank=True, default="")
     email = models.EmailField()
     centers = models.JSONField(default=list)
+    city = models.CharField(max_length=200, blank=True)
+    state = models.CharField(max_length=100, blank=True)
     imported_at = models.DateTimeField(db_index=True)
     active = models.BooleanField(default=True, db_index=True)
 
@@ -149,6 +152,7 @@ class MailerMessage(models.Model):
     contact = models.ForeignKey(MailerContact, on_delete=models.PROTECT, related_name='outbound')
     email = models.EmailField()
     center_names = models.TextField()
+    template_context = models.JSONField(default=dict)
     position = models.PositiveIntegerField()
     message_id = models.CharField(max_length=254, unique=True)
     state = models.CharField(max_length=20, default='draft', db_index=True)
@@ -173,3 +177,10 @@ class MailerLease(models.Model):
     name = models.CharField(max_length=40, primary_key=True)
     token = models.CharField(max_length=64, blank=True)
     expires = models.DateTimeField()
+
+
+class MailerSuppression(models.Model):
+    email = models.EmailField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=30, default='unsubscribe')
+    actor = models.CharField(max_length=150, blank=True)

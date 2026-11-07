@@ -136,3 +136,53 @@ email plus a plain-text fallback. Subject and message are personalized and escap
 the composer accepts plain text, not arbitrary HTML. The confirmation screen shows
 the same HTML card as delivery. The footer introduces MySelfPay, links to the
 portal, and uses the saved campaign Reply-To. Previously sent emails are unchanged.
+
+
+## Outreach variables and recipient preferences
+
+The default composer contains the Vikram Sethi outreach structure. Variables are
+filled per center: `{{facility_name}}` (also `{{center_name}}`), `{{city}}`,
+`{{state}}`, `{{email}}`, `{{claim_link}}`, `{{mailing_address}}`, and
+`{{opt_out_link}}`. Unknown variable names are rejected. The directory supplies
+city/area and state; missing values are not invented. These values are frozen in
+the campaign preview. The postal address is editable in Reply mailbox settings;
+it defaults to the operator-provided 707 Miamisburg-Centerville Road, STE 223,
+Dayton, OH 45459. An email address is not accepted as a postal address.
+
+The center link opens the existing center portal, which requires email OTP.
+It does not bypass verification or introduce listing-edit permissions. The draft
+says to reply for listing corrections because direct editing is not implemented.
+
+History filters operate by recipient email across centers sharing a mailbox:
+- Never emailed: no sent, uncertain, or currently-sending message recorded.
+- Emailed, no reply: at least one SMTP-accepted message and no imported reply.
+  Use Check for replies to import the latest IMAP replies first.
+- Unsubscribed / disabled: addresses blocked from sending.
+
+The unsubscribe list is at `/admin/mailer/unsubscribed/` and includes inactive
+contacts too. Disable email is a superuser-only CSRF-protected POST. It adds the
+address to the same email-level suppression list as recipient unsubscribe.
+Queued and draft messages are suppressed, and sending checks the suppression
+list again just before SMTP. A message already in transit cannot be recalled.
+Directory refresh does not remove suppression records. No automatic re-enable
+or automated resends are provided.
+
+Recipient links are signed with a dedicated Django signing salt. GET displays a
+confirmation; only CSRF-protected POST changes preferences. This avoids accidental
+unsubscribes from link scanners. A List-Unsubscribe header points to the same
+confirmation page; this does not advertise RFC 8058 one-click unsubscribe.
+The preference affects mailer campaigns only, not appointment transactions.
+
+Deploy this version on AWS (no Vercel change):
+
+```bash
+cd /var/www/MyselfPay_Backend
+sudo systemctl stop myselfpay-mailer.service
+sudo git pull --ff-only origin codex/mobile-username-accounts
+sudo ./venv/bin/python manage.py migrate --noinput
+sudo ./venv/bin/python manage.py sync_mailer_contacts
+sudo ./venv/bin/python manage.py collectstatic --noinput
+sudo ./venv/bin/python manage.py check
+sudo systemctl restart myselfpay-backend.service
+sudo systemctl start myselfpay-mailer.service
+```

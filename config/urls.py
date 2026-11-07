@@ -5,12 +5,14 @@ from django.views.static import serve
 from api.admin import admin_site
 from api import views
 from api.spatial_views import SpatialBundleView
+from admin_mailer import unsubscribe_view
 
 urlpatterns = [
     path('admin', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin_site.urls),
     path('admin-assets/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
     path('api/v1/spatial-bundle/<str:h3_res7>/', SpatialBundleView.as_view(), name='spatial-bundle'),
+    path('api/mailer/unsubscribe/<str:token>/', unsubscribe_view, name='mailer-unsubscribe'),
     path('api/health', views.HealthView.as_view(), name='health'),
     re_path(r'^api/center/(?P<action>code|verify|dashboard|request|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),

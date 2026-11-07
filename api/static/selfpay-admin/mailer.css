@@ -13,3 +13,7 @@
 .mailer-email-search{padding:20px 24px;border-bottom:1px solid #e6e8ee}.mailer-email-search label{display:block;font-weight:600;margin-bottom:8px}.mailer-email-search input{flex:1;min-width:180px;min-height:44px}.mailer-email-search .mailer-note{margin-bottom:0}@media(max-width:600px){.mailer-email-search{padding:16px}.mailer-email-search input{width:100%;flex-basis:100%}}
 
 .mailer-email-preview{padding:24px 12px;background:#f2f4f7;border-radius:10px;margin:24px 0;min-width:0}.mailer-email-preview table{max-width:100%}.mailer-plain-preview summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600}@media(max-width:600px){.mailer-email-preview{padding:16px 0;margin:18px 0}}
+
+.mailer-directory .mailer-table{min-width:1200px}.mailer-directory .mailer-table th:nth-child(8){width:140px}.mailer-email-search select{min-height:44px;max-width:100%;flex:1;min-width:190px}
+
+.mailer-directory .mailer-table{min-width:1360px}.mailer-directory .mailer-table th:nth-child(1){width:48px}.mailer-directory .mailer-table th:nth-child(2){width:60px}.mailer-directory .mailer-table th:nth-child(3){width:340px}.mailer-directory .mailer-table th:nth-child(4){width:250px}.mailer-directory .mailer-table th:nth-child(5){width:160px}.mailer-directory .mailer-table th:nth-child(6){width:120px}.mailer-directory .mailer-table th:nth-child(7){width:220px}.mailer-directory .mailer-table th:nth-child(8){width:160px}

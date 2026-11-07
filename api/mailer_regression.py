@@ -224,7 +224,7 @@ class MailerTests(TestCase):
     def test_email_search_pagination_preserves_filter_and_empty_results(self):
         response = self.client.get('/admin/mailer/', {'email':'@example.test','page':'2'})
         self.assertEqual(response.context['page'].number,2)
-        self.assertContains(response,'email=%40example.test&amp;page=3')
+        self.assertContains(response,'email=%40example.test&amp;audience=all&amp;page=3')
         response = self.client.get('/admin/mailer/', {'email':'missing@example.invalid'})
         self.assertEqual(response.context['total'],0)
         self.assertContains(response,'No centers match this email search.')
@@ -248,7 +248,7 @@ class MailerTests(TestCase):
         self.assertIn('MySelfPay by One Smarter, Inc.',plain)
         self.assertIn('A message from MySelfPay',html)
         self.assertIn('background:#a71930',html)
-        self.assertIn('Hello Synthetic center 1,',html)
+        self.assertIn('Synthetic center 1',html)
         self.assertIn('First line<br>',html)
         self.assertNotIn('<script>bad</script>',html)
         self.assertNotIn('<img src=x',html)
@@ -258,3 +258,99 @@ class MailerTests(TestCase):
         response=self.client.get(f'/admin/mailer/campaign/{campaign.pk}/')
         self.assertContains(response,'A message from MySelfPay')
         self.assertNotContains(response,'<script>bad</script>')
+
+    def test_outreach_variables_are_frozen_and_personalized_without_recursive_substitution(self):
+        from api.models import MailerMailbox
+        item=MailerContact.objects.first();item.city='Dayton';item.state='OH';item.save()
+        campaign=admin_mailer.preview_campaign({**self.data,'selection':'1','subject':admin_mailer.OUTREACH_SUBJECT,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+        message=campaign.messages.get()
+        self.assertEqual(admin_mailer.personalize(campaign.subject,message), 'Synthetic center 1 is now searchable on MySelfPay')
+        body=admin_mailer.personalize(campaign.body,message)
+        for value in ('Dayton, OH','STE 223','/#center','/api/mailer/unsubscribe/'):
+            self.assertIn(value,body)
+        self.assertNotIn('{{',body)
+        item.city='Changed';item.save()
+        self.assertIn('Dayton, OH',admin_mailer.personalize(campaign.body,message))
+        message.center_names='Center {{email}}'
+        self.assertEqual(admin_mailer.personalize('{{facility_name}}',message),'Center {{email}}')
+
+    def test_unsubscribe_is_confirmed_signed_and_stops_queued_shared_mail(self):
+        from django.urls import reverse
+        from django.core import signing
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first()
+        twin=MailerContact.objects.create(center_key='same-email',email=item.email,centers=['Shared center'],imported_at=timezone.now())
+        campaign=admin_mailer.preview_campaign({**self.data,'selected_contacts':[item,twin]},'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        url=reverse('mailer-unsubscribe',args=[token])
+        client=Client(enforce_csrf_checks=True)
+        response=client.get(url)
+        self.assertContains(response,'Email preferences')
+        self.assertFalse(MailerSuppression.objects.exists())
+        self.assertEqual(client.post(url,HTTP_ORIGIN='http://testserver').status_code,403)
+        csrf=client.cookies['csrftoken'].value
+        response=client.post(url,{'csrfmiddlewaretoken':csrf},HTTP_ORIGIN='http://testserver')
+        self.assertContains(response,'You are unsubscribed')
+        self.assertEqual(campaign.messages.filter(state='suppressed').count(),2)
+        self.assertNotIn(item.pk, admin_mailer.mailer_contacts().values_list('pk',flat=True))
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.assertEqual(client.get(url+'bad').status_code,404)
+        self.assertContains(client.post(url,{'csrfmiddlewaretoken':csrf},HTTP_ORIGIN='http://testserver'),'You are unsubscribed')
+        admin_mailer.suppress_email(item.email)
+        self.assertEqual(MailerSuppression.objects.count(),1)
+
+    def test_disable_is_admin_only_blocks_new_and_prepared_campaigns(self):
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first()
+        campaign=self.preview('1')
+        response=self.client.post('/admin/mailer/',{'action':'disable','contact_id':item.pk})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+        self.assertContains(self.client.get('/admin/mailer/unsubscribed/'),item.email)
+        with self.assertRaises(ValidationError):
+            admin_mailer.preview_campaign({**self.data,'selected_contacts':[item]},'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.client.logout()
+        self.assertEqual(self.client.post('/admin/mailer/',{'action':'disable','contact_id':item.pk}).status_code,302)
+
+    def test_filters_use_email_history_across_shared_centers_and_all_replies(self):
+        item=MailerContact.objects.first()
+        twin=MailerContact.objects.create(center_key='history-twin',email=item.email,centers=['Twin'],imported_at=timezone.now())
+        campaign=self.preview('1');message=campaign.messages.get();message.state='sent';message.sent_at=timezone.now();message.save()
+        self.assertNotIn(twin.pk,admin_mailer.mailer_contacts(audience='never').values_list('pk',flat=True))
+        self.assertIn(twin.pk,admin_mailer.mailer_contacts(audience='no_reply').values_list('pk',flat=True))
+        admin_mailer.import_reply(self.reply(message),'box','1',1)
+        self.assertNotIn(twin.pk,admin_mailer.mailer_contacts(audience='no_reply').values_list('pk',flat=True))
+        admin_mailer.suppress_email(item.email)
+        self.assertIn(twin.pk,admin_mailer.mailer_contacts(audience='unsubscribed').values_list('pk',flat=True))
+        response=self.client.get('/admin/mailer/',{'audience':'never'})
+        self.assertContains(response,'Never emailed')
+
+    def test_template_rejects_unknown_variables_and_postal_email(self):
+        form=admin_mailer.ComposeForm({**self.data,'body':'{{unknown}}'})
+        self.assertFalse(form.is_valid())
+        MailerMailbox.objects.create(mailing_address='')
+        with self.assertRaises(ValidationError):
+            admin_mailer.preview_campaign({**self.data,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+
+    def test_suppression_is_checked_again_immediately_before_smtp(self):
+        from api.models import MailerSuppression
+        campaign=self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        MailerSuppression.objects.create(email=campaign.messages.get().email)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+
+    def test_outreach_rendering_uses_clickable_labels_not_long_signed_link_text(self):
+        campaign=admin_mailer.preview_campaign({**self.data,'selection':'1','subject':admin_mailer.OUTREACH_SUBJECT,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+        item=campaign.messages.get();context=admin_mailer.variables(item)
+        html=admin_mailer.email_body_html(admin_mailer.personalize(campaign.body,item),context)
+        self.assertIn('>Open your center portal</a>',html)
+        self.assertIn('>Unsubscribe</a>',html)
+        self.assertIn('href="'+context['claim_link']+'"',html)
+        self.assertNotIn('>'+context['opt_out_link'],html)
