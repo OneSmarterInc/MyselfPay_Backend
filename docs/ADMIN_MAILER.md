@@ -123,3 +123,9 @@ sudo systemctl start myselfpay-mailer.service
 ```
 
 If the optional mailer service is not installed, omit its stop/start lines.
+
+
+Email search accepts a partial address or domain, case-insensitively. Results stay
+newest center import first; pagination retains the filter. Count/range previews
+use that same filtered order. Selected checkboxes must belong to the filtered
+results. Clear removes the filter. This update requires no new migration.

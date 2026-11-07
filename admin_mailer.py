@@ -34,7 +34,8 @@ import core
 
 def mailer_view(site, request):
     mailbox = MailerMailbox.objects.filter(pk=1).first() or MailerMailbox(pk=1)
-    compose, mailbox_form = ComposeForm(), MailboxForm(instance=mailbox)
+    email_search = (request.POST.get('email_filter', '') if request.POST.get('action') == 'preview' else request.GET.get('email', '')).strip()[:254]
+    compose, mailbox_form = ComposeForm(initial={'email_filter': email_search}), MailboxForm(instance=mailbox)
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'contacts':
@@ -67,9 +68,9 @@ def mailer_view(site, request):
                     return redirect('admin:mailer_campaign', ident=campaign.pk)
     elif request.GET.get('template'):
         template = get_object_or_404(MailerTemplate, pk=request.GET['template'])
-        compose = ComposeForm(initial={'subject': template.subject, 'body': template.body, 'template_name': template.name})
+        compose = ComposeForm(initial={'subject': template.subject, 'body': template.body, 'template_name': template.name, 'email_filter':email_search})
     latest = MailerMessage.objects.filter(contact=OuterRef('pk')).exclude(state='draft').order_by('-campaign__created_at')
-    contacts = MailerContact.objects.filter(active=True).annotate(latest_message=Subquery(latest.values('pk')[:1]))
+    contacts = mailer_contacts(email_search).annotate(latest_message=Subquery(latest.values('pk')[:1]))
     page = Paginator(contacts, 50).get_page(request.GET.get('page'))
     sent = {m.pk: m for m in MailerMessage.objects.filter(pk__in=[c.latest_message for c in page if c.latest_message]).annotate(reply_count=Count('replies'))}
     reply_ids = MailerReply.objects.filter(message_id=OuterRef('pk')).order_by('-received_at', '-pk')
@@ -80,7 +81,7 @@ def mailer_view(site, request):
             for n, contact in enumerate(page)]
     return TemplateResponse(request, 'admin/mailer.html', {**site.each_context(request), 'title': 'Mailer',
         'compose': compose, 'mailbox_form': mailbox_form, 'mailbox': mailbox, 'rows': rows, 'page': page,
-        'total': contacts.count(), 'templates': MailerTemplate.objects.order_by('name'),
+        'total': contacts.count(), 'email_search': email_search, 'templates': MailerTemplate.objects.order_by('name'),
         'campaigns': MailerCampaign.objects.annotate(recipient_count=Count('messages')).order_by('-created_at')[:10]})
 
 
@@ -146,6 +147,13 @@ def sync_contacts():
 
 
 
+def mailer_contacts(email_search=''):
+    contacts = MailerContact.objects.filter(active=True)
+    if email_search:
+        contacts = contacts.filter(email__icontains=email_search.strip())
+    return contacts.order_by('-imported_at', 'center_key', 'email', 'pk')
+
+
 def selection_range(value, total):
     raw = str(value).strip()
     if not re.fullmatch(r'[1-9]\d{0,6}(?:\s*-\s*[1-9]\d{0,6})?', raw):
@@ -158,6 +166,7 @@ def selection_range(value, total):
 
 
 class ComposeForm(forms.Form):
+    email_filter = forms.CharField(max_length=254, required=False, widget=forms.HiddenInput)
     selection = forms.CharField(max_length=40, required=False, label='Recipient count or range (optional)',
                                help_text='100 selects rows 1–100. 100-200 selects rows 100–200, including both ends (101 emails).')
     selected_contacts = forms.ModelMultipleChoiceField(queryset=MailerContact.objects.filter(active=True),
@@ -220,7 +229,7 @@ def personalize(value, item):
 
 
 def preview_campaign(data, user):
-    contacts = MailerContact.objects.filter(active=True)
+    contacts = mailer_contacts(data.get('email_filter', ''))
     selected = data.get('selected_contacts')
     ids = [item.pk if hasattr(item, 'pk') else int(item) for item in selected] if selected is not None else []
     if ids:

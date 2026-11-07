@@ -210,3 +210,27 @@ class MailerTests(TestCase):
     def test_blank_selection_requires_checkboxes_or_range(self):
         form = admin_mailer.ComposeForm({**self.data, 'selection':''})
         self.assertFalse(form.is_valid())
+
+    def test_email_search_is_case_insensitive_sorted_and_ranges_use_filtered_rows(self):
+        old = MailerContact.objects.create(center_key='search-old', email='team@filter.example.test', centers=['Older match'], imported_at=timezone.now()-timedelta(days=2))
+        new = MailerContact.objects.create(center_key='search-new', email='hello@filter.example.test', centers=['Newest match'], imported_at=timezone.now())
+        response = self.client.get('/admin/mailer/', {'email':'FILTER.example.test'})
+        self.assertEqual([row['contact'].pk for row in response.context['rows']], [new.pk, old.pk])
+        self.assertContains(response, 'Search email')
+        response = self.client.post('/admin/mailer/?email=FILTER.example.test', {**self.data, 'action':'preview', 'selection':'1', 'email_filter':'FILTER.example.test'})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(MailerCampaign.objects.get().messages.get().contact_id,new.pk)
+
+    def test_email_search_pagination_preserves_filter_and_empty_results(self):
+        response = self.client.get('/admin/mailer/', {'email':'@example.test','page':'2'})
+        self.assertEqual(response.context['page'].number,2)
+        self.assertContains(response,'email=%40example.test&amp;page=3')
+        response = self.client.get('/admin/mailer/', {'email':'missing@example.invalid'})
+        self.assertEqual(response.context['total'],0)
+        self.assertContains(response,'No centers match this email search.')
+
+    def test_checkbox_cannot_send_outside_filtered_results(self):
+        item=MailerContact.objects.first()
+        response=self.client.post('/admin/mailer/', {**self.data, 'action':'preview', 'email_filter':'no-match.invalid', 'selected_contacts':[str(item.pk)]})
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(MailerCampaign.objects.count(),0)
