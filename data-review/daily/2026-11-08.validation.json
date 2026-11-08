@@ -1,0 +1,153 @@
+{
+  "date": "2026-11-08",
+  "batch_id": "DAILY-20261108",
+  "checked_utc": "2026-11-08T02:26:45.209507+00:00",
+  "eligible": 30,
+  "held": 26,
+  "previously_known_excluded": 63,
+  "screened_total_including_known": 119,
+  "approved": 0,
+  "imported": 0,
+  "target": 100,
+  "target_met": false,
+  "states": {
+    "IA": {
+      "eligible": 2,
+      "held": 0
+    },
+    "MS": {
+      "eligible": 1,
+      "held": 0
+    },
+    "AL": {
+      "eligible": 4,
+      "held": 4
+    },
+    "WV": {
+      "eligible": 0,
+      "held": 1
+    },
+    "DC": {
+      "eligible": 0,
+      "held": 2
+    },
+    "NE": {
+      "eligible": 6,
+      "held": 2
+    },
+    "OK": {
+      "eligible": 4,
+      "held": 2
+    },
+    "AR": {
+      "eligible": 3,
+      "held": 3
+    },
+    "ID": {
+      "eligible": 1,
+      "held": 3
+    },
+    "LA": {
+      "eligible": 2,
+      "held": 6
+    },
+    "MO": {
+      "eligible": 7,
+      "held": 3
+    }
+  },
+  "fixed_price_rows": 1,
+  "starting_price_rows": 1,
+  "usable_email_rows": 30,
+  "phone_missing_rows": 0,
+  "order_required": {
+    "Yes": 9,
+    "Unknown": 21
+  },
+  "columns": 76,
+  "first_52_canonical_columns_preserved": true,
+  "first_71_prior_daily_columns_preserved": true,
+  "additional_columns": [
+    "Appointment inbox",
+    "Appointment inbox source",
+    "Physician order source",
+    "Modality source",
+    "Email location coverage"
+  ],
+  "csv_rows": 30,
+  "csv_bytes": 105205,
+  "csv_sha256": "7c92c21551dfde3ad0de0b8a64d01fc269c38e3399bf0b2c4db0262b037c0f48",
+  "csv_git_blob_sha": "a4f5de3143c858948b74e1f4368827bacd4f6801",
+  "csv_utf8_bom": false,
+  "csv_values_exactly_match_validated_payload": true,
+  "record_ids": [
+    "DAILY-20261108-001",
+    "DAILY-20261108-002",
+    "DAILY-20261108-003",
+    "DAILY-20261108-004",
+    "DAILY-20261108-005",
+    "DAILY-20261108-006",
+    "DAILY-20261108-007",
+    "DAILY-20261108-008",
+    "DAILY-20261108-009",
+    "DAILY-20261108-010",
+    "DAILY-20261108-011",
+    "DAILY-20261108-012",
+    "DAILY-20261108-013",
+    "DAILY-20261108-014",
+    "DAILY-20261108-015",
+    "DAILY-20261108-016",
+    "DAILY-20261108-017",
+    "DAILY-20261108-018",
+    "DAILY-20261108-019",
+    "DAILY-20261108-020",
+    "DAILY-20261108-021",
+    "DAILY-20261108-022",
+    "DAILY-20261108-023",
+    "DAILY-20261108-024",
+    "DAILY-20261108-025",
+    "DAILY-20261108-026",
+    "DAILY-20261108-027",
+    "DAILY-20261108-028",
+    "DAILY-20261108-029",
+    "DAILY-20261108-030"
+  ],
+  "canonical_version": 59,
+  "canonical_rows": 5404,
+  "canonical_main": 5021,
+  "canonical_pending": 339,
+  "canonical_archive": 44,
+  "canonical_sha256": "bda17f1e5118626abae9decc25e170719cc0cb7a36b075b759fab9839e745afb",
+  "baseline_evidence_rows": 8814,
+  "baseline_sha256": "988abf831ed86cf3ce8b459da1dd1565b6bf77efef95e0690c5908425ef64b9a",
+  "live_rows": 2900,
+  "live_batch": "directory-email-20261029",
+  "live_without_structured_locations": 2755,
+  "live_final_recheck": {
+    "checked_utc": "2026-11-08T02:19:34.761853+00:00",
+    "active_batches": [
+      "directory-email-20261029"
+    ],
+    "row_count": 2900,
+    "identity_fields_unchanged": true,
+    "original_identity_fields_sha256": "280b037a9ee9c7d62bb3f8753c9ed9b483c471e82aaccff1092d92226c4c88d6",
+    "final_identity_fields_sha256": "280b037a9ee9c7d62bb3f8753c9ed9b483c471e82aaccff1092d92226c4c88d6",
+    "scope": "Stable entry key, batch, name, city, state, coverage, structured locations, notes containing phone, source and additional sources. Read-only active-batch query."
+  },
+  "repository_source_blob_sha": "3099c8a1cb164f1f1c1dce820c626895f793d83d",
+  "repository_source_blob_unchanged_from_previous_validation": true,
+  "repository_source_fresh_full_content_comparison": "Not completed: connector size/transport limits. Unchanged blob identity verified; no fresh full-content comparison claimed.",
+  "dedup_result": "No identity matches among retained eligible rows in current canonical, prior review/daily and live comparison. Ten initially eligible candidates and seven held candidates matched earlier reviews and were excluded from the new count. Existing-known research encounters were also excluded.",
+  "dedup_limitations": "2,755 live entries lack structured locations; coverage, notes and known aliases were considered, but real-world address/alias reconciliation remains provisional.",
+  "email_qualification": "Official scheduling, radiology-department or general-inquiry email with physical-location coverage required. Published email does not establish tested deliverability or booking acceptance. Physician-orders-only OCSRI contact held.",
+  "price_limits": "One published standard-rate facility and one starting-rate facility. Confirm exact exam, contrast, eligibility and total. Quote/transparency routes elsewhere are not numeric price offers.",
+  "approval_audit": "Prior review decisions were blank or Pending. No approvals inferred or changed. All new approval decisions blank and import permitted No.",
+  "csv_is_review_artifact_not_import": true,
+  "no_canonical_write": true,
+  "no_live_write": true,
+  "no_provider_contact": true,
+  "no_deployment": true,
+  "repository": "OneSmarterInc/MyselfPay_Backend",
+  "branch": "data/daily-csv",
+  "path": "data-review/daily/2026-11-08.csv"
+}
