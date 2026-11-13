@@ -41,7 +41,7 @@ import core
 def mailer_view(site, request):
     mailbox = MailerMailbox.objects.filter(pk=1).first() or MailerMailbox(pk=1)
     audience = request.POST.get('audience_filter', 'all') if request.POST.get('action') == 'preview' else request.GET.get('audience', 'all')
-    audience = audience if audience in ('all', 'never', 'no_reply', 'unsubscribed') else 'all'
+    audience = audience if audience in ('all', 'sent', 'replied', 'other', 'never', 'no_reply', 'unsubscribed') else 'all'
     email_search = (request.POST.get('email_filter', '') if request.POST.get('action') == 'preview' else request.GET.get('email', '')).strip()[:254]
     compose, mailbox_form = ComposeForm(initial={'email_filter': email_search, 'audience_filter': audience, 'subject':OUTREACH_SUBJECT, 'body':OUTREACH_BODY, 'select_all_filtered':request.GET.get('all_matching') == '1'}), MailboxForm(instance=mailbox)
     if request.method == 'POST':
@@ -82,15 +82,21 @@ def mailer_view(site, request):
     elif request.GET.get('template'):
         template = get_object_or_404(MailerTemplate, pk=request.GET['template'])
         compose = ComposeForm(initial={'subject': template.subject, 'body': template.body, 'template_name': template.name, 'email_filter':email_search, 'audience_filter':audience})
-    latest = MailerMessage.objects.filter(contact=OuterRef('pk')).exclude(state='draft').order_by('-campaign__created_at')
-    contacts = mailer_contacts(email_search, audience).annotate(latest_message=Subquery(latest.values('pk')[:1]))
+    latest = MailerMessage.objects.filter(contact=OuterRef('pk')).exclude(state='draft').order_by('-campaign__created_at', '-pk')
+    latest_reply = MailerReply.objects.filter(message__contact_id=OuterRef('pk')).order_by('-received_at', '-pk')
+    contacts = mailer_contacts(email_search, audience).annotate(
+        latest_message=Subquery(latest.values('pk')[:1]),
+        latest_reply_id=Subquery(latest_reply.values('pk')[:1]))
     page = Paginator(contacts, 50).get_page(request.GET.get('page'))
     sent = {m.pk: m for m in MailerMessage.objects.filter(pk__in=[c.latest_message for c in page if c.latest_message]).annotate(reply_count=Count('replies'))}
-    reply_ids = MailerReply.objects.filter(message_id=OuterRef('pk')).order_by('-received_at', '-pk')
-    last_replies = MailerMessage.objects.filter(pk__in=sent).annotate(last_reply=Subquery(reply_ids.values('pk')[:1]))
-    replies = {r.message_id: r for r in MailerReply.objects.filter(pk__in=[m.last_reply for m in last_replies if m.last_reply])}
+    replies = {r.pk: r for r in MailerReply.objects.filter(pk__in=[c.latest_reply_id for c in page if c.latest_reply_id])}
+    reply_counts = dict(MailerReply.objects.filter(message__contact_id__in=[c.pk for c in page])
+                        .values('message__contact_id').annotate(n=Count('pk')).values_list('message__contact_id', 'n'))
     rows = [{'contact': contact, 'position': page.start_index() + n, 'last': sent.get(contact.latest_message),
-             'reply_preview': reply_text(replies[contact.latest_message])[:150] if contact.latest_message in replies else ''}
+             'reply_count': reply_counts.get(contact.pk, 0),
+             'thread_id': replies[contact.latest_reply_id].message_id if contact.latest_reply_id in replies else contact.latest_message,
+             'reply_preview': reply_text(replies[contact.latest_reply_id])[:150] if contact.latest_reply_id in replies else '',
+             'reply_received_at': replies[contact.latest_reply_id].received_at if contact.latest_reply_id in replies else None}
             for n, contact in enumerate(page)]
     return TemplateResponse(request, 'admin/mailer.html', {**site.each_context(request), 'title': 'Mailer',
         'compose': compose, 'mailbox_form': mailbox_form, 'mailbox': mailbox, 'rows': rows, 'page': page,
@@ -168,17 +174,26 @@ def sync_contacts():
 
 def mailer_contacts(email_search='', audience='all'):
     contacts = MailerContact.objects.filter(active=True).annotate(
+        has_sent=Exists(MailerMessage.objects.filter(contact_id=OuterRef('pk'), state='sent')),
+        has_reply=Exists(MailerReply.objects.filter(message__contact_id=OuterRef('pk'))),
         suppressed=Exists(MailerSuppression.objects.filter(email=OuterRef('email'))),
         suppression_id=Subquery(MailerSuppression.objects.filter(email=OuterRef('email')).values('pk')[:1]))
     contacts = contacts.filter(suppressed=(audience == 'unsubscribed'))
     if email_search:
         contacts = contacts.filter(email__icontains=email_search.strip())
-    if audience == 'never':
+    if audience == 'sent':
+        contacts = contacts.filter(has_sent=True)
+    elif audience == 'replied':
+        contacts = contacts.filter(has_reply=True)
+    elif audience == 'other':
+        contacts = contacts.filter(has_sent=False)
+    elif audience == 'never':
         contacts = contacts.annotate(touched=Exists(MailerMessage.objects.filter(email=OuterRef('email'), state__in=['sent','uncertain','sending']))).filter(touched=False)
     elif audience == 'no_reply':
         contacts = contacts.annotate(sent_before=Exists(MailerMessage.objects.filter(email=OuterRef('email'), state='sent')),
             answered=Exists(MailerReply.objects.filter(message__email=OuterRef('email')))).filter(sent_before=True, answered=False)
-    return contacts.order_by('-imported_at', 'center_key', 'email', 'pk')
+    # One canonical order for display, pagination, count/range, and preview.
+    return contacts.order_by('-has_sent', '-imported_at', 'center_key', 'email', 'pk')
 
 
 def selection_range(value, total):
@@ -194,7 +209,7 @@ def selection_range(value, total):
 
 class ComposeForm(forms.Form):
     select_all_filtered = forms.BooleanField(required=False, widget=forms.HiddenInput)
-    audience_filter = forms.ChoiceField(choices=[('all','All enabled centers'),('never','Never emailed'),('no_reply','Emailed, no reply'),('unsubscribed','Unsubscribed / disabled')], initial='all', required=False, widget=forms.HiddenInput)
+    audience_filter = forms.ChoiceField(choices=[('all','All enabled centers'),('sent','Sent emails'),('replied','Replies received'),('other','Other emails'),('never','Never emailed'),('no_reply','Emailed, no reply'),('unsubscribed','Unsubscribed / disabled')], initial='all', required=False, widget=forms.HiddenInput)
     email_filter = forms.CharField(max_length=254, required=False, widget=forms.HiddenInput)
     selection = forms.CharField(max_length=40, required=False, label='Recipient count or range (optional)',
                                help_text='100 selects rows 1–100. 100-200 selects rows 100–200, including both ends (101 emails).')
@@ -451,6 +466,12 @@ def send_pending(limit=20):
                 continue
             try:
                 booking_mail.send_message(message, item.email)
+            except booking_mail.MailDeliveryUncertain:
+                MailerMessage.objects.filter(pk=ident).update(state='uncertain', error='SMTP acceptance was not confirmed after submission. Check delivery before resending.')
+            except booking_mail.MailUnavailable as error:
+                # The transport distinguishes explicit rejection / pre-send
+                # failures from ambiguous failures after submission starts.
+                MailerMessage.objects.filter(pk=ident).update(state='failed', error=str(error)[:200])
             except Exception:
                 # Never automatically replay a send after an ambiguous transport failure.
                 MailerMessage.objects.filter(pk=ident).update(state='uncertain', error='SMTP delivery was not confirmed. Check the mailbox before resending.')

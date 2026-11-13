@@ -32,6 +32,47 @@ class MailerTests(TestCase):
     def preview(self, selection='2'):
         return admin_mailer.preview_campaign({**self.data, 'selection': selection}, 'mailer-admin')
 
+    def test_sent_first_order_is_shared_by_pages_and_range_selection(self):
+        older = MailerContact.objects.get(email='center205@example.test')
+        campaign = admin_mailer.preview_campaign({**self.data, 'selected_contacts': [older], 'selection': ''}, 'admin')
+        campaign.messages.update(state='sent', sent_at=timezone.now())
+        response = self.client.get('/admin/mailer/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data['rows'][0]['contact'].pk, older.pk)
+        self.assertEqual(response.context_data['rows'][0]['position'], 1)
+        second = self.client.get('/admin/mailer/?page=2')
+        self.assertEqual(second.context_data['rows'][0]['position'], 51)
+        ids = [row['contact'].pk for row in response.context_data['rows'] + second.context_data['rows']]
+        self.assertEqual(len(ids), len(set(ids)))
+        frozen = self.preview('1')
+        self.assertEqual(frozen.messages.get().contact_id, older.pk)
+
+    def test_replies_view_keeps_older_thread_when_newest_email_has_no_reply(self):
+        first = self.preview('1').messages.get()
+        first.state = 'sent'; first.save()
+        self.assertTrue(admin_mailer.import_reply(self.reply(first), 'mailbox', '1', 1))
+        newer = self.preview('1').messages.get()
+        newer.state = 'uncertain'; newer.save()
+        response = self.client.get('/admin/mailer/?audience=replied')
+        self.assertEqual(response.context_data['total'], 1)
+        row = response.context_data['rows'][0]
+        self.assertEqual(row['last'].pk, newer.pk)
+        self.assertEqual(row['thread_id'], first.pk)
+        self.assertEqual(row['reply_count'], 1)
+        self.assertContains(response, f'/admin/mailer/message/{first.pk}/')
+        self.assertContains(response, '&lt;script&gt;unsafe()&lt;/script&gt;')
+
+    def test_sent_and_other_filters_keep_same_email_centers_separate(self):
+        first = MailerContact.objects.get(email='center001@example.test')
+        second = MailerContact.objects.create(center_key='shared-other',email=first.email,centers=['Other center'],imported_at=timezone.now())
+        campaign = admin_mailer.preview_campaign({**self.data, 'selected_contacts': [first], 'selection': ''}, 'admin')
+        campaign.messages.update(state='sent')
+        self.assertEqual(list(admin_mailer.mailer_contacts(audience='sent').values_list('pk',flat=True)), [first.pk])
+        self.assertIn(second.pk, admin_mailer.mailer_contacts(audience='other').values_list('pk',flat=True))
+        self.assertNotIn(first.pk, admin_mailer.mailer_contacts(audience='other').values_list('pk',flat=True))
+        response=self.client.post('/admin/mailer/', {'action':'preview','audience_filter':'sent','selection':'1','subject':'Synthetic','body':'Synthetic'})
+        self.assertEqual(response.status_code,302)
+
     def test_selection_is_one_based_inclusive_and_frozen(self):
         self.assertEqual(admin_mailer.selection_range('100', 205), (1, 100))
         self.assertEqual(admin_mailer.selection_range('100-200', 205), (100, 200))
@@ -69,6 +110,24 @@ class MailerTests(TestCase):
             admin_mailer.send_pending()
             self.assertEqual(send.call_count, 1)
         self.assertEqual(campaign.messages.get().state, 'uncertain')
+
+    def test_known_smtp_failure_is_failed_not_uncertain_and_never_retried(self):
+        import booking_mail
+        campaign=self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message',side_effect=booking_mail.MailUnavailable('SMTP authentication failed (535). Check the mailbox username and password.')) as send:
+            admin_mailer.send_pending(); admin_mailer.send_pending()
+            self.assertEqual(send.call_count,1)
+        item=campaign.messages.get()
+        self.assertEqual(item.state,'failed')
+        self.assertIn('535',item.error)
+
+    def test_ambiguous_submission_is_still_uncertain(self):
+        import booking_mail
+        campaign=self.preview('1'); admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message',side_effect=booking_mail.MailDeliveryUncertain('Unconfirmed')):
+            admin_mailer.send_pending()
+        self.assertEqual(campaign.messages.get().state,'uncertain')
 
     def test_allowlist_and_cancellation_prevent_sends(self):
         campaign = self.preview('1')
