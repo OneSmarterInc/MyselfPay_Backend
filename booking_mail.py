@@ -5,6 +5,7 @@ from email.errors import MessageError
 from html import escape
 import os
 import smtplib
+import socket
 import ssl
 
 
@@ -58,20 +59,30 @@ def send_message(message, recipient):
         from email.utils import formatdate
         message['Date'] = formatdate(localtime=False)
     accepted = False
+    stage = 'configuration'
     try:
         port = int(values['port'])
         context = ssl.create_default_context()
+        stage = 'connection'
         transport = smtplib.SMTP_SSL(host, port, timeout=15, context=context) if use_ssl else smtplib.SMTP(host, port, timeout=15)
         with transport as smtp:
+            stage = 'greeting'
             smtp.ehlo()
             if use_tls:
+                stage = 'TLS negotiation'
                 smtp.starttls(context=context)
                 smtp.ehlo()
+            stage = 'authentication'
             smtp.login(username, password)
+            stage = 'message submission'
             try:
                 refused = smtp.send_message(message, from_addr=sender, to_addrs=[recipient])
-            except (smtplib.SMTPRecipientsRefused, smtplib.SMTPSenderRefused, smtplib.SMTPDataError):
-                raise MailUnavailable('The email was rejected by the mail server.') from None
+            except smtplib.SMTPRecipientsRefused as error:
+                codes = [value[0] for value in error.recipients.values() if isinstance(value, tuple) and isinstance(value[0], int)]
+                code = codes[0] if codes else 'unknown'
+                raise MailUnavailable(f'SMTP recipient rejected ({code}). Check the recipient address and provider sending restrictions.') from None
+            except (smtplib.SMTPSenderRefused, smtplib.SMTPDataError) as error:
+                raise MailUnavailable(f'SMTP message rejected ({error.smtp_code}). Check sender authorization, provider limits and message policy.') from None
             except (OSError, smtplib.SMTPException):
                 raise MailDeliveryUncertain('The mail server did not confirm acceptance.') from None
             if refused:
@@ -79,9 +90,23 @@ def send_message(message, recipient):
             accepted = True
     except MailUnavailable:
         raise
-    except (OSError, ValueError, smtplib.SMTPException):
+    except (OSError, ValueError, smtplib.SMTPException) as error:
         if not accepted:
-            raise MailUnavailable('Email could not be sent. Please retry shortly.') from None
+            # Never persist the provider's raw response: it can contain addresses
+            # or authentication material. Report only the stage and numeric code.
+            if isinstance(error, smtplib.SMTPAuthenticationError):
+                detail = f'SMTP authentication failed ({error.smtp_code}). Check the mailbox username and password.'
+            elif isinstance(error, socket.gaierror):
+                detail = 'SMTP hostname could not be resolved. Check the outgoing SMTP server hostname.'
+            elif isinstance(error, ssl.SSLError):
+                detail = f'SMTP {stage} failed: TLS error. Check the port and SSL/STARTTLS setting.'
+            elif isinstance(error, TimeoutError):
+                detail = f'SMTP {stage} timed out before sending. Check server connectivity and provider availability.'
+            elif isinstance(error, smtplib.SMTPResponseException):
+                detail = f'SMTP {stage} rejected ({error.smtp_code}). Check provider restrictions and server settings.'
+            else:
+                detail = f'SMTP {stage} failed before sending. Check server connectivity, port and security settings.'
+            raise MailUnavailable(detail) from None
 
 
 def send_clinic_code(recipient, ident, code):

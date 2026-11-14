@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 import h3
 import core
+from directory_policy import blocked, visible_sql
 from proximity import offer_locations
 
 
@@ -29,7 +30,7 @@ def prepare_location(location):
 
 def index_entry(db, batch, key, entry):
     db.execute('DELETE FROM spatial_locations WHERE batch_id=? AND entry_key=?', (batch, key))
-    if entry.get('location_type') == 'program':
+    if blocked(entry) or entry.get('location_type') == 'program':
         return 0
     rows = []
     for ordinal, source in enumerate(entry.get('locations', [])):
@@ -75,14 +76,17 @@ def bundle(path, cell):
         if not db.execute('SELECT value FROM settings WHERE key=?', ('spatial-ready:' + batch,)).fetchone():
             raise SpatialNotReady()
         query = f'FROM spatial_locations s JOIN entries e ON e.batch_id=s.batch_id AND e.entry_key=s.entry_key WHERE s.batch_id=? AND s.h3_res7 IN ({placeholders})'
-        params = (batch, *cells)
+        predicate, values = visible_sql('e.payload')
+        query += ' AND '+predicate
+        params = (batch, *cells, *values)
         count = db.execute('SELECT COUNT(*) AS n ' + query, params).fetchone()['n']
         rows = db.execute('SELECT s.id,s.entry_key,s.h3_res7,s.h3_res11,s.location,e.payload ' + query + ' ORDER BY s.id LIMIT ?', (*params, BUNDLE_LIMIT)).fetchall()
         keys = sorted({row['entry_key'] for row in rows})
         offers = {}
         if keys:
             marks = ','.join('?' for _ in keys)
-            offer_rows = db.execute(f'SELECT entry_key,payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND entry_key IN ({marks}) ORDER BY id LIMIT 1001', (batch, *keys)).fetchall()
+            predicate, values = visible_sql()
+            offer_rows = db.execute(f'SELECT entry_key,payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND entry_key IN ({marks}) AND '+predicate+' ORDER BY id LIMIT 1001', (batch, *keys, *values)).fetchall()
             for item in offer_rows[:1000]:
                 offers.setdefault(item['entry_key'], []).append(item)
             offers_truncated = len(offer_rows) > 1000

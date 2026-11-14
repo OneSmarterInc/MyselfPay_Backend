@@ -1,7 +1,7 @@
 """Email-verified appointment requests with encrypted details.
 
-Patient and clinic verification use SMTP. Clinic notifications use an explicit
-delivery switch and committed outbox. Recipients come from the catalog only.
+Clinic verification uses SMTP. Notifications use an explicit delivery switch
+and committed outbox. Recipients come from the catalog or approved support.
 """
 from __future__ import annotations
 
@@ -106,12 +106,18 @@ def appointment_email(center: dict) -> str:
     return address if len(address) <= 254 and EMAIL.fullmatch(address) else ''
 
 
+def request_recipient(center: dict) -> str:
+    """Use a scheduling contact or the operator-approved support mailbox."""
+    return appointment_email(center) or 'patientcare@onesmarterhealthweb.com'
+
+
 def resolve_center(con: Any, key: str) -> dict:
     row = con.execute(
         'SELECT payload FROM entries WHERE batch_id=? AND entry_key=?',
         (core.active_batch(con), key),
     ).fetchone()
-    if not row:
+    from directory_policy import blocked
+    if not row or blocked(row['payload']):
         raise BookingError('This listing is no longer available. Refresh the directory.', 409)
     return json.loads(row['payload'])
 
@@ -121,7 +127,8 @@ def price_snapshot(con: Any, key: str, offer_id: str, service: str = '') -> str:
         return 'Clinic will confirm the exact total.'
     row = con.execute('SELECT payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND entry_key=? AND id=?',
                       (core.active_batch(con), key, offer_id)).fetchone()
-    if not row:
+    from directory_policy import blocked
+    if not row or blocked(row['payload']):
         raise BookingError('This price offer changed. Refresh the listing.', 409)
     offer = json.loads(row['payload'])
     if service and offer.get('mod') != service:
@@ -168,7 +175,9 @@ def options(path: Any, key: str, offer_id: str = '') -> dict:
         'name': center['name'], 'location': center.get('area', ''),
         'timezone': default_timezone(center),
         'price_text': price_text,
-        'delivery': booking_delivery.mode(appointment_email(center)), 'recipient_available': bool(appointment_email(center)),
+        'delivery': 'enabled' if booking_chat.enabled() else booking_delivery.mode(request_recipient(center)),
+        'recipient_available': True,
+        'notification_target': 'center' if appointment_email(center) else 'support',
         'is_test_center': bool(center.get('is_test_center')),
         'zones': ZONES, 'periods': PERIODS,
         'today': {z: datetime.now(ZoneInfo(z)).date().isoformat() for z in ZONES},
@@ -185,7 +194,13 @@ def text_field(data: dict, field: str, limit: int) -> str:
 
 
 def validate(data: dict) -> dict:
-    name = text_field(data, 'first_name', 80)
+    name = data.get('first_name', '')
+    if name:
+        name = text_field(data, 'first_name', 80)
+    elif name is None:
+        name = ''
+    if not isinstance(name, str):
+        raise BookingError('Enter a valid first name or leave it blank.')
     phone = text_field(data, 'phone', 30) if data.get('phone') else ''
     if phone and (not re.fullmatch(r'\+?[0-9 ()\-.]+', phone) or not 8 <= len(re.sub(r'\D', '', phone)) <= 15):
         raise BookingError('Enter a valid phone number, including area code.')
@@ -251,7 +266,9 @@ def notification(payload: dict, ident: str) -> EmailMessage:
     slots = [datetime.strptime(slot['date'], '%Y-%m-%d').strftime('%a, %d %b %Y') + ' · ' + PERIODS[slot['period']] for slot in payload['slots']]
     slot_html = ''.join('<div style="padding:12px 14px;margin:8px 0;background:#f5f5f4;border-radius:8px;font-size:15px;line-height:1.6">' + escape(slot) + '</div>' for slot in slots)
     request_url = payload['clinic_url']
-    description = 'MySelfPay connects patients with imaging centers for self-pay appointment requests.'
+    description = ('MySelfPay Patient Care: contact this center to confirm availability before approving the request.'
+                   if payload.get('notification_target') == 'support' else
+                   'MySelfPay connects patients with imaging centers for self-pay appointment requests.')
     message.set_content('MySelfPay\nPreferred appointment times (' + zone + '):\n' + '\n'.join(slots)
                         + '\n\nOpen request: ' + request_url + '\n\n' + description + '\n')
     message.add_alternative(f'''<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
@@ -379,9 +396,11 @@ def verified_patient_email(con: Any, owner_hash: str, ident: Any, proof: Any) ->
 
 
 def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact: dict | None = None) -> dict:
-    if not data.get('timezone'):
-        with connection(path) as con:
-            data = {**data, 'timezone': default_timezone(resolve_center(con, data.get('clinic_id', '')))}
+    import mobile_accounts
+    with connection(path) as con:
+        data = {**data, 'phone': mobile_accounts.booking_phone_for(con, owner)}
+        if not data.get('timezone'):
+            data['timezone'] = default_timezone(resolve_center(con, data.get('clinic_id', '')))
     validated = validate(data)
     key = text_field(data, 'idempotency_key', 80)
     center_key = text_field(data, 'clinic_id', 200)
@@ -389,14 +408,10 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
     offer_id = data.get('offer_id', '')
     if not isinstance(offer_id, str) or len(offer_id) > 200:
         raise BookingError('Invalid price offer.')
-    verification_id = data.get('verification_id')
     input_hash = digest(core.canonical({'clinic': center_key, 'offer_id': offer_id,
-                                      'email': data.get('email'), 'verification_id': verification_id, 'phone_verification_id': data.get('phone_verification_id'), **validated}))
+                                      **validated}))
     now = time.time()
     with connection(path, write=True) as con:
-        if not isinstance(con, sqlite3.Connection) and isinstance(verification_id, str):
-            con.execute('SELECT id FROM booking_email_checks WHERE id=? AND owner_hash=? FOR UPDATE',
-                        (verification_id, owner_hash)).fetchone()
         # Unique owner/key and the transaction make retries safe on SQLite and Postgres.
         prior = con.execute('SELECT * FROM booking_requests WHERE owner_hash=? AND idempotency_hash=?',
                             (owner_hash, key_hash)).fetchone()
@@ -404,16 +419,11 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             if prior['input_hash'] != input_hash:
                 raise BookingError('This submission key was already used for different details.', 409)
             return receipt(prior, con)
-        patient_email = (require_saved_email(con, owner_hash, data['email']) if data.get('email')
-                         else verified_patient_email(con, owner_hash, verification_id, data.get('verification_token')))
-        import booking_phone
-        has_phone_proof = bool(data.get('phone_verification_id') or data.get('phone_verification_token'))
-        if has_phone_proof:
-            validated['phone'] = booking_phone.require_verified(con, owner_hash, data.get('phone_verification_id'), data.get('phone_verification_token'), validated['phone'])
+        # Recheck verification in the submission transaction.
+        validated['phone'] = mobile_accounts.booking_phone_for(con, owner)
         center = resolve_center(con, center_key)
-        if booking_chat.enabled() and patient_email.strip().casefold() == appointment_email(center).strip().casefold():
-            raise BookingError('Use a different patient email address from the center email. Secure Mail requires separate patient and center mailboxes.', 400)
-        if booking_delivery.mode(appointment_email(center)) == 'unavailable':
+        recipient = request_recipient(center)
+        if not booking_chat.enabled() and booking_delivery.mode(recipient) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
         if con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE owner_hash=? AND created>?',
@@ -422,17 +432,17 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         ident = 'MSP-' + secrets.token_hex(8).upper()
         patient_token, clinic_token = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
         payload = {**validated, 'clinic_id': center_key, 'clinic_name': center['name'],
-                   'patient_email': patient_email,
-                   'reply_email': patient_email,
+                   'delivery_route': 'center_secure_mail' if booking_chat.enabled() else 'center_email',
                    'reply_phone': validated['phone'],
                    'price_text': price_text,
-                   'location': center.get('area', ''), 'recipient': appointment_email(center),
+                   'location': center.get('area', ''), 'recipient': recipient,
+                   'notification_target': 'center' if appointment_email(center) else 'support',
                    'phone_clinic': center.get('phone', ''),
                    'is_test_center': bool(center.get('is_test_center')),
                    'patient_token': patient_token, 'clinic_token': clinic_token,
                    'clinic_url': f'{base_url}/#clinic/{ident}/{clinic_token}'}
         # Only server catalog values may become clinic routing destinations.
-        if not booking_delivery.enabled():
+        if not booking_chat.enabled() and not booking_delivery.enabled():
             suppress(notification(payload, ident))
         con.execute('''INSERT INTO booking_requests
             (id,owner_hash,idempotency_hash,input_hash,payload,patient_hash,clinic_hash,
@@ -446,15 +456,12 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
             raise BookingError('This submission key was already used for different details.', 409)
         con.execute('INSERT INTO center_request_routes(request_id,clinic_id,email_hash) VALUES(?,?,?) ON CONFLICT(request_id) DO NOTHING',
                     (row['id'], center_key, digest(payload['recipient'].strip().lower())))
-        con.execute("UPDATE booking_email_checks SET state='consumed',proof_hash=NULL WHERE id=?", (verification_id,))
-        if has_phone_proof:
-            con.execute("UPDATE booking_phone_checks SET state='consumed',proof_hash=NULL WHERE id=?", (data['phone_verification_id'],))
         if booking_chat.enabled():
             booking_chat.enqueue(con, row)
         elif booking_delivery.enabled():
             booking_delivery.enqueue(con, row['id'])
     # SMTP runs after the booking and outbox commit, never inside the write lock.
-    if booking_delivery.enabled() and not booking_chat.enabled():
+    if not booking_chat.enabled() and booking_delivery.enabled():
         booking_delivery.deliver(path, row['id'])
     with connection(path) as con:
         return receipt(get_row(con, row['id']), con)
@@ -463,11 +470,15 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
 def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
-    chat = booking_chat.summary(con, row)
-    if chat:
-        delivery = 'secure_mail_ready' if chat.get('secure_chat_url') else 'secure_mail_pending'
-    return {**chat, 'id': row['id'], 'status': row['status'], 'delivery': delivery,
+    # Historical handoffs remain diagnosable, without exposing patient chat links.
+    if con is not None and p.get('delivery_route') != 'center_email':
+        prior = con.execute('SELECT state FROM booking_chat WHERE request_id=?', (row['id'],)).fetchone()
+        if prior:
+            delivery = 'sent' if prior['state'] == 'ready' else 'queued'
+    return { 'id': row['id'], 'status': row['status'], 'delivery': delivery,
             'is_test_center': bool(p.get('is_test_center')),
+            'notification_target': p.get('notification_target', 'center'),
+            'approved_slot': p.get('approved_slot'),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],
@@ -564,7 +575,7 @@ def verify_code(path: Any, ident: str, token: str, code: str) -> dict:
     return {'session': session, 'expires_at': now + 900}
 
 
-def clinic_details(path: Any, ident: str, session: str, status: str | None = None) -> dict:
+def clinic_details(path: Any, ident: str, session: str, status: str | None = None, appointment=None) -> dict:
     with connection(path, write=status is not None) as con:
         row = get_row(con, ident, lock=status is not None)
         authorize(row, session, 'clinic_session_hash')
@@ -573,20 +584,15 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
         if row['link_expires'] <= time.time():
             raise BookingError('This request link has expired.', 410)
         if status is not None:
-            if status not in ('scheduled', 'voicemail', 'unable'):
-                raise BookingError('Choose a valid outcome.')
-            if row['status'] in TERMINAL and row['status'] != status:
-                raise BookingError('This request is already closed.', 409)
-            closed = row['closed'] or (time.time() if status in TERMINAL else None)
-            con.execute('UPDATE booking_requests SET status=?,closed=? WHERE id=?', (status, closed, ident))
-            row = get_row(con, ident)
+            import appointment_slots
+            row = appointment_slots.update(con, row, status, appointment)
             booking_chat.enqueue(con, row)
         p = unpack(row)
         result = receipt(row, con)
         result.pop('tracking_token')
         result['expires_at'] = row['clinic_session_expires']
         if row['status'] not in TERMINAL:
-            result.update(first_name=p['first_name'], phone=p['phone'], patient_email=p['patient_email'])
+            result.update(first_name=p['first_name'], phone=p['phone'])
         else:
             result['contact_hidden'] = True
         return result

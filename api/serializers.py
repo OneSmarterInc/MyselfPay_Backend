@@ -25,16 +25,20 @@ class CenterVerifySerializer(serializers.Serializer):
 class CenterRequestSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
+    appointment = serializers.JSONField(required=False)
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(max_length=254)
+    username = serializers.CharField(max_length=30)
     password = serializers.CharField(max_length=128, trim_whitespace=False, write_only=True)
 
 
 class RegistrationSerializer(LoginSerializer):
-    name = serializers.CharField(max_length=100)
-    phone = serializers.CharField(max_length=30, allow_blank=True, default='')
+    name = serializers.CharField(max_length=100, required=False, default='')
+    phone = serializers.CharField(max_length=30)
+    challenge = serializers.CharField(max_length=100, write_only=True)
+    verification_id = serializers.CharField(max_length=100)
+    verification_token = serializers.CharField(max_length=200, write_only=True)
     zip_code = serializers.RegexField(r'^[0-9]{5}$', max_length=5, allow_blank=True, default='', error_messages={'invalid': 'Enter a five-digit ZIP code.'})
 
     def validate_password(self, value):
@@ -130,13 +134,8 @@ class SlotSerializer(serializers.Serializer):
 
 
 class BookingCreateSerializer(BookingOptionsSerializer):
-    phone_verification_id = serializers.CharField(max_length=100, required=False)
-    phone_verification_token = serializers.CharField(max_length=200, write_only=True, required=False)
     idempotency_key = serializers.CharField(max_length=80)
-    verification_id = serializers.CharField(max_length=100, required=False)
-    verification_token = serializers.CharField(max_length=200, write_only=True, required=False)
-    email = serializers.EmailField(max_length=254, required=False)
-    first_name = serializers.CharField(max_length=80)
+    first_name = serializers.CharField(max_length=80, allow_blank=True, default='')
     phone = serializers.CharField(max_length=30, allow_blank=True, default='')
     timezone = serializers.ChoiceField(choices=tuple(booking.ZONES), required=False)
     service = serializers.ChoiceField(choices=('MRI', 'CT', 'Other imaging', 'Please contact me'))
@@ -162,3 +161,4 @@ class ClinicSessionSerializer(serializers.Serializer):
 
 class ClinicStatusSerializer(ClinicSessionSerializer):
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'))
+    appointment = serializers.JSONField(required=False)

@@ -21,8 +21,6 @@ class MobileOTPTests(unittest.TestCase):
             return booking_phone.request_code(self.path,self.owner,self.phone)
 
     def test_required_phone_owner_and_contact_binding(self):
-        for changes in ({'phone_verification_token':None},{'phone':'+15550128888'}):
-            with self.assertRaises(booking.BookingError): self.fixture.create({**self.fixture.data,**changes})
         issued=self.request()
         with patch('booking_sms.check_code',return_value=True) as check:
             with self.assertRaises(booking.BookingError): booking_phone.verify_code(self.path,'another-owner',issued['verification_id'],'123456')
@@ -54,7 +52,11 @@ class MobileOTPTests(unittest.TestCase):
         self.assertTrue(self.fixture.create(data)['id'])
         data['idempotency_key']='changed-email-request'
         data['email']='unverified@example.test'
-        with self.assertRaises(booking.BookingError): self.fixture.create(data)
+        result = self.fixture.create(data)
+        with booking.connection(self.path) as db:
+            payload = booking.unpack(booking.get_row(db, result['id']))
+            self.assertNotIn('patient_email', payload)
+            self.assertEqual(payload['phone'], self.fixture.data['phone'])
         with booking.connection(self.path) as db:
             with self.assertRaises(booking.BookingError): booking.require_saved_email(db, booking.digest('other-owner'), 'patient@example.test')
 
@@ -87,7 +89,7 @@ class MobileOTPTests(unittest.TestCase):
         first=self.fixture.create()
         self.assertEqual(self.fixture.create()['id'],first['id'])
         data={**self.fixture.data,**self.fixture.verify_email('guest-owner','other@example.test'),'idempotency_key':'new-booking'}
-        with self.assertRaises(booking.BookingError):self.fixture.create(data)
+        self.assertTrue(self.fixture.create(data)['id'])
 
     def test_transport_uses_verify_service_and_does_not_return_secret(self):
         values={'api_key_sid':'SK'+'1'*32,'api_key_secret':'synthetic-secret','verify_service_sid':'VA'+'2'*32}

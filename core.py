@@ -11,6 +11,7 @@ import time
 import uuid
 from pathlib import Path
 from urllib.parse import urlparse
+from directory_policy import visible_sql
 
 ROOT = Path(__file__).resolve().parent
 DB = os.environ.get('DATABASE_URL') or ROOT / 'data' / 'myselfpay.sqlite3'
@@ -181,28 +182,62 @@ def publish(batch,path=DB):
 
 def directory_summary(path=DB):
     """Public counts only; no sessions or personal records are read."""
+    metadata = catalog_metadata(path, include_locations=False)
+    return {'listing_count': metadata['entry_count'], 'state_count': metadata['state_count']}
+
+
+def catalog_metadata(path=DB, *, include_locations=True):
+    """Read only geography/counts; never transfer full prices, notes or contacts."""
     import re
-    valid=set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split())
+    from directory_cache import snapshot, source_key
+    valid = set('AL AK AZ AR CA CO CT DE FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'.split())
     with connect(path) as db:
-        rows=db.execute("SELECT payload FROM entries WHERE batch_id=(SELECT value FROM settings WHERE key='active_batch')").fetchall()
-    states=set()
-    for row in rows:
-        entry=json.loads(row['payload'])
-        states.update(s.strip().upper() for s in re.split(r'[;,/|]+',entry.get('states','')))
-        states.update(str(loc.get('state','')).strip().upper() for loc in entry.get('locations',[]))
-    return {'listing_count':len(rows),'state_count':len(states & valid)}
+        batch = active_batch(db)
+        def load():
+            if isinstance(db, sqlite3.Connection):
+                fields = "json_extract(payload,'$.states') AS states,json_extract(payload,'$.area') AS area,json_extract(payload,'$.locations') AS locations,json_extract(payload,'$.location_type') AS location_type,json_type(payload,'$.location_type') IS NOT NULL AS has_type"
+            else:
+                fields = "payload::jsonb->>'states' AS states,payload::jsonb->>'area' AS area,payload::jsonb->'locations' AS locations,payload::jsonb->>'location_type' AS location_type,jsonb_exists(payload::jsonb,'location_type') AS has_type"
+            predicate, policy_params = visible_sql()
+            rows = db.execute('SELECT ' + fields + ' FROM entries WHERE batch_id=? AND '+predicate, (batch, *policy_params)).fetchall()
+            entries, states = [], set()
+            for row in rows:
+                locations = row['locations'] or []
+                if isinstance(locations, str):
+                    locations = json.loads(locations)
+                entry = {'states': row['states'] or '', 'area': row['area'] or '', 'locations': locations}
+                if row['has_type']:
+                    entry['location_type'] = row['location_type']
+                entries.append(entry)
+                states.update(s.strip().upper() for s in re.split(r'[;,/|]+', entry['states']))
+                states.update(str(loc.get('state', '')).strip().upper() for loc in locations)
+            ep, ev = visible_sql('e.payload')
+            op, ov = visible_sql('o.payload')
+            count = db.execute('SELECT COUNT(*) AS n FROM offers o JOIN entries e ON e.batch_id=o.batch_id AND e.entry_key=o.entry_key WHERE o.batch_id=? AND '+ep+' AND '+op, (batch, *ev, *ov)).fetchone()['n']
+            return {'version': batch, 'entry_count': len(rows), 'offer_count': count,
+                    'locations': [label for label, city in location_choices(entries)] if include_locations else [],
+                    'state_count': len(states & valid)}
+        result = snapshot('metadata' if include_locations else 'summary', source_key(path), batch, load)
+        # Readiness can be updated by the index worker without changing batches.
+        result['spatial_ready'] = bool(batch and db.execute('SELECT value FROM settings WHERE key=?', ('spatial-ready:' + batch,)).fetchone())
+        return result
 
 def catalog(path=DB):
+    from directory_cache import snapshot, source_key
     with connect(path) as db:
         batch=active_batch(db)
-        entries={r['entry_key']:{**json.loads(r['payload']), 'booking_id': r['entry_key']} for r in db.execute('SELECT * FROM entries WHERE batch_id=?',(batch,))}
-        offers=[]
-        for r in db.execute('SELECT * FROM offers WHERE batch_id=?',(batch,)):
-            o=json.loads(r['payload']);o['entry']=entries[r['entry_key']];o['version']=batch
-            o['amount']=r['amount_cents']/100 if r['amount_cents'] is not None else None
-            if r['max_cents'] is not None:o['max']=r['max_cents']/100
-            offers.append(o)
-    return {'version':batch,'entries':list(entries.values()),'offers':offers,'locations':[label for label,city in location_choices(entries.values())]}
+        def load():
+            predicate, values = visible_sql()
+            entries={r['entry_key']:{**json.loads(r['payload']), 'booking_id': r['entry_key']} for r in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate,(batch,*values))}
+            offers=[]
+            for r in db.execute('SELECT entry_key,payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND '+predicate,(batch,*values)):
+                if r['entry_key'] not in entries: continue
+                o=json.loads(r['payload']);o['entry']=entries[r['entry_key']];o['version']=batch
+                o['amount']=r['amount_cents']/100 if r['amount_cents'] is not None else None
+                if r['max_cents'] is not None:o['max']=r['max_cents']/100
+                offers.append(o)
+            return {'version':batch,'entries':list(entries.values()),'offers':offers,'locations':[label for label,city in location_choices(entries.values())]}
+        return snapshot('catalog', source_key(path), batch, load)
 
 LOCATION_CHOICES = [('Cincinnati, OH','Cincinnati'),('Louisville, KY','Louisville'),('Lexington, KY','Lexington'),('Philadelphia, PA','Philadelphia'),('Boise, ID','Boise'),('Lawrenceville, GA','Lawrenceville'),('Auburn, WA','Auburn'),('Spanish Fork, UT','Spanish Fork'),('South Burlington, VT','South Burlington'),('Wisconsin','Wisconsin'),('National','National')]
 
@@ -496,7 +531,10 @@ def session(token,path=DB):
         row=db.execute('SELECT m.id,m.tenant,m.name,m.email,s.csrf FROM sessions s JOIN members m ON m.id=s.member_id WHERE s.token_hash=? AND s.expires>?',(hashlib.sha256(token.encode()).hexdigest(),time.time())).fetchone()
         if row and db.execute("SELECT value FROM settings WHERE key=? AND value='1'", ('account-disabled:' + row['id'],)).fetchone():
             return None
-        return dict(row) if row else None
+        if row:
+            import mobile_accounts
+            return mobile_accounts.profile(db, row) if row['tenant']=='selfpay' else dict(row)
+        return None
 
 def history(member,path=DB):
     if member['tenant']=='guest':return []

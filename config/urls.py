@@ -5,19 +5,26 @@ from django.views.static import serve
 from api.admin import admin_site
 from api import views
 from api.spatial_views import SpatialBundleView
+from admin_mailer import unsubscribe_view
 
 urlpatterns = [
     path('admin', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin_site.urls),
     path('admin-assets/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
     path('api/v1/spatial-bundle/<str:h3_res7>/', SpatialBundleView.as_view(), name='spatial-bundle'),
+    path('api/mailer/unsubscribe', unsubscribe_view, name='mailer-unsubscribe-query'),
+    re_path(r'^api/mailer/unsubscribe/(?P<token>[^/]+)/?$', unsubscribe_view, name='mailer-unsubscribe'),
     path('api/health', views.HealthView.as_view(), name='health'),
     re_path(r'^api/center/(?P<action>code|verify|dashboard|request|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),
+    re_path(r'^api/registration/mobile/(?P<action>code|verify)$', views.RegistrationMobileView.as_view()),
+    re_path(r'^api/auth/mobile/(?P<action>code|verify)$', views.MobileOTPView.as_view()),
+    path('api/account/setup', views.AccountSetupView.as_view()),
     path('api/register', views.RegistrationView.as_view(), name='register'),
     path('api/login', views.AuthenticationView.as_view(), name='login'),
     path('api/logout', views.LogoutView.as_view(), name='logout'),
+    re_path(r'^api/password/(?P<action>code|verify|reset)$', views.PasswordView.as_view()),
     path('api/password', views.PasswordView.as_view(), name='password'),
     path('api/dashboard', views.DashboardView.as_view(), name='dashboard'),
     path('api/me', views.MeView.as_view(), name='me'),

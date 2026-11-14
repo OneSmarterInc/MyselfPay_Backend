@@ -1,0 +1,7 @@
+{% extends "admin/base_site.html" %}{% load static %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'selfpay-admin/mailer.css' %}">{% endblock %}
+{% block content_title %}{% endblock %}{% block content %}
+<div class="sp-page-heading"><div><h1>Email and replies</h1><p>{{ item.center_names }}</p></div><a class="mailer-secondary" href="{% url 'admin:mailer_campaign' item.campaign_id %}">Back to campaign</a></div>
+<section class="sp-panel mailer-preview"><h2>{{ subject }}</h2><dl class="mailer-facts"><dt>To</dt><dd>{{ item.email }}</dd><dt>Reply-To</dt><dd>{{ item.campaign.reply_to }}</dd><dt>Status</dt><dd>{{ item.state|capfirst }}{% if item.sent_at %} · {{ item.sent_at|date:'d M Y, H:i' }}{% endif %}</dd></dl>{% if item.error %}<p class="mailer-error">{{ item.error }}</p>{% endif %}<pre class="mailer-message-body">{{ body }}</pre></section>
+<section class="sp-panel mailer-preview"><h2>Replies <span class="mailer-count">{{ replies|length }}</span></h2>{% for reply in replies %}<article class="mailer-reply"><h3>{{ reply.subject }}</h3><p class="mailer-note">{{ reply.sender }} · {{ reply.received_at|date:'d M Y, H:i' }}</p><pre class="mailer-message-body">{{ reply.body }}</pre></article>{% empty %}<p class="mailer-note">No matching replies yet. Enable the IMAP mailbox and run the mailer worker to check for replies.</p>{% endfor %}</section>
+{% endblock %}

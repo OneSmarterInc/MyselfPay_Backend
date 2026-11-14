@@ -14,6 +14,8 @@ class AccountError(ValueError):
         self.status = status
 
 def initialize(path):
+    import mobile_accounts
+    mobile_accounts.initialize(path)
     with core.connect(path) as db:
         db.executescript((Path(__file__).parent / 'ops/sql/20261030-user-accounts.sql').read_text())
         db.executescript((Path(__file__).parent / 'ops/sql/20261101-account-zip.sql').read_text())
@@ -92,6 +94,8 @@ def new_session(db, ident, previous_token):
         db.execute('DELETE FROM sessions WHERE token_hash=?', (old,))
     db.execute('INSERT INTO sessions VALUES(?,?,?,?)', (hashlib.sha256(token.encode()).hexdigest(), ident, csrf, time.time() + 8*3600))
     member = dict(db.execute('SELECT id,tenant,name,email FROM members WHERE id=?', (ident,)).fetchone())
+    import mobile_accounts
+    member = mobile_accounts.profile(db, member)
     member['zip_code'] = saved_zip(db, ident)
     return {'token': token, 'csrf': csrf, 'member': member}
 
