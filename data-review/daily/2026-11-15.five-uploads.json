@@ -1,0 +1,2438 @@
+{
+  "schema_version": 1,
+  "batch_id": "FIVE-UPLOADS-20261115",
+  "verified_on": "2026-11-15",
+  "scope": "Evidence supplement for five uploaded CSVs, not production database import payload. No database changes, deployment, outreach, or price guarantees.",
+  "counts": {
+    "submitted_rows": 187,
+    "raw_unique_urls": 125,
+    "unique_after_combined_alias_mapping": 122,
+    "combined_overlap_urls": 103,
+    "combined_overlap_locations": 100,
+    "incremental_url_records": 17,
+    "canonical_matches_within_incremental": 6,
+    "new_or_unmatched_candidates": 11,
+    "future_opening_holds_within_incremental": 2,
+    "additional_exclusions": 5
+  },
+  "dedup_limitations": "Compared all five CSVs, Combined_Imaging_Leads.xlsx, canonical directory v59 URLs/address/name, and GitHub Nov14/Nov15 baseline daily files. Canonical contains archived/promoted duplicates. No full historical-batch or live database comparison performed here; no net-new production assertion. Suite distinctions preserved.",
+  "related_combined_prefix": "data-review/daily/2026-11-15.combined-upload",
+  "input_manifest": [
+    {
+      "file": "new_leads.csv",
+      "row": 2,
+      "input_name": "Camelback",
+      "input_url": "https://simonmed.com/locations/az/camelback/",
+      "combined_id": "L0011",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads.csv",
+      "row": 3,
+      "input_name": "Willowbrook",
+      "input_url": "https://simonmed.com/locations/tx/willowbrook/",
+      "combined_id": "L0029",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 2,
+      "input_name": "Whitney Imaging Center",
+      "input_url": "https://rayusradiology.com/locations/whitney-imaging-center/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-001",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 3,
+      "input_name": "Insight Imaging",
+      "input_url": "https://rayusradiology.com/locations/waterbury/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-002",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 4,
+      "input_name": "RAYUS Radiology MMI",
+      "input_url": "https://rayusradiology.com/locations/rayus-radiology-mmi-lewiston-me/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-003",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 5,
+      "input_name": "RAYUS Vascular Care",
+      "input_url": "https://rayusradiology.com/locations/rayus-vascular-care-westbrook/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-004",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 6,
+      "input_name": "RAYUS Radiology – Sartell, MN – Sartell East",
+      "input_url": "https://rayusradiology.com/locations/aspirus-st-lukes-duluth/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-005",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 7,
+      "input_name": "RAYUS Radiology",
+      "input_url": "https://rayusradiology.com/locations/rayus-maitland-fl/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-006",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 8,
+      "input_name": "RAYUS Radiology",
+      "input_url": "https://rayusradiology.com/locations/indianapolis/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-007",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 9,
+      "input_name": "RAYUS Radiology",
+      "input_url": "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-008",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 10,
+      "input_name": "American Health Imaging of Myrtle Beach",
+      "input_url": "https://americanhealthimaging.com/location/american-health-imaging-of-myrtle-beach/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-009",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 11,
+      "input_name": "Freehold",
+      "input_url": "https://universityradiology.com/location/freehold/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-010",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 12,
+      "input_name": "Moorestown",
+      "input_url": "https://universityradiology.com/location/moorestown/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-011",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 13,
+      "input_name": "Wall",
+      "input_url": "https://universityradiology.com/location/wall/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-012",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 14,
+      "input_name": "Imaging Healthcare Specialists – Chula Vista (South Bay) Imaging Center",
+      "input_url": "https://www.imaginghealthcare.com/locations/chula-vista/",
+      "combined_id": null,
+      "incremental_record_id": "FIVE-20261115-013",
+      "disposition": "Incremental evidence record"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 15,
+      "input_name": "Solis Mammography Lafayette (formerly Breast Center of Acadiana)",
+      "input_url": "https://www.solismammo.com/louisiana/lafayette",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 16,
+      "input_name": "Jefferson-Solis Mammography – Cinnaminson",
+      "input_url": "https://www.solismammo.com/new-jersey/jefferson-cinnaminson",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 17,
+      "input_name": "Jefferson-Solis Mammography – Cinnaminson",
+      "input_url": "https://www.solismammo.com/pennsylvania/jefferson-ardmore",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_more.csv",
+      "row": 18,
+      "input_name": "Solis Mammography Forney",
+      "input_url": "https://www.solismammo.com/dfw/forney",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 2,
+      "input_name": "Arizona Diagnostic Radiology Ahwatukee",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/ahwatukee",
+      "combined_id": "L0009",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 3,
+      "input_name": "Arizona Diagnostic Radiology Gilbert Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/gilbert",
+      "combined_id": "L0004",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 4,
+      "input_name": "Arizona Diagnostic Radiology Park Central",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/park-central",
+      "combined_id": "L0010",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 5,
+      "input_name": "Arizona Diagnostic Radiology Paseo",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/paseo",
+      "combined_id": "L0006",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 6,
+      "input_name": "Arizona Diagnostic Radiology Superstition Springs",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/superstition-springs",
+      "combined_id": "L0007",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 7,
+      "input_name": "Arizona Diagnostic Radiology Tempe Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/tempe-baseline",
+      "combined_id": "L0013",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 8,
+      "input_name": "Arizona Diagnostic Radiology Westgate",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/westgate",
+      "combined_id": "L0037",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 9,
+      "input_name": "Breastlink Chandler",
+      "input_url": "https://breastlink.com/locations/breastlink-chandler",
+      "combined_id": "L0036",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 10,
+      "input_name": "Breastlink Kierland",
+      "input_url": "https://breastlink.com/locations/breastlink-kierland",
+      "combined_id": "L0012",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 11,
+      "input_name": "Breastlink Park Central",
+      "input_url": "https://breastlink.com/locations/breastlink-park-central",
+      "combined_id": "L0010",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 12,
+      "input_name": "Arizona Diagnostic Radiology Apache Junction",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/apache-junction",
+      "combined_id": "L0001",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 13,
+      "input_name": "Arizona Diagnostic Radiology Casa Grande",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/casa-grande",
+      "combined_id": "L0002",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 14,
+      "input_name": "Kern Radiology - Bahamas",
+      "input_url": "https://www.radnet.com/kern-radiology//locations/kern-radiology-bahamas",
+      "combined_id": "L0038",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 15,
+      "input_name": "Kern Radiology - Downtown Advanced",
+      "input_url": "https://www.radnet.com/kern-radiology//locations/kern-radiology-downtown-advanced",
+      "combined_id": "L0039",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 16,
+      "input_name": "Kern Radiology - Rio Bravo",
+      "input_url": "https://www.radnet.com/kern-radiology//locations/kern-radiology-rio-bravo",
+      "combined_id": "L0040",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 17,
+      "input_name": "Kern Radiology - Tehachapi",
+      "input_url": "https://www.radnet.com/kern-radiology//locations/kern-radiology-tehachapi",
+      "combined_id": "L0064",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 18,
+      "input_name": "Kern Radiology - Women’s Center",
+      "input_url": "https://www.radnet.com/kern-radiology//locations/kern-radiology-womens-center",
+      "combined_id": "L0041",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 19,
+      "input_name": "Beaumont Advanced Imaging",
+      "input_url": "https://www.radnet.com/inland-empire//locations/beaumont-advanced-imaging-0",
+      "combined_id": "L0042",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 20,
+      "input_name": "Corona Comprehensive Imaging Center",
+      "input_url": "https://www.radnet.com/inland-empire//locations/corona-comprehensive-imaging-center",
+      "combined_id": "L0044",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 21,
+      "input_name": "Healthcare Advanced Imaging",
+      "input_url": "https://www.radnet.com/inland-empire//locations/healthcare-advanced-imaging",
+      "combined_id": "L0059",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 22,
+      "input_name": "San Bernardino Advanced Imaging",
+      "input_url": "https://www.radnet.com/inland-empire//locations/san-bernardino-advanced-imaging",
+      "combined_id": "L0060",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 23,
+      "input_name": "San Bernardino Advanced Imaging - 21st Street",
+      "input_url": "https://www.radnet.com/inland-empire//locations/san-bernardino-advance-imaging-21st-street",
+      "combined_id": "L0061",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 24,
+      "input_name": "Huntington Park Advanced Imaging - Zoe",
+      "input_url": "https://www.radnet.com/los-angeles//locations/huntington-park-advanced-imaging-zoe",
+      "combined_id": "L0048",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 25,
+      "input_name": "Mink Advanced Imaging - Los Angeles",
+      "input_url": "https://www.radnet.com/los-angeles//locations/mink-advanced-imaging-los-angeles",
+      "combined_id": "L0051",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 26,
+      "input_name": "Montebello Advanced Imaging",
+      "input_url": "https://www.radnet.com/los-angeles//locations/montebello-advanced-imaging",
+      "combined_id": "L0054",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 27,
+      "input_name": "Westchester Advanced Imaging",
+      "input_url": "https://www.radnet.com/los-angeles//locations/westchester-advanced-imaging",
+      "combined_id": "L0052",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 28,
+      "input_name": "Breastlink Women’s Imaging - Santa Ana",
+      "input_url": "https://www.radnet.com/orange-county//locations/breastlink-womens-imaging-santa-ana",
+      "combined_id": "L0062",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 29,
+      "input_name": "WaveImaging - Orange",
+      "input_url": "https://www.radnet.com/orange-county//locations/waveimaging-orange",
+      "combined_id": "L0056",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 30,
+      "input_name": "WaveImaging - Saddleback",
+      "input_url": "https://www.radnet.com/orange-county//locations/waveimaging-saddleback",
+      "combined_id": "L0049",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 31,
+      "input_name": "Pacific Advanced Imaging - 2nd Ave",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-2nd-ave",
+      "combined_id": "L0014",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 32,
+      "input_name": "Pacific Advanced Imaging - Elm Street",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-elm-street",
+      "combined_id": "L0015",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 33,
+      "input_name": "Pacific Advanced Imaging - Poway",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-poway",
+      "combined_id": "L0019",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 34,
+      "input_name": "Burbank Advanced Imaging Center",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/burbank-advanced-imaging-center",
+      "combined_id": "L0067",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 35,
+      "input_name": "Imaging Specialists of Burbank",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/imaging-specialists-burbank",
+      "combined_id": "L0043",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 36,
+      "input_name": "Liberty Pacific Advanced Imaging - Mission Hills",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/liberty-pacific-advanced-imaging-mission-hills",
+      "combined_id": "L0053",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 37,
+      "input_name": "Liberty Pacific Advanced Imaging - Northridge",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/liberty-pacific-advanced-imaging-northridge",
+      "combined_id": "L0055",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 38,
+      "input_name": "Liberty Pacific Advanced Imaging - West Hills",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/liberty-pacific-advanced-imaging-west-hills",
+      "combined_id": "L0071",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 39,
+      "input_name": "Marcia Ray Breastlink - Women’s Imaging Center",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/marcia-ray-breastlink-womens-imaging",
+      "combined_id": "L0046",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 40,
+      "input_name": "Northridge Diagnostic Imaging Center",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/northridge-diagnostic-imaging-center",
+      "combined_id": "L0058",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 41,
+      "input_name": "Santa Clarita Imaging",
+      "input_url": "https://www.radnet.com/san-fernando-valley//locations/santa-clarita-imaging",
+      "combined_id": "L0068",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 42,
+      "input_name": "Imaging Specialists of Pasadena",
+      "input_url": "https://www.radnet.com/san-gabriel-valley/locations/imaging-specialists-pasadena",
+      "combined_id": "L0017",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 43,
+      "input_name": "Hemet Advanced Imaging",
+      "input_url": "https://www.radnet.com/temecula-valley//locations/hemet-advanced-imaging",
+      "combined_id": "L0047",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 44,
+      "input_name": "Rolling Oaks Radiology - Oxnard",
+      "input_url": "https://www.radnet.com/rolling-oaks-radiology//locations/rolling-oaks-radiology-oxnard",
+      "combined_id": "L0057",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 45,
+      "input_name": "Rolling Oaks Radiology - Simi Valley",
+      "input_url": "https://www.radnet.com/rolling-oaks-radiology//locations/rolling-oaks-radiology-simi-valley",
+      "combined_id": "L0063",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 46,
+      "input_name": "Rolling Oaks Radiology - Thousand Oaks",
+      "input_url": "https://www.radnet.com/rolling-oaks-radiology//locations/rolling-oaks-radiology-thousand-oaks",
+      "combined_id": "L0065",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 47,
+      "input_name": "Rolling Oaks Radiology - Ventura",
+      "input_url": "https://www.radnet.com/rolling-oaks-radiology//locations/rolling-oaks-radiology-ventura",
+      "combined_id": "L0069",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 48,
+      "input_name": "Thousand Oaks MDI - Lombard",
+      "input_url": "https://www.radnet.com/rolling-oaks-radiology//locations/thousand-oaks-mdi-lombard",
+      "combined_id": "L0066",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 49,
+      "input_name": "Radiology Regional | Naples Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-naples",
+      "combined_id": "L0112",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 50,
+      "input_name": "Radiology Regional | Cape Coral (Del Prado) Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-cape-coral-del-prado",
+      "combined_id": "L0082",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 51,
+      "input_name": "Radiology Regional | Fort Myers (6100 Winkler) Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-fort-myers-6100-winkler",
+      "combined_id": "L0094",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 52,
+      "input_name": "Radiology Regional | Fort Myers (6140 Winkler) Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-fort-myers-6140-winkler",
+      "combined_id": "L0095",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 53,
+      "input_name": "Radiology Regional | Fort Myers (Hope Preserve) Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-fort-myers-hope-preserve",
+      "combined_id": "L0096",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 54,
+      "input_name": "Radiology Regional | Lehigh Imaging Center",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-lehigh",
+      "combined_id": "L0108",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 55,
+      "input_name": "Radiology Regional – Center Point",
+      "input_url": "https://www.radnet.com/radiology-regional//locations/rr-sarasota-lakewood-ranch",
+      "combined_id": "L0128",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 56,
+      "input_name": "Advanced Radiology | Weems (NOW CLOSED)",
+      "input_url": "https://www.advancedradiology.com/locations/annapolis-weems",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 57,
+      "input_name": "New Jersey Imaging Network | Englewood Cliffs",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/englewood-cliffs",
+      "combined_id": "L0162",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 58,
+      "input_name": "New Jersey Imaging Network | Hackensack Imaging",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/hackensack",
+      "combined_id": "L0163",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 59,
+      "input_name": "New Jersey Imaging Network | Rutherford Imaging",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/rutherford",
+      "combined_id": "L0171",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 60,
+      "input_name": "New Jersey Imaging Network | Haddon Heights Radiology",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/haddon-heights",
+      "combined_id": "L0164",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 61,
+      "input_name": "New Jersey Imaging Network | Montclair Radiology",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/montclair",
+      "combined_id": "L0167",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 62,
+      "input_name": "New Jersey Imaging Network | Newark Imaging",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/newark-imaging",
+      "combined_id": "L0168",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 63,
+      "input_name": "New Jersey Imaging Network | Nutley Imaging (Formerly Montclair)",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/nutley",
+      "combined_id": "L0169",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 64,
+      "input_name": "New Jersey Imaging Network | Verona Imaging (Formerly Montclair)",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/verona",
+      "combined_id": "L0176",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 65,
+      "input_name": "New Jersey Imaging Network | West Caldwell Imaging (Formerly Montclair)",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/west-caldwell",
+      "combined_id": "L0177",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 66,
+      "input_name": "New Jersey Imaging Network | West Orange Imaging Center",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/west-orange",
+      "combined_id": "L0180",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 67,
+      "input_name": "New Jersey Imaging Network | Washington Township Radiology",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/washington-township",
+      "combined_id": "L0174",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 68,
+      "input_name": "New Jersey Imaging Network | Hoboken Radiology",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/hoboken",
+      "combined_id": "L0165",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 69,
+      "input_name": "New Jersey Imaging Network | Hoboken Women's Imaging",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/hoboken-womens-imaging",
+      "combined_id": "L0166",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 70,
+      "input_name": "New Jersey Imaging Network | Union City Radiology Center",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/union-city",
+      "combined_id": "L0175",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 71,
+      "input_name": "New Jersey Imaging Network | West New York Imaging Center",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/njin-west-new-york",
+      "combined_id": "L0178",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 72,
+      "input_name": "New Jersey Imaging Network | West New York MRI Center",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/njin-west-new-york-mri",
+      "combined_id": "L0179",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 73,
+      "input_name": "New Jersey Imaging Network | East Brunswick Imaging (Now Open)",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/east-brunswick",
+      "combined_id": "L0159",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 74,
+      "input_name": "New Jersey Imaging Network | Edison Radiology Center",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/edison",
+      "combined_id": "L0160",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 75,
+      "input_name": "New Jersey Imaging Network | Menlo Park",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/menlo-park",
+      "combined_id": "L0161",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 76,
+      "input_name": "New Jersey Imaging Network | Old Bridge",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/old-bridge-imaging",
+      "combined_id": "L0170",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 77,
+      "input_name": "New Jersey Imaging Network | Woodbridge",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/woodbridge",
+      "combined_id": "L0156",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 78,
+      "input_name": "New Jersey Imaging Network | Toms River - East",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/toms-river-east",
+      "combined_id": "L0172",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 79,
+      "input_name": "New Jersey Imaging Network | Toms River Women’s Imaging",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/toms-river-west-womens-imaging",
+      "combined_id": "L0173",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 80,
+      "input_name": "New Jersey Imaging Network | Clifton",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/clifton",
+      "combined_id": "L0157",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 81,
+      "input_name": "New Jersey Imaging Network | Cranford",
+      "input_url": "https://www.radnet.com/new-jersey-imaging-network//locations/cranford",
+      "combined_id": "L0158",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 82,
+      "input_name": "Cornwall Radiology (formerly Kolb Radiology) (NOW CLOSED)",
+      "input_url": "https://www.radnet.com/lenox-hill-radiology/locations/lhr-cornwall-radiology-formerly-cornwall-radiology",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 83,
+      "input_name": "Houston Medical Imaging Brooks Lake",
+      "input_url": "https://houstonimaging.com/locations/brooks-lake",
+      "combined_id": "L0033",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 84,
+      "input_name": "Women's Breast Center",
+      "input_url": "https://houstonimaging.com/locations/katy-womens-breast-center",
+      "combined_id": "L0030",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 85,
+      "input_name": "Saint Alphonsus Medical Center – Nampa",
+      "input_url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/saint-alphonsus-medical-center-nampa/",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 86,
+      "input_name": "Valor Health",
+      "input_url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/valor-health/",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 87,
+      "input_name": "Camelback",
+      "input_url": "https://simonmed.com/locations/az/camelback/",
+      "combined_id": "L0011",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 88,
+      "input_name": "Visalia",
+      "input_url": "https://simonmed.com/locations/ca/visalia/",
+      "combined_id": "L0020",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 89,
+      "input_name": "Madera",
+      "input_url": "https://simonmed.com/locations/ca/madera/",
+      "combined_id": "L0016",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 90,
+      "input_name": "Willowbrook",
+      "input_url": "https://simonmed.com/locations/tx/willowbrook/",
+      "combined_id": "L0029",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v2.csv",
+      "row": 91,
+      "input_name": "Porterville",
+      "input_url": "https://simonmed.com/locations/ca/porterville/",
+      "combined_id": "L0018",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 2,
+      "input_name": "Chandler Fairview",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/chandler-fairview",
+      "combined_id": "L0003",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 3,
+      "input_name": "Mercy Gilbert",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/mercy-gilbert",
+      "combined_id": "L0005",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 4,
+      "input_name": "North Mesa",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/north-mesa",
+      "combined_id": "L0008",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 5,
+      "input_name": "Leisure World (We’ve Closed — Click for Nearby Centers)",
+      "input_url": "https://www.radnet.com/community-radiology/locations/leisure-world-imaging",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 6,
+      "input_name": "Global",
+      "input_url": "https://houstonimaging.com/locations/global-imaging",
+      "combined_id": "L0032",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 7,
+      "input_name": "Sugar Land/Fort Bend",
+      "input_url": "https://houstonimaging.com/locations/sugar-land-fort-bend",
+      "combined_id": "L0034",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 8,
+      "input_name": "Campbell",
+      "input_url": "https://houstonimaging.com/locations/campbell",
+      "combined_id": "L0022",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 9,
+      "input_name": "Energy Corridor",
+      "input_url": "https://houstonimaging.com/locations/energy-corridor",
+      "combined_id": "L0023",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 10,
+      "input_name": "Heights",
+      "input_url": "https://houstonimaging.com/locations/heights",
+      "combined_id": "L0024",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 11,
+      "input_name": "Jacinto City/Eastside",
+      "input_url": "https://houstonimaging.com/locations/jacinto-city-eastside",
+      "combined_id": "L0025",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 12,
+      "input_name": "Pearland",
+      "input_url": "https://houstonimaging.com/locations/pearland",
+      "combined_id": "L0031",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 13,
+      "input_name": "Richmond",
+      "input_url": "https://houstonimaging.com/locations/richmond",
+      "combined_id": "L0026",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 14,
+      "input_name": "Shepherd",
+      "input_url": "https://houstonimaging.com/locations/shepherd",
+      "combined_id": "L0027",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 15,
+      "input_name": "Steeplechase",
+      "input_url": "https://houstonimaging.com/locations/steeplechase",
+      "combined_id": "L0028",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 16,
+      "input_name": "Tomball",
+      "input_url": "https://houstonimaging.com/locations/tomball",
+      "combined_id": "L0035",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 17,
+      "input_name": "Edinburg",
+      "input_url": "https://houstonimaging.com/locations/edinburg",
+      "combined_id": "L0021",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 18,
+      "input_name": "Breastlink Kierland",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/breastlink-kierland",
+      "combined_id": "L0012",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 19,
+      "input_name": "Breastlink Park Central",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/breastlink-park-central",
+      "combined_id": "L0010",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 20,
+      "input_name": "Arizona Diagnostic Radiology Ahwatukee",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/ahwatukee",
+      "combined_id": "L0009",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 21,
+      "input_name": "Arizona Diagnostic Radiology Gilbert Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/gilbert",
+      "combined_id": "L0004",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 22,
+      "input_name": "Arizona Diagnostic Radiology Paseo",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/paseo",
+      "combined_id": "L0006",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 23,
+      "input_name": "Arizona Diagnostic Radiology Superstition Springs",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/superstition-springs",
+      "combined_id": "L0007",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 24,
+      "input_name": "Arizona Diagnostic Radiology Tempe Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/tempe-baseline",
+      "combined_id": "L0013",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 25,
+      "input_name": "Arizona Diagnostic Radiology Westgate",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/westgate",
+      "combined_id": "L0037",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 26,
+      "input_name": "Breastlink Chandler",
+      "input_url": "https://breastlink.com/locations/breastlink-chandler",
+      "combined_id": "L0036",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 27,
+      "input_name": "Breastlink Kierland",
+      "input_url": "https://breastlink.com/locations/breastlink-kierland",
+      "combined_id": "L0012",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 28,
+      "input_name": "Breastlink Park Central",
+      "input_url": "https://breastlink.com/locations/breastlink-park-central",
+      "combined_id": "L0010",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 29,
+      "input_name": "Arizona Diagnostic Radiology Apache Junction",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/apache-junction",
+      "combined_id": "L0001",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 30,
+      "input_name": "Arizona Diagnostic Radiology Casa Grande",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/casa-grande",
+      "combined_id": "L0002",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 31,
+      "input_name": "Pacific Advanced Imaging - 2nd Ave",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-2nd-ave",
+      "combined_id": "L0014",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 32,
+      "input_name": "Pacific Advanced Imaging - Elm Street",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-elm-street",
+      "combined_id": "L0015",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 33,
+      "input_name": "Pacific Advanced Imaging - Poway",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-poway",
+      "combined_id": "L0019",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 34,
+      "input_name": "Imaging Specialists of Pasadena",
+      "input_url": "https://www.radnet.com/san-gabriel-valley/locations/imaging-specialists-pasadena",
+      "combined_id": "L0017",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 35,
+      "input_name": "Cornwall Radiology (formerly Kolb Radiology) (NOW CLOSED)",
+      "input_url": "https://www.radnet.com/lenox-hill-radiology/locations/lhr-cornwall-radiology-formerly-cornwall-radiology",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 36,
+      "input_name": "Houston Medical Imaging Brooks Lake",
+      "input_url": "https://houstonimaging.com/locations/brooks-lake",
+      "combined_id": "L0033",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 37,
+      "input_name": "Women's Breast Center",
+      "input_url": "https://houstonimaging.com/locations/katy-womens-breast-center",
+      "combined_id": "L0030",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 38,
+      "input_name": "Saint Alphonsus Medical Center – Nampa",
+      "input_url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/saint-alphonsus-medical-center-nampa/",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 39,
+      "input_name": "Valor Health",
+      "input_url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/valor-health/",
+      "combined_id": null,
+      "incremental_record_id": null,
+      "disposition": "Held exclusion; see exclusions"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 40,
+      "input_name": "Camelback",
+      "input_url": "https://simonmed.com/locations/az/camelback/",
+      "combined_id": "L0011",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 41,
+      "input_name": "Visalia",
+      "input_url": "https://simonmed.com/locations/ca/visalia/",
+      "combined_id": "L0020",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 42,
+      "input_name": "Madera",
+      "input_url": "https://simonmed.com/locations/ca/madera/",
+      "combined_id": "L0016",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 43,
+      "input_name": "Willowbrook",
+      "input_url": "https://simonmed.com/locations/tx/willowbrook/",
+      "combined_id": "L0029",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v3.csv",
+      "row": 44,
+      "input_name": "Porterville",
+      "input_url": "https://simonmed.com/locations/ca/porterville/",
+      "combined_id": "L0018",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 2,
+      "input_name": "Chandler Fairview",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/chandler-fairview",
+      "combined_id": "L0003",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 3,
+      "input_name": "Mercy Gilbert",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/mercy-gilbert",
+      "combined_id": "L0005",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 4,
+      "input_name": "North Mesa",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/north-mesa",
+      "combined_id": "L0008",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 5,
+      "input_name": "Global",
+      "input_url": "https://houstonimaging.com/locations/global-imaging",
+      "combined_id": "L0032",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 6,
+      "input_name": "Sugar Land/Fort Bend",
+      "input_url": "https://houstonimaging.com/locations/sugar-land-fort-bend",
+      "combined_id": "L0034",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 7,
+      "input_name": "Campbell",
+      "input_url": "https://houstonimaging.com/locations/campbell",
+      "combined_id": "L0022",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 8,
+      "input_name": "Energy Corridor",
+      "input_url": "https://houstonimaging.com/locations/energy-corridor",
+      "combined_id": "L0023",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 9,
+      "input_name": "Heights",
+      "input_url": "https://houstonimaging.com/locations/heights",
+      "combined_id": "L0024",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 10,
+      "input_name": "Jacinto City/Eastside",
+      "input_url": "https://houstonimaging.com/locations/jacinto-city-eastside",
+      "combined_id": "L0025",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 11,
+      "input_name": "Pearland",
+      "input_url": "https://houstonimaging.com/locations/pearland",
+      "combined_id": "L0031",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 12,
+      "input_name": "Richmond",
+      "input_url": "https://houstonimaging.com/locations/richmond",
+      "combined_id": "L0026",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 13,
+      "input_name": "Shepherd",
+      "input_url": "https://houstonimaging.com/locations/shepherd",
+      "combined_id": "L0027",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 14,
+      "input_name": "Steeplechase",
+      "input_url": "https://houstonimaging.com/locations/steeplechase",
+      "combined_id": "L0028",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 15,
+      "input_name": "Tomball",
+      "input_url": "https://houstonimaging.com/locations/tomball",
+      "combined_id": "L0035",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 16,
+      "input_name": "Edinburg",
+      "input_url": "https://houstonimaging.com/locations/edinburg",
+      "combined_id": "L0021",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 17,
+      "input_name": "Breastlink Kierland",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/breastlink-kierland",
+      "combined_id": "L0012",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 18,
+      "input_name": "Breastlink Park Central",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/breastlink-park-central",
+      "combined_id": "L0010",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 19,
+      "input_name": "Arizona Diagnostic Radiology Ahwatukee",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/ahwatukee",
+      "combined_id": "L0009",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 20,
+      "input_name": "Arizona Diagnostic Radiology Gilbert Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/gilbert",
+      "combined_id": "L0004",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 21,
+      "input_name": "Arizona Diagnostic Radiology Paseo",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/paseo",
+      "combined_id": "L0006",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 22,
+      "input_name": "Arizona Diagnostic Radiology Superstition Springs",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/superstition-springs",
+      "combined_id": "L0007",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 23,
+      "input_name": "Arizona Diagnostic Radiology Tempe Baseline",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/tempe-baseline",
+      "combined_id": "L0013",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 24,
+      "input_name": "Arizona Diagnostic Radiology Apache Junction",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/apache-junction",
+      "combined_id": "L0001",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 25,
+      "input_name": "Arizona Diagnostic Radiology Casa Grande",
+      "input_url": "https://www.arizonadiagnosticradiology.com/locations/casa-grande",
+      "combined_id": "L0002",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 26,
+      "input_name": "Pacific Advanced Imaging - 2nd Ave",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-2nd-ave",
+      "combined_id": "L0014",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 27,
+      "input_name": "Pacific Advanced Imaging - Elm Street",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-elm-street",
+      "combined_id": "L0015",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 28,
+      "input_name": "Pacific Advanced Imaging - Poway",
+      "input_url": "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-poway",
+      "combined_id": "L0019",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 29,
+      "input_name": "Imaging Specialists of Pasadena",
+      "input_url": "https://www.radnet.com/san-gabriel-valley/locations/imaging-specialists-pasadena",
+      "combined_id": "L0017",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 30,
+      "input_name": "Houston Medical Imaging Brooks Lake",
+      "input_url": "https://houstonimaging.com/locations/brooks-lake",
+      "combined_id": "L0033",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 31,
+      "input_name": "Women's Breast Center",
+      "input_url": "https://houstonimaging.com/locations/katy-womens-breast-center",
+      "combined_id": "L0030",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 32,
+      "input_name": "Camelback",
+      "input_url": "https://simonmed.com/locations/az/camelback/",
+      "combined_id": "L0011",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 33,
+      "input_name": "Visalia",
+      "input_url": "https://simonmed.com/locations/ca/visalia/",
+      "combined_id": "L0020",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 34,
+      "input_name": "Madera",
+      "input_url": "https://simonmed.com/locations/ca/madera/",
+      "combined_id": "L0016",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 35,
+      "input_name": "Willowbrook",
+      "input_url": "https://simonmed.com/locations/tx/willowbrook/",
+      "combined_id": "L0029",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    },
+    {
+      "file": "new_leads_v4.csv",
+      "row": 36,
+      "input_name": "Porterville",
+      "input_url": "https://simonmed.com/locations/ca/porterville/",
+      "combined_id": "L0018",
+      "incremental_record_id": null,
+      "disposition": "Duplicate of combined upload; use combined enrichment"
+    }
+  ],
+  "incremental_research": [
+    {
+      "chain": "Midstate Radiology Associates",
+      "name": "Whitney Imaging - Hamden",
+      "street": "2200 Whitney Avenue, Suite 120",
+      "city": "Hamden",
+      "state": "CT",
+      "zip": "06518",
+      "phone": "203-288-3068",
+      "url": "https://rayusradiology.com/locations/whitney-imaging-center/",
+      "modalities": "3D mammography; CT; cardiac calcium scoring; DEXA; fluoroscopy; high-field MRI; lung screening; nuclear medicine; ultrasound; X-ray; volumetric brain imaging",
+      "selfpay_wording": "Network provides personalized estimates, but explicit branch cash eligibility and numeric prices not established.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "RAYUS page explicitly transfers this center to Midstate Radiology Associates. Insurance copay example is not a cash price.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email verified in official sources checked.",
+      "published_prices": [],
+      "price_scope": "Unknown cash rate; request personalized estimate.",
+      "sources": [
+        "https://rayusradiology.com/locations/whitney-imaging-center/",
+        "https://www.midstateradiology.com/locations/whitney-imaging/",
+        "https://www.midstateradiology.com/affordability/",
+        "https://www.midstateradiology.com/contact/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Confirm cash eligibility, exact exam and all fee components.",
+      "record_id": "FIVE-20261115-001",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "Greater Waterbury Imaging Center",
+      "street": "68 Robbins St.",
+      "city": "Waterbury",
+      "state": "CT",
+      "zip": "06708",
+      "phone": "203-573-7674",
+      "url": "https://rayusradiology.com/locations/waterbury/",
+      "modalities": "High-field MRI; breast MRI; MRI-guided breast biopsy; arthrogram; volumetric brain imaging",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "No email deliverability test or provider contact. Restricted press/privacy addresses excluded. Generic page boilerplate is not evidence of additional branch modalities.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email verified in official sources checked.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/waterbury/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "record_id": "FIVE-20261115-002",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Radiology MMI - Lewiston",
+      "street": "93 Campus Ave.",
+      "city": "Lewiston",
+      "state": "ME",
+      "zip": "04240",
+      "phone": "207-883-1285",
+      "url": "https://rayusradiology.com/locations/rayus-radiology-mmi-lewiston-me/",
+      "modalities": "Nuclear medicine; PET/CT",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "No email deliverability test or provider contact. Restricted press/privacy addresses excluded. Generic page boilerplate is not evidence of additional branch modalities.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email verified in official sources checked.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/rayus-radiology-mmi-lewiston-me/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "scheduling_phone": "800-734-4132",
+      "pricing_phone": "207-289-3037",
+      "record_id": "FIVE-20261115-003",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Vascular Care - Westbrook",
+      "street": "11 Rock Row",
+      "city": "Westbrook",
+      "state": "ME",
+      "zip": "04092",
+      "phone": "207-289-3001",
+      "url": "https://rayusradiology.com/locations/rayus-vascular-care-westbrook/",
+      "modalities": "Vascular/interventional procedures; ultrasound",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "No email deliverability test or provider contact. Restricted press/privacy addresses excluded. Generic page boilerplate is not evidence of additional branch modalities. Distinct from RAYUS diagnostic imaging Suite 1A at same building; this vascular clinic is Suite 2A. Template estimate number 952-541-1111 conflicts geographically; use local published 207-289-3001 to clarify.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email verified in official sources checked.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/rayus-vascular-care-westbrook/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "record_id": "FIVE-20261115-004",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Radiology - Sartell East",
+      "street": "155 Dehler Dr.",
+      "city": "Sartell",
+      "state": "MN",
+      "zip": "56377",
+      "phone": "320-251-0609",
+      "url": "https://rayusradiology.com/locations/sartell-east/",
+      "modalities": "Breast imaging; CT; MRI; PET/CT; ultrasound; X-ray; injections/biopsies",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "postal_address_microdata",
+      "review_notes": "Submitted Duluth-slug URL redirects to Sartell East; deduplicate with canonical D-1002, not a new Duluth location.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "RAYUSstcsched@RAYUSradiology.com",
+      "email_scope": "Regional scheduling/referral orders; official Central Minnesota order form explicitly lists Sartell East.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/aspirus-st-lukes-duluth/",
+        "https://rayusradiology.com/locations/sartell-east/",
+        "https://rayusradiology.com/wp-content/uploads/2026/03/CMN-4306_MainOrderForm_02-26_v2.pdf"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "record_id": "FIVE-20261115-005",
+      "canonical_match_ids": [
+        "D-1002"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Radiology - Maitland",
+      "street": "1640 N Maitland Ave",
+      "city": "Maitland",
+      "state": "FL",
+      "zip": "32751",
+      "phone": "407-741-5400",
+      "url": "https://rayusradiology.com/locations/rayus-maitland-fl/",
+      "modalities": "Bone density; breast imaging; CT; MRI; ultrasound; X-ray",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "No email deliverability test or provider contact. Restricted press/privacy addresses excluded. Generic page boilerplate is not evidence of additional branch modalities.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "FLscheduling@rayusradiology.com",
+      "email_scope": "Regional Central Florida scheduling/referral-orders mailbox explicitly lists Maitland, not branch-exclusive.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/rayus-maitland-fl/",
+        "https://rayusradiology.com/wp-content/uploads/2026/03/outputresult-27.pdf"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says global technical and professional bill; exact cash quote remains unknown.",
+      "record_id": "FIVE-20261115-006",
+      "canonical_match_ids": [
+        "D-770"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Radiology - Indianapolis East",
+      "street": "1250 N. Post Rd.,",
+      "city": "Indianapolis",
+      "state": "IN",
+      "zip": "46219",
+      "phone": "317-846-0717",
+      "url": "https://rayusradiology.com/locations/indianapolis/",
+      "modalities": "High-field MRI",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "No email deliverability test or provider contact. Restricted press/privacy addresses excluded. Generic page boilerplate is not evidence of additional branch modalities.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "INDYsched@RAYUSradiology.com",
+      "email_scope": "Regional Indiana scheduling/referral-orders mailbox; official form lists Indianapolis East. Older form remains publicly hosted; deliverability not tested.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/indianapolis/",
+        "https://rayusradiology.com/wp-content/uploads/2022/12/Rayus-Indiana-Referral-Form-8-22-22.pdf"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "record_id": "FIVE-20261115-007",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "RAYUS Radiology",
+      "name": "RAYUS Radiology - Clarksville",
+      "street": "135 Chesapeake Ln.",
+      "city": "Clarksville",
+      "state": "TN",
+      "zip": "37040",
+      "phone": "615-890-8999",
+      "url": "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/",
+      "modalities": "CT; 1.5T MRI; X-ray (planned)",
+      "selfpay_wording": "Location cost section explicitly offers personalized estimates including self-pay; ask for exact exam and contrast protocol.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Do not publish as currently operating. Year not printed beside opening date. No location-bound scheduling email verified.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email verified in official sources checked.",
+      "published_prices": [],
+      "price_scope": "Quote required; no numerical cash price verified.",
+      "sources": [
+        "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/"
+      ],
+      "operation_status": "HOLD: official heading says Opening 11/16; not confirmed open as of 2026-11-15.",
+      "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
+      "record_id": "FIVE-20261115-008",
+      "canonical_match_ids": [],
+      "recommendation": "Hold until opening independently confirmed",
+      "import_permitted": false
+    },
+    {
+      "chain": "American Health Imaging",
+      "name": "American Health Imaging of Myrtle Beach",
+      "street": "1103 48th Avenue North, Suite 101",
+      "city": "Myrtle Beach",
+      "state": "SC",
+      "zip": "29577",
+      "phone": "+1-843-217-6116",
+      "url": "https://americanhealthimaging.com/location/american-health-imaging-of-myrtle-beach/",
+      "modalities": "MRI; CT; cardiac scoring; low-dose CT lung screening; diffusion tensor imaging; NeuroQuant",
+      "selfpay_wording": "Group billing page offers cash rates for uninsured patients; branch lists cardiac scoring.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Official branch page requires physician referral. No general/scheduling email found; phone and appointment request form available. Cardiac price is not a general CT price.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email found in official sources checked.",
+      "price_scope": "Group-level cardiac scoring $199; no location-specific MRI/diagnostic CT numerical rates found.",
+      "published_prices": [
+        {
+          "exam": "Cardiac calcium scoring",
+          "usd": 199,
+          "scope": "Group service-page self-pay rate; branch lists service. Branch-specific rate not separately stated.",
+          "source": "https://americanhealthimaging.com/services/cardiac-scoring/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        }
+      ],
+      "sources": [
+        "https://americanhealthimaging.com/location/american-health-imaging-of-myrtle-beach/",
+        "https://americanhealthimaging.com/services/cardiac-scoring/",
+        "https://americanhealthimaging.com/patients/billing-collections/",
+        "https://americanhealthimaging.com/request-appointment/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "record_id": "FIVE-20261115-009",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "University Radiology",
+      "name": "Freehold",
+      "street": "1043 W Main St",
+      "city": "Freehold Township",
+      "state": "NJ",
+      "zip": "07728",
+      "phone": "732-462-1900",
+      "url": "https://universityradiology.com/location/freehold/",
+      "modalities": "3T MRI; high-field open 1.2T MRI; breast MRI; prostate MRI; MR enterography; CT; CT enterography; CT lung screening; PET/CT; mammography; DXA; ultrasound; breast ultrasound; ultrasound breast biopsy; thyroid biopsy; arthrograms; fluoroscopy; X-ray",
+      "selfpay_wording": "Self-pay eligibility and rates not established by official pages reviewed; request quote.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "html_address",
+      "review_notes": "Official contact page provides phone and online forms, not a general/scheduling email. Do not use staff, grievance or technical-support emails as scheduling contact.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email found in official sources checked.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://universityradiology.com/location/freehold/",
+        "https://universityradiology.com/contact/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "scheduling_phone": "732-390-0033",
+      "record_id": "FIVE-20261115-010",
+      "canonical_match_ids": [
+        "D-3227"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "University Radiology",
+      "name": "Moorestown",
+      "street": "400 NJ-38, Suite 2300",
+      "city": "Moorestown",
+      "state": "NJ",
+      "zip": "08057",
+      "phone": "856-372-3025",
+      "url": "https://universityradiology.com/location/moorestown/",
+      "modalities": "3T MRI; prostate MRI; MR enterography; CT; CT enterography; CT lung screening; PET/CT; 3D mammography; DXA; ultrasound; breast ultrasound; US elastography; arthrograms; C-arm; X-ray",
+      "selfpay_wording": "Self-pay eligibility and rates not established by official pages reviewed; request quote.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "html_address",
+      "review_notes": "Official contact page provides phone and online forms, not a general/scheduling email. Do not use staff, grievance or technical-support emails as scheduling contact.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email found in official sources checked.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://universityradiology.com/location/moorestown/",
+        "https://universityradiology.com/contact/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "scheduling_phone": "856-372-3025",
+      "record_id": "FIVE-20261115-011",
+      "canonical_match_ids": [
+        "D-3233"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "University Radiology",
+      "name": "Wall",
+      "street": "2315 Route 34 South",
+      "city": "Wall",
+      "state": "NJ",
+      "zip": "08736",
+      "phone": "732-452-3700",
+      "url": "https://universityradiology.com/location/wall/",
+      "modalities": "1.5T MRI",
+      "selfpay_wording": "Self-pay eligibility and rates not established by official pages reviewed; request quote.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "html_address",
+      "review_notes": "Official contact page provides phone and online forms, not a general/scheduling email. Do not use staff, grievance or technical-support emails as scheduling contact.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "",
+      "scheduling_email": "",
+      "email_scope": "No public location-specific general/scheduling email found in official sources checked.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://universityradiology.com/location/wall/",
+        "https://universityradiology.com/contact/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "scheduling_phone": "732-390-0033",
+      "record_id": "FIVE-20261115-012",
+      "canonical_match_ids": [
+        "D-3243"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "Imaging Healthcare Specialists",
+      "name": "Imaging Healthcare Specialists – Chula Vista (South Bay) Imaging Center",
+      "street": "333 H Street, Main Suite – Ste 1095, Secondary Suite – Ste 1005",
+      "city": "Chula Vista",
+      "state": "CA",
+      "zip": "91910",
+      "phone": "858-658-6500",
+      "url": "https://www.imaginghealthcare.com/locations/chula-vista/",
+      "modalities": "CT; DEXA; mammography; MRI; ultrasound; X-ray",
+      "selfpay_wording": "Group rates require payment in full at appointment; single procedure with radiologist interpretation. No insurance submission; personal injury liens excluded. Provider order generally required.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "html_address",
+      "review_notes": "No location-specific email or price list. Selected common rates only; group page has additional specialty rates. Do not infer PET/nuclear medicine at this branch.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "info@imaginghealthcare.com",
+      "scheduling_email": "",
+      "email_scope": "Group contact footer on pricing page; physician-resources page says business development, marketing, clinic liaison and leadership monitor mailbox. Not branch-specific or verified scheduling.",
+      "price_scope": "Group fee schedule; branch lists modality families but exact specialized exam availability must be confirmed.",
+      "published_prices": [
+        {
+          "exam": "MRI without contrast, excluding breast/prostate",
+          "usd": 400,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "MRI with and without contrast, excluding prostate",
+          "usd": 575,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "CT without contrast",
+          "usd": 270,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "CT with contrast",
+          "usd": 330,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "CT with and without contrast",
+          "usd": 390,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "Screening 3D mammogram",
+          "usd": 230,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "Diagnostic 3D mammogram",
+          "usd": 310,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "Ultrasound",
+          "usd": 250,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "X-ray",
+          "usd": 100,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        },
+        {
+          "exam": "DEXA",
+          "usd": 160,
+          "scope": "Group rate, confirm exam at branch",
+          "source": "https://www.imaginghealthcare.com/pricing/",
+          "price_type": "Published fixed group rate",
+          "location_price_verified": false
+        }
+      ],
+      "sources": [
+        "https://www.imaginghealthcare.com/locations/chula-vista/",
+        "https://www.imaginghealthcare.com/pricing/",
+        "https://www.imaginghealthcare.com/myihs-providers/referral-forms-resources/"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "record_id": "FIVE-20261115-013",
+      "canonical_match_ids": [
+        "D-1511"
+      ],
+      "recommendation": "Update existing canonical evidence; do not insert duplicate",
+      "import_permitted": false
+    },
+    {
+      "chain": "Solis Mammography",
+      "name": "Solis Mammography Lafayette (formerly Breast Center of Acadiana)",
+      "street": "935 Camellia Blvd Suite 100",
+      "city": "Lafayette",
+      "state": "LA",
+      "zip": "70508",
+      "phone": "(337) 202-5983",
+      "url": "https://www.solismammo.com/louisiana/lafayette",
+      "modalities": "3D screening mammography; diagnostic mammography; breast ultrasound; bone density; breast biopsy; image-guided localization; Mammo+Heart",
+      "selfpay_wording": "Official FAQ says all centers offer a self-pay option; prices vary. No current numerical price found in reviewed official pages.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Do not import third-party $250/$300/$99 offers as official location prices. Contact group for quote.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "SolisMammography@solismammo.com",
+      "scheduling_email": "SolisMammography@solismammo.com",
+      "email_scope": "Central group scheduling and clinical inquiry email; not branch-specific. Separate insuranceinfo email is for insurance/self-pay questions.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://www.solismammo.com/louisiana/lafayette",
+        "https://www.solismammo.com/contact-us",
+        "https://www.solismammo.com/node/907",
+        "https://www.solismammo.com/services/screening-mammogram",
+        "https://www.solismammo.com/patient-resources/insurance"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "pricing_inquiry_email": "insuranceinfo@solismammo.com",
+      "record_id": "FIVE-20261115-014",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "Solis Mammography",
+      "name": "Jefferson-Solis Mammography – Cinnaminson",
+      "street": "175 US-130 Suite C",
+      "city": "Cinnaminson",
+      "state": "NJ",
+      "zip": "08077",
+      "phone": "856-230-7425",
+      "url": "https://www.solismammo.com/new-jersey/jefferson-cinnaminson",
+      "modalities": "3D screening mammography; automated breast ultrasound",
+      "selfpay_wording": "Official FAQ says all centers offer a self-pay option; prices vary. No current numerical price found in reviewed official pages.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Do not import third-party $250/$300/$99 offers as official location prices. Contact group for quote. Location requires physician order for screening.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "SolisMammography@solismammo.com",
+      "scheduling_email": "SolisMammography@solismammo.com",
+      "email_scope": "Central group scheduling and clinical inquiry email; not branch-specific. Separate insuranceinfo email is for insurance/self-pay questions.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://www.solismammo.com/new-jersey/jefferson-cinnaminson",
+        "https://www.solismammo.com/contact-us",
+        "https://www.solismammo.com/node/907",
+        "https://www.solismammo.com/services/screening-mammogram",
+        "https://www.solismammo.com/patient-resources/insurance"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "pricing_inquiry_email": "insuranceinfo@solismammo.com",
+      "record_id": "FIVE-20261115-015",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "Solis Mammography",
+      "name": "Jefferson-Solis Mammography – Ardmore",
+      "street": "163 West Lancaster Ave Suite 110",
+      "city": "Ardmore",
+      "state": "PA",
+      "zip": "19003",
+      "phone": "601-366-7520",
+      "url": "https://www.solismammo.com/pennsylvania/jefferson-ardmore",
+      "modalities": "3D screening mammography; diagnostic mammography; breast ultrasound",
+      "selfpay_wording": "Official FAQ says all centers offer a self-pay option; prices vary. No current numerical price found in reviewed official pages.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Do not import third-party $250/$300/$99 offers as official location prices. Contact group for quote. Corrected mislabeled source name from Cinnaminson to Ardmore. Official page publishes 601-366-7520, unusual area code for PA; not silently corrected. Location requires physician order for screening.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "SolisMammography@solismammo.com",
+      "scheduling_email": "SolisMammography@solismammo.com",
+      "email_scope": "Central group scheduling and clinical inquiry email; not branch-specific. Separate insuranceinfo email is for insurance/self-pay questions.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://www.solismammo.com/pennsylvania/jefferson-ardmore",
+        "https://www.solismammo.com/contact-us",
+        "https://www.solismammo.com/node/907",
+        "https://www.solismammo.com/services/screening-mammogram",
+        "https://www.solismammo.com/patient-resources/insurance"
+      ],
+      "operation_status": "Official location page lists address, telephone and services.",
+      "pricing_inquiry_email": "insuranceinfo@solismammo.com",
+      "record_id": "FIVE-20261115-016",
+      "canonical_match_ids": [],
+      "recommendation": "Candidate only; live dedup and integration validation required",
+      "import_permitted": false
+    },
+    {
+      "chain": "Solis Mammography",
+      "name": "Solis Mammography Forney",
+      "street": "1960 N Gateway Blvd Suite 120",
+      "city": "Forney",
+      "state": "TX",
+      "zip": "75126",
+      "phone": "469-290-6631",
+      "url": "https://www.solismammo.com/dfw/forney",
+      "modalities": "Planned 3D screening mammography; Mammo+Heart listed",
+      "selfpay_wording": "Official FAQ says all centers offer a self-pay option; prices vary. No current numerical price found in reviewed official pages.",
+      "entity_type": "Imaging chain / group",
+      "crawled_on": "2026-11-15",
+      "status": "Researched; scoped evidence only; no database import",
+      "parser": "jsonld",
+      "review_notes": "Do not import third-party $250/$300/$99 offers as official location prices. Contact group for quote. As of 2026-11-15, upcoming location only. Do not classify as currently operating.",
+      "verified_on": "2026-11-15",
+      "location_email": "",
+      "general_email": "SolisMammography@solismammo.com",
+      "scheduling_email": "SolisMammography@solismammo.com",
+      "email_scope": "Central group scheduling and clinical inquiry email; not branch-specific. Separate insuranceinfo email is for insurance/self-pay questions.",
+      "price_scope": "No public numerical self-pay price found in official sources checked.",
+      "published_prices": [],
+      "sources": [
+        "https://www.solismammo.com/dfw/forney",
+        "https://www.solismammo.com/contact-us",
+        "https://www.solismammo.com/node/907",
+        "https://www.solismammo.com/services/screening-mammogram",
+        "https://www.solismammo.com/patient-resources/insurance"
+      ],
+      "operation_status": "NOT YET OPEN: official page states opening December 7, 2026.",
+      "pricing_inquiry_email": "insuranceinfo@solismammo.com",
+      "record_id": "FIVE-20261115-017",
+      "canonical_match_ids": [],
+      "recommendation": "Hold until opening independently confirmed",
+      "import_permitted": false
+    }
+  ],
+  "exclusions": [
+    {
+      "input_name": "Leisure World (We’ve Closed — Click for Nearby Centers)",
+      "url": "https://www.radnet.com/community-radiology/locations/leisure-world-imaging",
+      "reason": "Closed facility confirmed by official location page; exclude active location insertion.",
+      "verified_on": "2026-11-15",
+      "import_permitted": false
+    },
+    {
+      "input_name": "Cornwall Radiology (formerly Kolb Radiology) (NOW CLOSED)",
+      "url": "https://www.radnet.com/lenox-hill-radiology/locations/lhr-cornwall-radiology-formerly-cornwall-radiology",
+      "reason": "Closed facility confirmed by official location page; exclude active location insertion.",
+      "verified_on": "2026-11-15",
+      "import_permitted": false
+    },
+    {
+      "input_name": "Saint Alphonsus Medical Center – Nampa",
+      "url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/saint-alphonsus-medical-center-nampa/",
+      "reason": "Official page identifies Gem State Radiology reading location at a hospital; not evidence of standalone IMI self-pay clinic or applicable IMI group prices.",
+      "verified_on": "2026-11-15",
+      "import_permitted": false
+    },
+    {
+      "input_name": "Valor Health",
+      "url": "https://aboutimi.com/locations/gem-state-radiology-reading-locations/valor-health/",
+      "reason": "Official page identifies Gem State Radiology reading location at a hospital; not evidence of standalone IMI self-pay clinic or applicable IMI group prices.",
+      "verified_on": "2026-11-15",
+      "import_permitted": false
+    },
+    {
+      "input_name": "Advanced Radiology | Weems (NOW CLOSED)",
+      "url": "https://www.advancedradiology.com/locations/annapolis-weems",
+      "reason": "Closed facility confirmed by official location page; exclude active location insertion.",
+      "verified_on": "2026-11-15",
+      "import_permitted": false
+    }
+  ]
+}
