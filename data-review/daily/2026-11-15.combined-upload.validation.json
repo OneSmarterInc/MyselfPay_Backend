@@ -32,7 +32,7 @@
   "full_fresh_review_complete": false,
   "limits": [
     "171 existing matched rows retain historical values with original check dates; they were not freshly website-verified in this pass.",
-    "35 candidates plus 2 unmatched existing-label rows researched. Four SimonMed location pages inaccessible; secondary evidence explicitly separated.",
+    "35 candidates plus 2 unmatched existing-label rows researched. All four previously inaccessible SimonMed location pages were directly retrieved in the deeper pass; their addresses and phones are now verified.",
     "Camelback temporarily closed; do not import as available.",
     "All numeric offers are MDsave prepaid marketplace prices, not direct clinic rates. Not a complete tariff.",
     "Web-index cached evidence can be older than observation date; availability and totals must be reconfirmed before purchase.",
@@ -43,9 +43,10 @@
   ],
   "files_sha256": {
     "output.prices.csv": "eac8f8ea98ab7b02190208068da4ef5cdd2d4ff4d9e908fe647e38228fd41b5d",
-    "output.enriched.csv": "3ce3cd4fa08759ef99bc423f47a25ee022043464e69bd8134451bf3385f440b7",
+    "output.enriched.csv": "b5909f801b0d35a2ecf27ea0c35d9ddda7a2048abacb0decf612846121fbcaac",
     "output.source.csv": "7093b8ceaa743979872c7379c4c54fc1573121aa89862e628a0d48b75282e3e4",
-    "output.evidence.json": "ee770c2d9a03bb20a09165a6cdb36bb9295f1a48c1c981a9cbb65789f722a98b",
-    "output.README.md": "4bb902e07e08b3084d005b38cbd672ca5159bb571ddeee735d300efd64683085"
+    "output.followup-evidence.json": "d74d1c411d4767942a48ecd77a8cf6d5729227823d51a41e627144d5b0ca55d9",
+    "output.evidence.json": "0dc6780c5819991fc73d10150655da6d252555c1d5f64ffcb1e9ec9fd4735bc0",
+    "output.README.md": "dec2177253b1baf82877c6e34f98af2662c68995a84b4b66afc98d5990b7f79f"
   }
 }
