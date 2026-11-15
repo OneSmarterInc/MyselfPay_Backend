@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-15",
+  "timezone": "UTC+05:30",
+  "checked_utc": "2026-11-15T01:48:09.179953+00:00",
+  "qualified_rows": 1,
+  "new_discoveries": 0,
+  "recovered_prior_holds": 1,
+  "recovered_id": "DAILY-20261108-H015",
+  "held_rows": 4,
+  "held_by_state": {
+    "AL": 2,
+    "OK": 2
+  },
+  "target": 100,
+  "target_met": false,
+  "columns": 76,
+  "canonical_version": 59,
+  "canonical_sha256": "bda17f1e5118626abae9decc25e170719cc0cb7a36b075b759fab9839e745afb",
+  "live_rows": 2900,
+  "live_identity_digest": "7242b1eab166c3285618cb6209d80bca",
+  "dedup_limits": "Canonical v59 full workbook; Nov6-14 daily CSVs; Nov8-13 review evidence including Nov11 supplement; read-only live/backend review queries by name, phone and street. Main repository source blob identified but returned empty content; no full comparison claimed.",
+  "repository_source_blob_sha": "89f53ccbedb94e9d1ffbe67ee49bbd134fe99bcf",
+  "same_day_reconciliation": "No Nov15 file found on main or data/daily-csv before creation; existing files untouched. Daily branch diverges; not merged.",
+  "source_limits": "Bounded priority-state pass, not exhaustive state census. Published emails not delivery-tested. No inferred emails or prices. Prior holds remain separate.",
+  "approvals": 0,
+  "imports": 0,
+  "no_live_changes": true,
+  "no_canonical_changes": true,
+  "no_deploy": true,
+  "no_outreach": true,
+  "csv_sha256": "2ec98aa7b24b603afa6a0b90f2ec49fee3e6bb315a97838229ca80b68f1456c0"
+}
