@@ -1,0 +1,190 @@
+{
+  "audit_date": "2026-11-15",
+  "scope": "Price-source review and historical inventory reconciliation; not a full individual-center or production-database audit.",
+  "canonical_version": 59,
+  "canonical_source_rows": 5404,
+  "prior_repository_source_rows": 5390,
+  "canonical_rows_missing_from_prior_repository_source": 14,
+  "matching_source_pricing_differences": 0,
+  "historical_numeric_source_rows": 364,
+  "distinct_historical_numeric_source_fields": 242,
+  "representative_source_records_reviewed": 242,
+  "representative_source_records_remaining": 0,
+  "network_policy_sources_reviewed": 10,
+  "coverage_counts": {
+    "Record price source reviewed": 242,
+    "Not checked this run": 4120,
+    "Network policy reviewed; branch and quote unchecked": 874,
+    "Shared pricing source reviewed; this record scope unchecked": 168
+  },
+  "full_record_certifications": 0,
+  "database_writes": 0,
+  "provider_contacts": 0,
+  "code_or_deployment_changes": 0,
+  "validations": {
+    "stable_ids_unique": true,
+    "canonical_rows_preserved": true,
+    "historical_price_values_preserved": true,
+    "no_fresh_observed_price_or_date_for_unchecked_records": true,
+    "csv_roundtrip": true,
+    "same_day_files_untouched": true
+  },
+  "inputs": [
+    {
+      "path": "US_Self_Pay_Imaging_Directory.csv",
+      "bytes": 17272732,
+      "sha256": "cd74dee9508ae2e985c6d3c532888d153a837792a9402dc66b462fa757160118",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 5395
+    },
+    {
+      "path": "US_Imaging_Centers_Main_7_Columns_Fully_Updated.csv",
+      "bytes": 2606100,
+      "sha256": "bba8a9890ee93fa64287ed38eab6a06d5758a7c4dfd58281a2b5eef719e99675",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 5105
+    },
+    {
+      "path": "2026-11-06.csv",
+      "bytes": 16434,
+      "sha256": "8308a63a0f7830c2315045eb39f901e76c8a8bd33a9468938855a2b3b9c63c97",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 5
+    },
+    {
+      "path": "data-review/daily/2026-11-14.csv",
+      "bytes": 1532,
+      "sha256": "c00a619aed4cebce60674bce280edaf38975fe3c39ba5510d594165e6aef56ed",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 0
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.README.md",
+      "bytes": 4715,
+      "sha256": "dec2177253b1baf82877c6e34f98af2662c68995a84b4b66afc98d5990b7f79f",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.enriched.csv",
+      "bytes": 146086,
+      "sha256": "b5909f801b0d35a2ecf27ea0c35d9ddda7a2048abacb0decf612846121fbcaac",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 208
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.evidence.json",
+      "bytes": 220626,
+      "sha256": "0dc6780c5819991fc73d10150655da6d252555c1d5f64ffcb1e9ec9fd4735bc0",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.followup-evidence.json",
+      "bytes": 85336,
+      "sha256": "d74d1c411d4767942a48ecd77a8cf6d5729227823d51a41e627144d5b0ca55d9",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.prices.csv",
+      "bytes": 59214,
+      "sha256": "eac8f8ea98ab7b02190208068da4ef5cdd2d4ff4d9e908fe647e38228fd41b5d",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 148
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.source.csv",
+      "bytes": 76651,
+      "sha256": "7093b8ceaa743979872c7379c4c54fc1573121aa89862e628a0d48b75282e3e4",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 208
+    },
+    {
+      "path": "data-review/daily/2026-11-15.combined-upload.validation.json",
+      "bytes": 2817,
+      "sha256": "cb056f8b1512eb6efffd3e91ed3177df65574e32ad888dfd55d7453ac5508071",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.csv",
+      "bytes": 5290,
+      "sha256": "2ec98aa7b24b603afa6a0b90f2ec49fee3e6bb315a97838229ca80b68f1456c0",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 1
+    },
+    {
+      "path": "data-review/daily/2026-11-15.five-uploads.README.md",
+      "bytes": 4174,
+      "sha256": "954d4157c90be182a6a1fa2fb77e1963979040558e2f3bef2be87934c36349e8",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.five-uploads.json",
+      "bytes": 124653,
+      "sha256": "073ac28a5a5bacfb4386ff32073128e47435d39660ff94c1b20f84b5c0ae8954",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    },
+    {
+      "path": "data-review/daily/2026-11-15.holds.csv",
+      "bytes": 1756,
+      "sha256": "c509c2793b907f3bb6331e37c3b1fd70411e1cbee8905d017f0d72729283d66e",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit.",
+      "csv_records_including_nondata_preamble": 4
+    },
+    {
+      "path": "data-review/daily/2026-11-15.validation.json",
+      "bytes": 1463,
+      "sha256": "c42af791746a27bbc82482e1bbafdc54db5600f8cf5471e65e5055779a9f6fff",
+      "reconciliation": "Existing input retained byte-for-byte. Prior research is not a fresh check in this audit."
+    }
+  ],
+  "individual_records_not_reviewed": 5162,
+  "confirmed_numeric_price_change_records": 1,
+  "records_with_evidence_or_scope_updates": 36,
+  "evidence_update_statements": 37,
+  "newly_observed_closures": [
+    "D-139"
+  ],
+  "previously_recorded_closures_reconfirmed": [
+    "D-121"
+  ],
+  "artifacts": [
+    {
+      "path": "data-review/weekly/2026-11-15.README.md",
+      "bytes": 9300,
+      "sha256": "22ba30cb3565fc6608df41f0dd10233c397a6e634e7fe9415c3e648917fa6648"
+    },
+    {
+      "path": "data-review/weekly/2026-11-15.evidence-updates.csv",
+      "bytes": 25671,
+      "sha256": "64d11b81188738f887154bc11037e46332541463073b9022d60a91dc6bf1681b"
+    },
+    {
+      "path": "data-review/weekly/2026-11-15.network-policies.json",
+      "bytes": 8432,
+      "sha256": "83739a13cc3bd78e80aeda1e1ca98e872caf217080cb8487ee93091be9d254a1"
+    },
+    {
+      "path": "data-review/weekly/2026-11-15.price-audit.csv",
+      "bytes": 6118124,
+      "sha256": "7fdbd421142af73bc386ddcf4792a34518da132b5c6d687e95824fcdbb53fe3e"
+    },
+    {
+      "path": "data-review/weekly/2026-11-15.price-changes.csv",
+      "bytes": 953,
+      "sha256": "bcb070831aa373c4dd26c91739689376b9af6eab73a74024fb9bae063a9f3b78"
+    },
+    {
+      "path": "data-review/weekly/2026-11-15.source-checks.json",
+      "bytes": 342936,
+      "sha256": "1332499f325fc776fbd6401a3a44d151c9076d0fdfaabe1968ec3512bee9f083"
+    }
+  ],
+  "prior_daily_research": {
+    "combined_leads": 208,
+    "historical_only_canonical_matches": 171,
+    "overlap_with_weekly_price_source_representatives": 0,
+    "unmatched_leads": 37,
+    "marketplace_price_observations": 148,
+    "marketplace_locations": 16,
+    "freshly_rechecked_in_weekly_audit": false
+  }
+}
