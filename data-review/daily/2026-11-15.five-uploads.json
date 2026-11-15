@@ -1810,7 +1810,7 @@
     {
       "chain": "RAYUS Radiology",
       "name": "RAYUS Vascular Care - Westbrook",
-      "street": "11 Rock Row",
+      "street": "11 Rock Row, Suite 2A",
       "city": "Westbrook",
       "state": "ME",
       "zip": "04092",
@@ -1880,7 +1880,7 @@
     {
       "chain": "RAYUS Radiology",
       "name": "RAYUS Radiology - Maitland",
-      "street": "1640 N Maitland Ave",
+      "street": "1640 N Maitland Ave, Suite 1020",
       "city": "Maitland",
       "state": "FL",
       "zip": "32751",
@@ -1916,7 +1916,7 @@
     {
       "chain": "RAYUS Radiology",
       "name": "RAYUS Radiology - Indianapolis East",
-      "street": "1250 N. Post Rd.,",
+      "street": "1250 N. Post Rd., Suite A",
       "city": "Indianapolis",
       "state": "IN",
       "zip": "46219",
@@ -1950,7 +1950,7 @@
     {
       "chain": "RAYUS Radiology",
       "name": "RAYUS Radiology - Clarksville",
-      "street": "135 Chesapeake Ln.",
+      "street": "135 Chesapeake Ln., Suite 101",
       "city": "Clarksville",
       "state": "TN",
       "zip": "37040",
@@ -2434,5 +2434,16 @@
       "verified_on": "2026-11-15",
       "import_permitted": false
     }
-  ]
+  ],
+  "six_upload_union": {
+    "submitted_records": 395,
+    "unique_candidate_identities": 230,
+    "duplicate_or_alias_submissions_removed": 165,
+    "closed": 3,
+    "hospital_reading_site_exclusions": 2,
+    "future_opening_holds": 2,
+    "excluding_five_exclusions": 225,
+    "excluding_exclusions_and_future_openings": 223,
+    "qualification": "223 is not a count of fully verified active/self-pay-ready centers. Canonical/master matches do not reduce the six-upload union."
+  }
 }
