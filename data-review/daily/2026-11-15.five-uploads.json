@@ -1730,14 +1730,27 @@
         "https://rayusradiology.com/locations/whitney-imaging-center/",
         "https://www.midstateradiology.com/locations/whitney-imaging/",
         "https://www.midstateradiology.com/affordability/",
-        "https://www.midstateradiology.com/contact/"
+        "https://www.midstateradiology.com/contact/",
+        "https://www.midstateradiology.com/about-us/patient-access-center/",
+        "https://www.midstateradiology.com/radiology-services/oncologic-body-imaging/ct-calcium-scoring/"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "fee_limits": "Confirm cash eligibility, exact exam and all fee components.",
       "record_id": "FIVE-20261115-001",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-001",
+        "name": "Whitney Imaging - Hamden",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://www.midstateradiology.com/about-us/patient-access-center/",
+          "https://www.midstateradiology.com/radiology-services/oncologic-body-imaging/ct-calcium-scoring/"
+        ],
+        "finding": "Official contact form and centralized203-694-8405 available. No published mailbox or cash amount found. Insurance copay illustration is not self-pay pricing."
+      },
+      "scheduling_phone": "203-694-8405"
     },
     {
       "chain": "RAYUS Radiology",
@@ -1763,14 +1776,46 @@
       "published_prices": [],
       "price_scope": "Quote required; no numerical cash price verified.",
       "sources": [
-        "https://rayusradiology.com/locations/waterbury/"
+        "https://rayusradiology.com/locations/waterbury/",
+        "https://greaterwaterburyimagingcenter.org/patient-tools/contact-us/",
+        "https://greaterwaterburyimagingcenter.org/payment/mri-scan-costs/",
+        "https://greaterwaterburyimagingcenter.org/wp-content/uploads/2014/05/GWICInsurance.pdf"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
       "record_id": "FIVE-20261115-002",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-002",
+        "name": "Greater Waterbury Imaging Center",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://greaterwaterburyimagingcenter.org/patient-tools/contact-us/",
+          "https://greaterwaterburyimagingcenter.org/payment/mri-scan-costs/",
+          "https://greaterwaterburyimagingcenter.org/wp-content/uploads/2014/05/GWICInsurance.pdf"
+        ],
+        "finding": "Own provider website publishes indicative MRI ranges, explicitly dependent on insurance and scan type; NOT a cash fee schedule. Old insurance PDF says call GWIC to arrange self-pay. No scheduling/general email verified; obfuscated personal billing contact is not promoted."
+      },
+      "indicative_non_cash_ranges": {
+        "source": "https://greaterwaterburyimagingcenter.org/payment/mri-scan-costs/",
+        "checked_on": "2026-11-15",
+        "mri_without_contrast_usd": [
+          500,
+          800
+        ],
+        "mri_with_contrast_usd": [
+          650,
+          950
+        ],
+        "mri_with_and_without_contrast_usd": [
+          900,
+          1685
+        ],
+        "price_type": "Indicative insurance-dependent range, NOT verified self-pay rate",
+        "caveat": "Provider describes typical ranges dependent on insurance and scan type; cash quote remains unknown. Fee inclusions not established."
+      }
     },
     {
       "chain": "RAYUS Radiology",
@@ -1796,7 +1841,10 @@
       "published_prices": [],
       "price_scope": "Quote required; no numerical cash price verified.",
       "sources": [
-        "https://rayusradiology.com/locations/rayus-radiology-mmi-lewiston-me/"
+        "https://rayusradiology.com/locations/rayus-radiology-mmi-lewiston-me/",
+        "https://rayusradiology.com/wp-content/uploads/2022/10/me.mmiscriptpad.pdf",
+        "https://rayusradiology.com/wp-content/uploads/2022/10/me.petct_.pdf",
+        "https://rayusradiology.com/contact-us-redirect/"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
@@ -1805,7 +1853,18 @@
       "record_id": "FIVE-20261115-003",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-003",
+        "name": "RAYUS Radiology MMI - Lewiston",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://rayusradiology.com/wp-content/uploads/2022/10/me.mmiscriptpad.pdf",
+          "https://rayusradiology.com/wp-content/uploads/2022/10/me.petct_.pdf",
+          "https://rayusradiology.com/contact-us-redirect/"
+        ],
+        "finding": "Maine MMI referral form and PET/CT flyer explicitly list Lewiston with phone/fax only. Third-party maine@rayusradiology.com listings not corroborated on official sources; not accepted."
+      }
     },
     {
       "chain": "RAYUS Radiology",
@@ -1831,14 +1890,26 @@
       "published_prices": [],
       "price_scope": "Quote required; no numerical cash price verified.",
       "sources": [
-        "https://rayusradiology.com/locations/rayus-vascular-care-westbrook/"
+        "https://rayusradiology.com/locations/rayus-vascular-care-westbrook/",
+        "https://rayusradiology.com/blog/rayus-radiology-expands-imaging-and-vascular-services-in-westbrook-maine-westbrook-maine/",
+        "https://rayusradiology.com/contact-us-redirect/"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
       "record_id": "FIVE-20261115-004",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-004",
+        "name": "RAYUS Vascular Care - Westbrook",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://rayusradiology.com/blog/rayus-radiology-expands-imaging-and-vascular-services-in-westbrook-maine-westbrook-maine/",
+          "https://rayusradiology.com/contact-us-redirect/"
+        ],
+        "finding": "Official launch release confirms distinct vascularSuite2A and diagnosticSuite1A. No suitable official email or numeric cash rate found. Minnesota vascular email not transferred to Maine."
+      }
     },
     {
       "chain": "RAYUS Radiology",
@@ -1938,14 +2009,27 @@
       "price_scope": "Quote required; no numerical cash price verified.",
       "sources": [
         "https://rayusradiology.com/locations/indianapolis/",
-        "https://rayusradiology.com/wp-content/uploads/2022/12/Rayus-Indiana-Referral-Form-8-22-22.pdf"
+        "https://rayusradiology.com/wp-content/uploads/2022/12/Rayus-Indiana-Referral-Form-8-22-22.pdf",
+        "https://rayusradiology.com/contact-us-redirect/",
+        "https://rayusradiology.com/blog/how-to-avoid-a-surprise-bill-for-your-mri-or-ct/"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
       "record_id": "FIVE-20261115-007",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-007",
+        "name": "RAYUS Radiology - Indianapolis East",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://rayusradiology.com/wp-content/uploads/2022/12/Rayus-Indiana-Referral-Form-8-22-22.pdf",
+          "https://rayusradiology.com/contact-us-redirect/",
+          "https://rayusradiology.com/blog/how-to-avoid-a-surprise-bill-for-your-mri-or-ct/"
+        ],
+        "finding": "Regional INDYsched email explicitly covers Indianapolis East. Public location cost section requires exam-specific self-pay quote; no numeric cash amount found."
+      }
     },
     {
       "chain": "RAYUS Radiology",
@@ -1971,14 +2055,25 @@
       "published_prices": [],
       "price_scope": "Quote required; no numerical cash price verified.",
       "sources": [
-        "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/"
+        "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/",
+        "https://rayusradiology.com/wp-content/uploads/2022/12/Order-Form-2022-updated.pdf"
       ],
       "operation_status": "HOLD: official heading says Opening 11/16; not confirmed open as of 2026-11-15.",
       "fee_limits": "Location page says most bills combine technical/professional fees, with separate billing possible for Medicare or hospital affiliations; exact all-in cash quote not verified.",
       "record_id": "FIVE-20261115-008",
       "canonical_match_ids": [],
       "recommendation": "Hold until opening independently confirmed",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "record_id": "FIVE-20261115-008",
+        "name": "RAYUS Radiology - Clarksville",
+        "checked_on": "2026-11-15",
+        "additional_official_sources": [
+          "https://rayusradiology.com/wp-content/uploads/2022/12/Order-Form-2022-updated.pdf",
+          "https://rayusradiology.com/locations/rayus-radiology-clarksville-tn/"
+        ],
+        "finding": "Tennessee PDF publishes TNorders@rayusradiology.com for Murfreesboro and Smyrna only, not Clarksville; retained as rejected applicability, not a Clarksville contact. Heading still says opening11/16; held. No numeric cash rate found."
+      }
     },
     {
       "chain": "American Health Imaging",
@@ -2016,13 +2111,24 @@
         "https://americanhealthimaging.com/location/american-health-imaging-of-myrtle-beach/",
         "https://americanhealthimaging.com/services/cardiac-scoring/",
         "https://americanhealthimaging.com/patients/billing-collections/",
-        "https://americanhealthimaging.com/request-appointment/"
+        "https://americanhealthimaging.com/request-appointment/",
+        "https://americanhealthimaging.com/how-does-scheduling-work-at-american-health-imaging/",
+        "https://americanhealthimaging.com/patients/faqs/",
+        "https://americanhealthimaging.com/good-faith-estimate-disclosure/"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "record_id": "FIVE-20261115-009",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "checked_on": "2026-11-15",
+        "search_coverage": "Official branch, cardiac and lung service pages, billing/collections, FAQs, appointment request form, scheduling guide, good-faith-estimate page; location-specific domain-filtered email and cash-price search.",
+        "price_followup": "Only cardiac scoring numerical price verified ($199 group page). MRI, diagnostic CT and low-dose lung screening require quote. Official scheduling guide directs uninsured/high-deductible patients to local center for estimate.",
+        "email_evidence": {},
+        "canonical_match": "No genuine match found in canonical v59 Directory by location/name/address/phone checks.",
+        "rejected_canonical_matches": []
+      }
     },
     {
       "chain": "University Radiology",
@@ -2277,14 +2383,39 @@
         "https://www.solismammo.com/contact-us",
         "https://www.solismammo.com/node/907",
         "https://www.solismammo.com/services/screening-mammogram",
-        "https://www.solismammo.com/patient-resources/insurance"
+        "https://www.solismammo.com/patient-resources/insurance",
+        "https://www.solismammo.com/patient-resources/faqs",
+        "https://www.solismammo.com/services/diagnostic-mammogram",
+        "https://www.solismammo.com/schedule",
+        "https://www.solismammo.com/services/mammo-heart",
+        "https://www.solismammo.com/breast-center-acadiana"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "pricing_inquiry_email": "insuranceinfo@solismammo.com",
       "record_id": "FIVE-20261115-014",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "checked_on": "2026-11-15",
+        "search_coverage": "Official branch, network contact, insurance page, FAQ, screening and diagnostic service pages, appointment location roster and launch promotions, Mammo+Heart page, domain-filtered price/self-pay and location email searches.",
+        "price_followup": "Current FAQ and service pages route prices to insuranceinfo@solismammo.com / 469-398-4099 or 866-717-2551. No numerical full-exam rate established. $0 insured preventive benefit is not self-pay. No $99/$250/$300 rates imported from third parties. AI/add-on pricing must not be classified as complete mammogram.",
+        "email_evidence": {
+          "SolisMammography@solismammo.com": {
+            "purpose": "Central clinical inquiries and scheduling questions",
+            "source": "https://www.solismammo.com/contact-us"
+          },
+          "insuranceinfo@solismammo.com": {
+            "purpose": "Central insurance clarification and uninsured mammogram cost questions",
+            "source": "https://www.solismammo.com/patient-resources/faqs"
+          }
+        },
+        "canonical_match": "No genuine match found in canonical v59 Directory by location/name/address/phone checks.",
+        "rejected_canonical_matches": [
+          "D-327 Advanced Imaging of Lafayette: 935 Camellia Blvd Suite 101 is a different company and suite, not Solis Suite 100.",
+          "D-920 Solis Youngsville: same former Breast Center of Acadiana branding, different branch/address."
+        ]
+      }
     },
     {
       "chain": "Solis Mammography",
@@ -2314,14 +2445,35 @@
         "https://www.solismammo.com/contact-us",
         "https://www.solismammo.com/node/907",
         "https://www.solismammo.com/services/screening-mammogram",
-        "https://www.solismammo.com/patient-resources/insurance"
+        "https://www.solismammo.com/patient-resources/insurance",
+        "https://www.solismammo.com/patient-resources/faqs",
+        "https://www.solismammo.com/services/diagnostic-mammogram",
+        "https://www.solismammo.com/schedule",
+        "https://www.solismammo.com/services/mammo-heart"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "pricing_inquiry_email": "insuranceinfo@solismammo.com",
       "record_id": "FIVE-20261115-015",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "checked_on": "2026-11-15",
+        "search_coverage": "Official branch, network contact, insurance page, FAQ, screening and diagnostic service pages, appointment location roster and launch promotions, Mammo+Heart page, domain-filtered price/self-pay and location email searches.",
+        "price_followup": "Current FAQ and service pages route prices to insuranceinfo@solismammo.com / 469-398-4099 or 866-717-2551. No numerical full-exam rate established. $0 insured preventive benefit is not self-pay. No $99/$250/$300 rates imported from third parties. AI/add-on pricing must not be classified as complete mammogram.",
+        "email_evidence": {
+          "SolisMammography@solismammo.com": {
+            "purpose": "Central clinical inquiries and scheduling questions",
+            "source": "https://www.solismammo.com/contact-us"
+          },
+          "insuranceinfo@solismammo.com": {
+            "purpose": "Central insurance clarification and uninsured mammogram cost questions",
+            "source": "https://www.solismammo.com/patient-resources/faqs"
+          }
+        },
+        "canonical_match": "No genuine match found in canonical v59 Directory by location/name/address/phone checks.",
+        "rejected_canonical_matches": []
+      }
     },
     {
       "chain": "Solis Mammography",
@@ -2351,14 +2503,35 @@
         "https://www.solismammo.com/contact-us",
         "https://www.solismammo.com/node/907",
         "https://www.solismammo.com/services/screening-mammogram",
-        "https://www.solismammo.com/patient-resources/insurance"
+        "https://www.solismammo.com/patient-resources/insurance",
+        "https://www.solismammo.com/patient-resources/faqs",
+        "https://www.solismammo.com/services/diagnostic-mammogram",
+        "https://www.solismammo.com/schedule",
+        "https://www.solismammo.com/services/mammo-heart"
       ],
       "operation_status": "Official location page lists address, telephone and services.",
       "pricing_inquiry_email": "insuranceinfo@solismammo.com",
       "record_id": "FIVE-20261115-016",
       "canonical_match_ids": [],
       "recommendation": "Candidate only; live dedup and integration validation required",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "checked_on": "2026-11-15",
+        "search_coverage": "Official branch, network contact, insurance page, FAQ, screening and diagnostic service pages, appointment location roster and launch promotions, Mammo+Heart page, domain-filtered price/self-pay and location email searches.",
+        "price_followup": "Current FAQ and service pages route prices to insuranceinfo@solismammo.com / 469-398-4099 or 866-717-2551. No numerical full-exam rate established. $0 insured preventive benefit is not self-pay. No $99/$250/$300 rates imported from third parties. AI/add-on pricing must not be classified as complete mammogram.",
+        "email_evidence": {
+          "SolisMammography@solismammo.com": {
+            "purpose": "Central clinical inquiries and scheduling questions",
+            "source": "https://www.solismammo.com/contact-us"
+          },
+          "insuranceinfo@solismammo.com": {
+            "purpose": "Central insurance clarification and uninsured mammogram cost questions",
+            "source": "https://www.solismammo.com/patient-resources/faqs"
+          }
+        },
+        "canonical_match": "No genuine match found in canonical v59 Directory by location/name/address/phone checks.",
+        "rejected_canonical_matches": []
+      }
     },
     {
       "chain": "Solis Mammography",
@@ -2388,14 +2561,35 @@
         "https://www.solismammo.com/contact-us",
         "https://www.solismammo.com/node/907",
         "https://www.solismammo.com/services/screening-mammogram",
-        "https://www.solismammo.com/patient-resources/insurance"
+        "https://www.solismammo.com/patient-resources/insurance",
+        "https://www.solismammo.com/patient-resources/faqs",
+        "https://www.solismammo.com/services/diagnostic-mammogram",
+        "https://www.solismammo.com/schedule",
+        "https://www.solismammo.com/services/mammo-heart"
       ],
       "operation_status": "NOT YET OPEN: official page states opening December 7, 2026.",
       "pricing_inquiry_email": "insuranceinfo@solismammo.com",
       "record_id": "FIVE-20261115-017",
       "canonical_match_ids": [],
       "recommendation": "Hold until opening independently confirmed",
-      "import_permitted": false
+      "import_permitted": false,
+      "followup_review": {
+        "checked_on": "2026-11-15",
+        "search_coverage": "Official branch, network contact, insurance page, FAQ, screening and diagnostic service pages, appointment location roster and launch promotions, Mammo+Heart page, domain-filtered price/self-pay and location email searches.",
+        "price_followup": "Current FAQ and service pages route prices to insuranceinfo@solismammo.com / 469-398-4099 or 866-717-2551. No numerical full-exam rate established. $0 insured preventive benefit is not self-pay. No $99/$250/$300 rates imported from third parties. AI/add-on pricing must not be classified as complete mammogram.",
+        "email_evidence": {
+          "SolisMammography@solismammo.com": {
+            "purpose": "Central clinical inquiries and scheduling questions",
+            "source": "https://www.solismammo.com/contact-us"
+          },
+          "insuranceinfo@solismammo.com": {
+            "purpose": "Central insurance clarification and uninsured mammogram cost questions",
+            "source": "https://www.solismammo.com/patient-resources/faqs"
+          }
+        },
+        "canonical_match": "No genuine match found in canonical v59 Directory by location/name/address/phone checks.",
+        "rejected_canonical_matches": []
+      }
     }
   ],
   "exclusions": [
@@ -2445,5 +2639,144 @@
     "excluding_five_exclusions": 225,
     "excluding_exclusions_and_future_openings": 223,
     "qualification": "223 is not a count of fully verified active/self-pay-ready centers. Canonical/master matches do not reduce the six-upload union."
+  },
+  "new_to_master_followup": {
+    "checked_on": "2026-11-15",
+    "identities": [
+      {
+        "id": "FIVE-20261115-001",
+        "name": "Whitney Imaging - Hamden",
+        "address": "2200 Whitney Avenue, Suite 120",
+        "city": "Hamden",
+        "state": "CT",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-002",
+        "name": "Greater Waterbury Imaging Center",
+        "address": "68 Robbins St.",
+        "city": "Waterbury",
+        "state": "CT",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-003",
+        "name": "RAYUS Radiology MMI - Lewiston",
+        "address": "93 Campus Ave.",
+        "city": "Lewiston",
+        "state": "ME",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-004",
+        "name": "RAYUS Vascular Care - Westbrook",
+        "address": "11 Rock Row, Suite 2A",
+        "city": "Westbrook",
+        "state": "ME",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-007",
+        "name": "RAYUS Radiology - Indianapolis East",
+        "address": "1250 N. Post Rd., Suite A",
+        "city": "Indianapolis",
+        "state": "IN",
+        "known_email": "INDYsched@RAYUSradiology.com",
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-008",
+        "name": "RAYUS Radiology - Clarksville",
+        "address": "135 Chesapeake Ln., Suite 101",
+        "city": "Clarksville",
+        "state": "TN",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "HOLD: official heading says Opening 11/16; not confirmed open as of 2026-11-15."
+      },
+      {
+        "id": "FIVE-20261115-009",
+        "name": "American Health Imaging of Myrtle Beach",
+        "address": "1103 48th Avenue North, Suite 101",
+        "city": "Myrtle Beach",
+        "state": "SC",
+        "known_email": null,
+        "pricing_email": null,
+        "numeric_cash_price_scope": "Group cardiac screening rate, not separately location-priced",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-014",
+        "name": "Solis Mammography Lafayette (formerly Breast Center of Acadiana)",
+        "address": "935 Camellia Blvd Suite 100",
+        "city": "Lafayette",
+        "state": "LA",
+        "known_email": "SolisMammography@solismammo.com",
+        "pricing_email": "insuranceinfo@solismammo.com",
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-015",
+        "name": "Jefferson-Solis Mammography – Cinnaminson",
+        "address": "175 US-130 Suite C",
+        "city": "Cinnaminson",
+        "state": "NJ",
+        "known_email": "SolisMammography@solismammo.com",
+        "pricing_email": "insuranceinfo@solismammo.com",
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-016",
+        "name": "Jefferson-Solis Mammography – Ardmore",
+        "address": "163 West Lancaster Ave Suite 110",
+        "city": "Ardmore",
+        "state": "PA",
+        "known_email": "SolisMammography@solismammo.com",
+        "pricing_email": "insuranceinfo@solismammo.com",
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "Official location page lists address, telephone and services."
+      },
+      {
+        "id": "FIVE-20261115-017",
+        "name": "Solis Mammography Forney",
+        "address": "1960 N Gateway Blvd Suite 120",
+        "city": "Forney",
+        "state": "TX",
+        "known_email": "SolisMammography@solismammo.com",
+        "pricing_email": "insuranceinfo@solismammo.com",
+        "numeric_cash_price_scope": "Unknown; quote required",
+        "operating_status": "NOT YET OPEN: official page states opening December 7, 2026."
+      }
+    ],
+    "counts": {
+      "unmatched_in_canonical_v59": 11,
+      "with_published_regional_or_central_scheduling_email": 5,
+      "missing_verified_general_or_scheduling_email": 6,
+      "with_official_group_numeric_exam_price": 1,
+      "missing_numeric_cash_exam_price": 10,
+      "with_verified_branch_exclusive_email": 0,
+      "with_branch_specific_cash_rate": 0,
+      "future_opening_holds": 2,
+      "new_usable_emails_discovered_this_followup": 0,
+      "new_numeric_cash_rates_discovered_this_followup": 0
+    },
+    "limits": "Practical official-source research complete for all11 unmatched identities; no guarantee no other unpublished contact/price exists. Six additional researched identities already match canonical; their prior scoped evidence retained. Exact quote and email gaps require provider confirmation; no contact sent. Waterbury indicative ranges are excluded from numeric cash count."
   }
 }
