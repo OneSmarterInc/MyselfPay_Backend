@@ -1,0 +1,4928 @@
+{
+  "checked_on": "2026-11-15",
+  "research": {
+    "L0001": {
+      "id": "L0001",
+      "center": "Arizona Diagnostic Radiology Apache Junction",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "1840 W Apache Trail",
+      "city": "Apache Junction",
+      "state": "AZ",
+      "zip": "85120",
+      "phone": "(480) 288-6400",
+      "official_page_phone": "(480) 288-6400",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3T MRI; CT; PET/CT; ultrasound; X-ray; DEXA; nuclear medicine; virtual colonoscopy; prostate imaging; 3D mammography; breast MRI; low-dose lung CT",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram screening (tomosynthesis)",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "Bone scan",
+          "amount": 599,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/apache-junction",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-apache-jnctn-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0002": {
+      "id": "L0002",
+      "center": "Arizona Diagnostic Radiology Casa Grande",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "1669 E McMurray Blvd",
+      "city": "Casa Grande",
+      "state": "AZ",
+      "zip": "85122",
+      "phone": "(520) 876-0297",
+      "official_page_phone": "(520) 876-0297",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3T MRI; CT; calcium score; ultrasound; X-ray; DEXA; prostate imaging; 3D mammography; fluoroscopy; lumbar puncture; myelogram; breast biopsy; breast MRI; low-dose lung CT; arthrogram; virtual colonoscopy",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram screening (tomosynthesis)",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 620,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/casa-grande",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-casa-grande-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0003": {
+      "id": "L0003",
+      "center": "Chandler Fairview",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "2201 W Fairview St, #1",
+      "city": "Chandler",
+      "state": "AZ",
+      "zip": "85224",
+      "phone": "(480) 934-0540",
+      "official_page_phone": "(480) 934-0540",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "1.5T MRI; ultrasound",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "MRA with and without contrast",
+          "amount": 787,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRA with contrast",
+          "amount": 610,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRA without contrast",
+          "amount": 554,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "Breast MRI with and/or without contrast",
+          "amount": 791,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI with and without contrast",
+          "amount": 750,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI with contrast",
+          "amount": 742,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI without contrast",
+          "amount": 523,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/chandler-fairview",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-chandler-fairview-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0004": {
+      "id": "L0004",
+      "center": "Arizona Diagnostic Radiology Gilbert Baseline",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "4915 E Baseline Rd #116",
+      "city": "Gilbert",
+      "state": "AZ",
+      "zip": "85234",
+      "phone": "(480) 354-9200",
+      "official_page_phone": "(480) 354-9200",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3T MRI; CT; breast biopsy; ultrasound; X-ray; fluoroscopy; DEXA; virtual colonoscopy; prostate imaging; 3D mammography; breast MRI; low-dose lung CT; arthrogram",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram screening (tomosynthesis)",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 620,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/gilbert-baseline",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tech-radiology-gilbert-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0005": {
+      "id": "L0005",
+      "center": "Mercy Gilbert",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "3591 S Mercy Rd, #105",
+      "city": "Gilbert",
+      "state": "AZ",
+      "zip": "85297",
+      "phone": null,
+      "official_page_phone": "(844) 870-3019",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3T and 1.5T MRI; CT; PET/CT; low-dose lung CT; calcium score; coronary CTA; echocardiogram; virtual colonoscopy; 3D mammography; ultrasound; DEXA; X-ray; fluoroscopy; arthrogram; prostate imaging; breast MRI",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 620,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis with and without contrast",
+          "amount": 748,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis with contrast",
+          "amount": 679,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis without contrast",
+          "amount": 468,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT with and without contrast",
+          "amount": 575,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT with contrast",
+          "amount": 438,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT without contrast",
+          "amount": 329,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/mercy-gilbert",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-mercy-gilbert-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "Official location page lists 844-870-3019, which the official billing page also labels as billing. Imported local phone was not independently reconfirmed. Use explicitly labeled scheduling line 480-455-1850."
+      ]
+    },
+    "L0006": {
+      "id": "L0006",
+      "center": "Arizona Diagnostic Radiology Paseo",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "5891 W Eugie Ave",
+      "city": "Glendale",
+      "state": "AZ",
+      "zip": "85304",
+      "phone": null,
+      "official_page_phone": "(844) 870-3019",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3T MRI; CT; ultrasound; X-ray; 3D mammography; prostate imaging; low-dose lung CT",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 620,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis with and without contrast",
+          "amount": 748,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis with contrast",
+          "amount": 679,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT abdomen and pelvis without contrast",
+          "amount": 468,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT with and without contrast",
+          "amount": 575,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT with contrast",
+          "amount": 438,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        },
+        {
+          "procedure": "CT without contrast",
+          "amount": 329,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/dignity-paseo",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-paseo-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "Official location page lists 844-870-3019, which the official billing page also labels as billing. Imported local phone was not independently reconfirmed. Use explicitly labeled scheduling line 480-455-1850."
+      ]
+    },
+    "L0007": {
+      "id": "L0007",
+      "center": "Arizona Diagnostic Radiology Superstition Springs",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "6811 E Superstition Springs Blvd",
+      "city": "Mesa",
+      "state": "AZ",
+      "zip": "85209",
+      "phone": null,
+      "official_page_phone": "(844) 870-3019",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "Ultrasound; 3D mammography; DEXA; X-ray",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram screening (tomosynthesis)",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        },
+        {
+          "procedure": "DEXA bone density",
+          "amount": 135,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/superstition-springs",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-superstition-springs-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "Official location page lists 844-870-3019, which the official billing page also labels as billing. Imported local phone was not independently reconfirmed. Use explicitly labeled scheduling line 480-455-1850."
+      ]
+    },
+    "L0008": {
+      "id": "L0008",
+      "center": "North Mesa",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "3308 N Higley Rd, #103",
+      "city": "Mesa",
+      "state": "AZ",
+      "zip": "85215",
+      "phone": "(480) 934-0545",
+      "official_page_phone": "(480) 934-0545",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "1.5T MRI",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "MRA with and without contrast",
+          "amount": 787,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRA with contrast",
+          "amount": 610,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRA without contrast",
+          "amount": 554,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "Breast MRI with and/or without contrast",
+          "amount": 791,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI with and without contrast",
+          "amount": 750,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI with contrast",
+          "amount": 742,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        },
+        {
+          "procedure": "MRI without contrast",
+          "amount": 523,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/north-mesa",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-north-mesa-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0009": {
+      "id": "L0009",
+      "center": "Arizona Diagnostic Radiology Ahwatukee",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "4530 E Ray Rd #160",
+      "city": "Phoenix",
+      "state": "AZ",
+      "zip": "85044",
+      "phone": "(480) 893-1004",
+      "official_page_phone": "(480) 893-1004",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "MRI; CT; ultrasound; X-ray; DEXA; virtual colonoscopy; prostate imaging; 3D mammography; breast MRI; low-dose lung CT",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "DEXA bone density",
+          "amount": 135,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/dexa-scan-bone-density-scan/d287f9c56adb"
+        },
+        {
+          "procedure": "MRI with and without contrast",
+          "amount": 750,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/mri-with-and-without-contrast/d287f9c564d5"
+        },
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/mri-with-and-without-contrast/d287f9c564d5"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/mri-with-and-without-contrast/d287f9c564d5"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/mri-with-and-without-contrast/d287f9c564d5"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/ahwatukee",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/dexa-scan-bone-density-scan/d287f9c56adb",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-ahwatukee-imaging-and-radiology/mri-with-and-without-contrast/d287f9c564d5"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "MDsave provider overview returned maintenance page; individual procedure pages remained readable and supported listed prices."
+      ]
+    },
+    "L0010": {
+      "id": "L0010",
+      "center": "Breastlink Park Central",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "3115 N 3rd Ave, #S-140",
+      "city": "Phoenix",
+      "state": "AZ",
+      "zip": "85013",
+      "phone": "(602) 277-4111",
+      "official_page_phone": "(602) 277-4111",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3D mammography; breast biopsy; breast ultrasound; DEXA; breast MRI; risk assessment; genetic testing",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Network self-pay/GFE policy published; branch-specific quote needed",
+      "prices": null,
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/breastlink-park-central",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://breastlink.com/contact",
+        "https://breastlink.com/billing",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-park-central-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "MDsave Park Central at 3115 N 3rd Avenue Suite 140 lists mammography prices, but does not explicitly identify Breastlink or S-140. Kept as a possible matching source, not assigned as verified branch pricing. Official page also contains conflicting hours and apparent placeholder phone 602-555-0145 in prose; header phone corroborated by Breastlink/local business listing."
+      ]
+    },
+    "L0012": {
+      "id": "L0012",
+      "center": "Breastlink Kierland",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "7469 E Monte Cristo Ave, #200",
+      "city": "Scottsdale",
+      "state": "AZ",
+      "zip": "85260",
+      "phone": "(480) 788-8910",
+      "official_page_phone": "(480) 788-8910",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "3D mammography; breast biopsy; breast ultrasound; DEXA",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [
+        {
+          "email": "hello@labfinder.com",
+          "reason": "Third-party booking platform support, not center email"
+        }
+      ],
+      "self_pay": "Network self-pay/GFE policy published; branch-specific quote needed",
+      "prices": null,
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/breastlink-kierland",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://breastlink.com/contact",
+        "https://breastlink.com/billing"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff.",
+        "Official page conflicts on Tuesday-only versus Tuesday/Thursday hours and whether breast MRI is offered. Core service list retained; confirm additional services. No exact branch price located."
+      ]
+    },
+    "L0013": {
+      "id": "L0013",
+      "center": "Arizona Diagnostic Radiology Tempe Baseline",
+      "date": "2026-11-15",
+      "location_status": "Official location page found; operating hours published (not phone-confirmed)",
+      "address": "1920 E Baseline Rd",
+      "city": "Tempe",
+      "state": "AZ",
+      "zip": "85283",
+      "phone": "(480) 500-1225",
+      "official_page_phone": "(480) 500-1225",
+      "scheduling_phone": "(480) 455-1850",
+      "services": "Ultrasound; 3D mammography; X-ray; DEXA",
+      "email": null,
+      "email_status": "No public usable inquiry email found",
+      "excluded_emails": [],
+      "self_pay": "Branch-specific prepaid offers found via MDsave",
+      "prices": [
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "2D mammogram screening",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "3D mammogram screening (tomosynthesis)",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        },
+        {
+          "procedure": "DEXA bone density",
+          "amount": 135,
+          "currency": "USD",
+          "channel": "MDsave prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+        }
+      ],
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/dignity-tempe-baseline",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-tempe-baseline-imaging-and-radiology"
+      ],
+      "caveats": [
+        "Public inquiry/scheduling email not found in reviewed official pages and targeted searches. Do not infer email from commercial email-format directories.",
+        "MDsave amounts, when supplied, are branch-specific prepaid marketplace offers in USD, not direct facility cash quotes. Purchase is required before care; provider does not file an insurance claim. Confirm exact exam, eligibility and current total before buying. Only observed procedures are listed, not an exhaustive tariff."
+      ]
+    },
+    "L0011": {
+      "id": "L0011",
+      "center": "Camelback",
+      "chain": "SimonMed",
+      "checked_date": "2026-11-15",
+      "address": "2141 E Camelback Rd. STE 110, Phoenix, AZ 85016-4723",
+      "phone": "(602) 954-0954",
+      "location_verification": "Official location page verified",
+      "operating_status": "Temporarily closed for construction per official location page",
+      "services": null,
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "email_source": "https://simonmed.com/patients/your-visit/faqs/",
+      "self_pay": "Network cash-quote policy only; branch temporarily closed",
+      "prices": null,
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://simonmed.com/locations/az/camelback/",
+        "https://simonmed.com/patients/your-visit/faqs/"
+      ],
+      "excluded_emails": [
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Claim status/itemized statement billing channel; excluded from scheduling and new-price inquiry email."
+        }
+      ],
+      "caveats": [
+        "Do not treat this as a currently available imaging location. Reopening date not posted."
+      ]
+    },
+    "L0014": {
+      "id": "L0014",
+      "center": "Pacific Advanced Imaging - 2nd Ave",
+      "chain": "RadNet",
+      "checked_date": "2026-11-15",
+      "address": "225 East 2nd Ave, Suite 104, Escondido, CA 92025",
+      "phone": "(760) 520-8500",
+      "location_verification": "Official location page verified",
+      "operating_status": "Listed with office hours on official website",
+      "services": [
+        "DEXA / bone density",
+        "Mammography",
+        "Ultrasound",
+        "X-ray"
+      ],
+      "email": null,
+      "email_type": null,
+      "email_source": null,
+      "self_pay": "Regional billing page supports uninsured/self-pay Good Faith Estimates",
+      "prices": null,
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-2nd-ave",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.valleyrad.com/feeschedule",
+        "https://www.radnet.com/san-diego/valley-rad"
+      ],
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Legacy general-contact address in search index; current validity unverified following RadNet site transition."
+        }
+      ],
+      "caveats": [
+        "Historical Valley Radiology fee schedule and info@valleyrad.com remain indexed, but the live fee URL redirects to a RadNet transition page with a November 1, 2026 portal cutoff. Historical rates/email not accepted as current.",
+        "No current public inquiry email or exact branch cash price found. Call regional scheduling for a Good Faith Estimate."
+      ],
+      "scheduling_phone": "760-280-0945"
+    },
+    "L0015": {
+      "id": "L0015",
+      "center": "Pacific Advanced Imaging - Elm Street",
+      "chain": "RadNet",
+      "checked_date": "2026-11-15",
+      "address": "255 North Elm Street, Suite 102 and 100, Escondido, CA 92025",
+      "phone": "(760) 520-8500",
+      "location_verification": "Official location page verified",
+      "operating_status": "Listed with office hours on official website",
+      "services": [
+        "Breast biopsy",
+        "CT",
+        "Mammography",
+        "MRI",
+        "PET/CT",
+        "Ultrasound",
+        "X-ray"
+      ],
+      "email": null,
+      "email_type": null,
+      "email_source": null,
+      "self_pay": "Regional billing page supports uninsured/self-pay Good Faith Estimates",
+      "prices": null,
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-elm-street",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.valleyrad.com/feeschedule",
+        "https://www.radnet.com/san-diego/valley-rad"
+      ],
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Legacy general-contact address in search index; current validity unverified following RadNet site transition."
+        }
+      ],
+      "caveats": [
+        "Historical Valley Radiology fee schedule and info@valleyrad.com remain indexed, but the live fee URL redirects to a RadNet transition page with a November 1, 2026 portal cutoff. Historical rates/email not accepted as current.",
+        "No current public inquiry email or exact branch cash price found. Call regional scheduling for a Good Faith Estimate."
+      ],
+      "scheduling_phone": "760-280-0945"
+    },
+    "L0016": {
+      "id": "L0016",
+      "center": "Madera",
+      "chain": "SimonMed",
+      "checked_date": "2026-11-15",
+      "address": "360 E Almond Ave., Madera, CA 93637",
+      "phone": null,
+      "location_verification": "Address corroborated by branch-specific MDsave offer; phone corroborated only by secondary directory; official location page inaccessible",
+      "operating_status": null,
+      "services": null,
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "email_source": "https://simonmed.com/patients/your-visit/faqs/",
+      "self_pay": "Branch-specific MDsave prepaid cash offers verified; direct-clinic cash rate requires quote.",
+      "prices": [
+        {
+          "procedure": "MRI without contrast",
+          "amount": 514,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology/mri-without-contrast/d181fdca63db",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One body part. CPT 70557 and 77084 excluded."
+        },
+        {
+          "procedure": "CT without contrast",
+          "amount": 297,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology/ct-scan-without-contrast/d181fdca63dd",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One body part; combined abdomen/pelvis, limited/follow-up CT and angiography excluded."
+        },
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 248,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 203,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "2D screening mammogram",
+          "amount": 213,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 278,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 233,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D screening mammogram",
+          "amount": 249,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Carotid ultrasound / Doppler",
+          "amount": 259,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 76,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 91,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 568,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        }
+      ],
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://simonmed.com/locations/ca/madera/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology/mri-without-contrast/d181fdca63db",
+        "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology/ct-scan-without-contrast/d181fdca63dd",
+        "https://www.mdsave.com/p/simonmed-imaging-madera-imaging-and-radiology",
+        "https://yellow-pages.us.com/california/madera/simonmed-madera-b40456188",
+        "https://jobs.lever.co/simonmed/c336d581-3606-40f9-920f-169172e8240b"
+      ],
+      "excluded_emails": [
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Claim status/itemized statement billing channel; excluded from scheduling and new-price inquiry email."
+        }
+      ],
+      "caveats": [
+        "Official location URL returned an accessibility error through web lookup; this alone does not establish closure. Original phone retained only as unverified imported_phone.",
+        "Current SimonMed recruiting page also confirms 360 E. Almond Ave address.",
+        "Listed offers are the exact prices observed, not an exhaustive procedure catalog. They may change and are not transferable to other branches."
+      ],
+      "imported_phone": "559-206-9901",
+      "secondary_phone": "559-206-9901",
+      "secondary_phone_source": "https://yellow-pages.us.com/california/madera/simonmed-madera-b40456188"
+    },
+    "L0017": {
+      "id": "L0017",
+      "center": "Imaging Specialists of Pasadena",
+      "chain": "RadNet",
+      "checked_date": "2026-11-15",
+      "address": "630 S. Raymond Ave., Ste. 210, Pasadena, CA 91105",
+      "phone": "(626) 356-0700",
+      "location_verification": "Official location page verified",
+      "operating_status": "Listed with office hours on official website",
+      "services": [
+        "Amyloid PET/CT",
+        "Calcium scoring",
+        "MR angiography",
+        "MR-guided breast biopsy",
+        "MRI",
+        "PET/CT",
+        "Prostate MRI",
+        "PSMA PET/CT"
+      ],
+      "email": null,
+      "email_type": null,
+      "email_source": null,
+      "self_pay": "Branch-specific MDsave prepaid cash offers verified; direct-clinic cash rate requires quote.",
+      "prices": [
+        {
+          "procedure": "CT without contrast",
+          "amount": 351,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology/ct-scan-without-contrast/d284fccc66d4",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One body part; combined abdomen/pelvis, limited/follow-up CT and angiography excluded. MDsave lists CT while current branch service list emphasizes MRI/PET; verify availability."
+        },
+        {
+          "procedure": "Carotid ultrasound / Doppler",
+          "amount": 522,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 702,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT abdomen/pelvis with and without contrast",
+          "amount": 847,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT abdomen/pelvis with contrast",
+          "amount": 767,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT abdomen/pelvis without contrast",
+          "amount": 510,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT with and without contrast",
+          "amount": 644,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT with contrast",
+          "amount": 480,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "MRA with and without contrast",
+          "amount": 936,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "MRA with contrast",
+          "amount": 724,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and current branch availability before purchasing; not direct clinic quote."
+        }
+      ],
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://www.radnet.com/san-gabriel-valley/locations/imaging-specialists-pasadena",
+        "https://prostate.radnet.com/locations/imaging-specialists-pasadena/",
+        "https://www.healthnet.com/content/dam/centene/healthnet/pdfs/medi-cal/medi-cal_provider_directory_la.pdf",
+        "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology/ct-scan-without-contrast/d284fccc66d4",
+        "https://www.mdsave.com/p/imaging-specialists-of-pasadena-imaging-and-radiology"
+      ],
+      "excluded_emails": [
+        {
+          "email": "ava.gamble@radnet.com",
+          "reason": "Named staff contact in older Health Net directory; not established as a current patient scheduling or pricing mailbox."
+        }
+      ],
+      "caveats": [
+        "Listed offers are the exact prices observed, not an exhaustive procedure catalog. They may change and are not transferable to other branches."
+      ],
+      "scheduling_phone": "626-445-4850"
+    },
+    "L0018": {
+      "id": "L0018",
+      "center": "Porterville",
+      "chain": "SimonMed",
+      "checked_date": "2026-11-15",
+      "address": "99 W Putnam Ave., Porterville, CA 93257",
+      "phone": null,
+      "location_verification": "Address corroborated by branch-specific MDsave offer; phone corroborated only by secondary directory; official location page inaccessible",
+      "operating_status": null,
+      "services": null,
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "email_source": "https://simonmed.com/patients/your-visit/faqs/",
+      "self_pay": "Branch-specific MDsave prepaid cash offers verified; direct-clinic cash rate requires quote.",
+      "prices": [
+        {
+          "procedure": "MRI with contrast",
+          "amount": 713,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology/mri-with-contrast/d782fdcb66d47f",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One body part; CPT 70558 excluded."
+        },
+        {
+          "procedure": "X-ray",
+          "amount": 77,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology/x-ray/d782fdcb66d479",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One eligible body part; confirm views and exclusions."
+        },
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 248,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 203,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "2D screening mammogram",
+          "amount": 213,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D mammogram diagnostic bilateral",
+          "amount": 278,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D mammogram diagnostic unilateral",
+          "amount": 233,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "3D screening mammogram",
+          "amount": 249,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Carotid ultrasound / Doppler",
+          "amount": 259,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Chest X-ray",
+          "amount": 76,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "Complex X-ray",
+          "amount": 91,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        },
+        {
+          "procedure": "CT angiography",
+          "amount": 568,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+          "notes": "Branch-specific MDsave provider-list price. Prepayment required; verify individual procedure inclusions and eligibility before purchasing; not direct clinic quote."
+        }
+      ],
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://simonmed.com/locations/ca/porterville/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology/mri-with-contrast/d782fdcb66d47f",
+        "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology/x-ray/d782fdcb66d479",
+        "https://www.mdsave.com/p/simonmed-imaging-porterville-imaging-and-radiology",
+        "https://findowcpdoctors.com/california/porterville/"
+      ],
+      "excluded_emails": [
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Claim status/itemized statement billing channel; excluded from scheduling and new-price inquiry email."
+        }
+      ],
+      "caveats": [
+        "Official location URL returned an accessibility error through web lookup; this alone does not establish closure. Original phone retained only as unverified imported_phone.",
+        "Porterville and Visalia share the same published phone and corporate NPI, but distinct MDsave addresses support retaining separate branches; do not deduplicate solely on phone.",
+        "Listed offers are the exact prices observed, not an exhaustive procedure catalog. They may change and are not transferable to other branches."
+      ],
+      "imported_phone": "559-713-6050",
+      "secondary_phone": "559-713-6050",
+      "secondary_phone_source": "https://findowcpdoctors.com/california/porterville/"
+    },
+    "L0019": {
+      "id": "L0019",
+      "center": "Pacific Advanced Imaging - Poway",
+      "chain": "RadNet",
+      "checked_date": "2026-11-15",
+      "address": "15725 Pomerado Road, Suite 101, Poway, CA 92064",
+      "phone": "(858) 815-2250",
+      "location_verification": "Official location page verified",
+      "operating_status": "Listed with office hours on official website",
+      "services": [
+        "Breast biopsy",
+        "CT",
+        "DEXA / bone density",
+        "Mammography",
+        "MRI",
+        "X-ray"
+      ],
+      "email": null,
+      "email_type": null,
+      "email_source": null,
+      "self_pay": "Regional billing page supports uninsured/self-pay Good Faith Estimates",
+      "prices": null,
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://www.radnet.com/san-diego/locations/pacific-advanced-imaging-poway",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.valleyrad.com/feeschedule",
+        "https://www.radnet.com/san-diego/valley-rad"
+      ],
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Legacy general-contact address in search index; current validity unverified following RadNet site transition."
+        }
+      ],
+      "caveats": [
+        "Historical Valley Radiology fee schedule and info@valleyrad.com remain indexed, but the live fee URL redirects to a RadNet transition page with a November 1, 2026 portal cutoff. Historical rates/email not accepted as current.",
+        "No current public inquiry email or exact branch cash price found. Call regional scheduling for a Good Faith Estimate."
+      ],
+      "scheduling_phone": "760-280-0945"
+    },
+    "L0020": {
+      "id": "L0020",
+      "center": "Visalia",
+      "chain": "SimonMed",
+      "checked_date": "2026-11-15",
+      "address": "3610 W Packwood Ave., Visalia, CA 93277",
+      "phone": null,
+      "location_verification": "Address corroborated by branch-specific MDsave offer; phone corroborated only by secondary directory; official location page inaccessible",
+      "operating_status": null,
+      "services": null,
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "email_source": "https://simonmed.com/patients/your-visit/faqs/",
+      "self_pay": "Branch-specific MDsave prepaid cash offers verified; direct-clinic cash rate requires quote.",
+      "prices": [
+        {
+          "procedure": "CT without contrast",
+          "amount": 297,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/ct-scan-without-contrast/d782fdcb67dc74",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One body part; combined abdomen/pelvis, limited/follow-up CT and angiography excluded."
+        },
+        {
+          "procedure": "X-ray",
+          "amount": 77,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/x-ray/d782fdcb67df79",
+          "notes": "MDsave/One Call marketplace prepaid cash bundle, not a direct clinic cash quote. Purchase before care; physician order required for CT/MRI/X-ray. Facility, interpretation and marketplace fees included on individual procedure pages; unlisted services excluded. Confirm exam/body-part eligibility and availability. One eligible body part; CPT exclusions apply."
+        },
+        {
+          "procedure": "2D mammogram diagnostic bilateral",
+          "amount": 248,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/ct-scan-without-contrast/d782fdcb67dc74",
+          "notes": "Additional procedures listed on branch-specific MDsave page; prepaid cash offer, not a direct clinic quote. Verify individual inclusions."
+        },
+        {
+          "procedure": "2D mammogram diagnostic unilateral",
+          "amount": 203,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/ct-scan-without-contrast/d782fdcb67dc74",
+          "notes": "Additional procedures listed on branch-specific MDsave page; prepaid cash offer, not a direct clinic quote. Verify individual inclusions."
+        },
+        {
+          "procedure": "2D screening mammogram",
+          "amount": 213,
+          "currency": "USD",
+          "price_type": "MDsave prepaid self-pay offer",
+          "source": "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/ct-scan-without-contrast/d782fdcb67dc74",
+          "notes": "Additional procedures listed on branch-specific MDsave page; prepaid cash offer, not a direct clinic quote. Verify individual inclusions."
+        }
+      ],
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://simonmed.com/locations/ca/visalia/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/ct-scan-without-contrast/d782fdcb67dc74",
+        "https://www.mdsave.com/p/simonmed-imaging-visalia-imaging-and-radiology/x-ray/d782fdcb67df79",
+        "https://findowcpdoctors.com/california/visalia/"
+      ],
+      "excluded_emails": [
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Claim status/itemized statement billing channel; excluded from scheduling and new-price inquiry email."
+        }
+      ],
+      "caveats": [
+        "Official location URL returned an accessibility error through web lookup; this alone does not establish closure. Original phone retained only as unverified imported_phone.",
+        "Phone shared with Porterville; distinct branch address. Do not substitute unrelated Visalia Imaging at 1700 S Court St returned by business lookup.",
+        "Listed offers are the exact prices observed, not an exhaustive procedure catalog. They may change and are not transferable to other branches."
+      ],
+      "imported_phone": "559-713-6050",
+      "secondary_phone": "559-713-6050",
+      "secondary_phone_source": "https://findowcpdoctors.com/california/visalia/"
+    },
+    "L0029": {
+      "id": "L0029",
+      "center": "Willowbrook",
+      "chain": "SimonMed",
+      "checked_date": "2026-11-15",
+      "address": "7927 Cypress Creek Parkway STE 100, Houston, TX 77070",
+      "phone": null,
+      "location_verification": "CareCredit directory corroborates name/address only; current official operation and direct phone unverified",
+      "operating_status": null,
+      "services": null,
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "email_source": "https://simonmed.com/patients/your-visit/faqs/",
+      "self_pay": "Network FAQ confirms cash quotes; call/chat for estimate",
+      "prices": null,
+      "direct_clinic_prices": null,
+      "sources": [
+        "https://simonmed.com/locations/tx/willowbrook/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://www.carecredit.com/doctor-locator/houston-tx/simonmed-imaging-willowbrook-691vcr/"
+      ],
+      "excluded_emails": [
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Claim status/itemized statement billing channel; excluded from scheduling and new-price inquiry email."
+        }
+      ],
+      "caveats": [
+        "Official location URL returned an accessibility error through web lookup; this alone does not establish closure. Original phone retained only as unverified imported_phone.",
+        "CareCredit lists 480-474-5962 rather than imported 713-335-8820; neither verified as current branch scheduling. Business lookup returned unrelated Beltway branch. No exact Willowbrook cash offer found."
+      ],
+      "imported_phone": "713-335-8820"
+    },
+    "L0021": {
+      "id": "L0021",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Edinburg",
+      "location_status": "Verified on official individual location page",
+      "street_address": "2502 W Trenton Rd",
+      "city": "Edinburg",
+      "state": "TX",
+      "zip": "78539",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T MRI",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/edinburg",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0022": {
+      "id": "L0022",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Campbell",
+      "location_status": "Verified on official individual location page",
+      "street_address": "9180 Katy Fwy, #100",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77055",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T MRI; prostate MRI; breast MRI; CT; low-dose lung CT; ultrasound; X-ray; calcium scoring; CCTA",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": [
+        {
+          "exam": "Coronary calcium score",
+          "amount": 100,
+          "currency": "USD",
+          "basis": "Advertised cash price, walk-in",
+          "verification_status": "Official-company social search-index evidence only; current availability not reconfirmed",
+          "source": "https://www.linkedin.com/company/houstonmedimaging",
+          "scope": "Post expressly names Campbell, Heights, Global, Pearland and Steeplechase only",
+          "caveat": "Search result crawled two months ago; post date not established; price absent from current fetched company feed. Call to reconfirm; not an MRI/diagnostic CT price."
+        }
+      ],
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/campbell",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research",
+        "https://www.linkedin.com/company/houstonmedimaging"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "A $100 calcium-score promotion appears in indexed official HMI LinkedIn content for this named branch. Treat as advertised, not a confirmed current quote."
+      ]
+    },
+    "L0023": {
+      "id": "L0023",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Energy Corridor",
+      "location_status": "Verified on official individual location page",
+      "street_address": "1155 Dairy Ashford Rd, #105",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77079",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T MRI; prostate MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; PET/CT; 3D mammography; calcium scoring; CCTA",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/energy-corridor",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0024": {
+      "id": "L0024",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Heights",
+      "location_status": "Verified on official individual location page",
+      "street_address": "427 W 20th St., #104 & #401",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77008",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T MRI; prostate MRI; breast MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography; calcium scoring",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": [
+        {
+          "exam": "Coronary calcium score",
+          "amount": 100,
+          "currency": "USD",
+          "basis": "Advertised cash price, walk-in",
+          "verification_status": "Official-company social search-index evidence only; current availability not reconfirmed",
+          "source": "https://www.linkedin.com/company/houstonmedimaging",
+          "scope": "Post expressly names Campbell, Heights, Global, Pearland and Steeplechase only",
+          "caveat": "Search result crawled two months ago; post date not established; price absent from current fetched company feed. Call to reconfirm; not an MRI/diagnostic CT price."
+        }
+      ],
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/heights",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research",
+        "https://www.linkedin.com/company/houstonmedimaging"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "A $100 calcium-score promotion appears in indexed official HMI LinkedIn content for this named branch. Treat as advertised, not a confirmed current quote."
+      ]
+    },
+    "L0025": {
+      "id": "L0025",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Jacinto City/Eastside",
+      "location_status": "Verified on official individual location page",
+      "street_address": "10912 E Fwy",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77029",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; prostate MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; mammography; ultrasound-guided breast biopsy; calcium scoring",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/jacinto-city-eastside",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0026": {
+      "id": "L0026",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Richmond",
+      "location_status": "Verified on official individual location page",
+      "street_address": "3310 Richmond Ave.",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77098",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; high-field open MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography; nuclear medicine; PET/CT; SPECT/CT; thyroid biopsy",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/richmond",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0027": {
+      "id": "L0027",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Shepherd",
+      "location_status": "Verified on official individual location page",
+      "street_address": "3301 S Shepherd Dr",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77098",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T and 1.5T MRI; prostate MRI; X-ray; arthrogram",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/shepherd",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0028": {
+      "id": "L0028",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Steeplechase",
+      "location_status": "Verified on official individual location page",
+      "street_address": "11301 Fallbrook Dr, #102",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77065",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; prostate MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography; calcium scoring; CCTA",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": [
+        {
+          "exam": "Coronary calcium score",
+          "amount": 100,
+          "currency": "USD",
+          "basis": "Advertised cash price, walk-in",
+          "verification_status": "Official-company social search-index evidence only; current availability not reconfirmed",
+          "source": "https://www.linkedin.com/company/houstonmedimaging",
+          "scope": "Post expressly names Campbell, Heights, Global, Pearland and Steeplechase only",
+          "caveat": "Search result crawled two months ago; post date not established; price absent from current fetched company feed. Call to reconfirm; not an MRI/diagnostic CT price."
+        }
+      ],
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/steeplechase",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research",
+        "https://www.linkedin.com/company/houstonmedimaging"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "A $100 calcium-score promotion appears in indexed official HMI LinkedIn content for this named branch. Treat as advertised, not a confirmed current quote."
+      ]
+    },
+    "L0030": {
+      "id": "L0030",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Women's Breast Center",
+      "location_status": "Verified on official individual location page",
+      "street_address": "9230 Katy Fwy, #440",
+      "city": "Houston",
+      "state": "TX",
+      "zip": "77055",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3D and diagnostic mammography; ultrasound; DEXA; stereotactic and ultrasound-guided breast biopsy",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/katy-womens-breast-center",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0031": {
+      "id": "L0031",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Pearland",
+      "location_status": "Verified on official individual location page",
+      "street_address": "3322 E Walnut St, #105",
+      "city": "Pearland",
+      "state": "TX",
+      "zip": "77581",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "3T MRI; prostate MRI; breast MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography; calcium scoring; CCTA; arthrogram; nuclear medicine; SPECT/CT",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": [
+        {
+          "exam": "Coronary calcium score",
+          "amount": 100,
+          "currency": "USD",
+          "basis": "Advertised cash price, walk-in",
+          "verification_status": "Official-company social search-index evidence only; current availability not reconfirmed",
+          "source": "https://www.linkedin.com/company/houstonmedimaging",
+          "scope": "Post expressly names Campbell, Heights, Global, Pearland and Steeplechase only",
+          "caveat": "Search result crawled two months ago; post date not established; price absent from current fetched company feed. Call to reconfirm; not an MRI/diagnostic CT price."
+        }
+      ],
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/pearland",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research",
+        "https://www.linkedin.com/company/houstonmedimaging"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "A $100 calcium-score promotion appears in indexed official HMI LinkedIn content for this named branch. Treat as advertised, not a confirmed current quote."
+      ]
+    },
+    "L0032": {
+      "id": "L0032",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Global",
+      "location_status": "Verified on official individual location page",
+      "street_address": "1435 Hwy 6 #102",
+      "city": "Sugar Land",
+      "state": "TX",
+      "zip": "77478",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; breast MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography; calcium scoring; CCTA",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": [
+        {
+          "exam": "Coronary calcium score",
+          "amount": 100,
+          "currency": "USD",
+          "basis": "Advertised cash price, walk-in",
+          "verification_status": "Official-company social search-index evidence only; current availability not reconfirmed",
+          "source": "https://www.linkedin.com/company/houstonmedimaging",
+          "scope": "Post expressly names Campbell, Heights, Global, Pearland and Steeplechase only",
+          "caveat": "Search result crawled two months ago; post date not established; price absent from current fetched company feed. Call to reconfirm; not an MRI/diagnostic CT price."
+        }
+      ],
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/global-imaging",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research",
+        "https://www.linkedin.com/company/houstonmedimaging"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "A $100 calcium-score promotion appears in indexed official HMI LinkedIn content for this named branch. Treat as advertised, not a confirmed current quote."
+      ]
+    },
+    "L0033": {
+      "id": "L0033",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Brooks Lake",
+      "location_status": "Verified on official individual location page",
+      "street_address": "1429 Highway 6, Suite 205",
+      "city": "Sugar Land",
+      "state": "TX",
+      "zip": "77478",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "Ultrasound; X-ray",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/brooks-lake",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0034": {
+      "id": "L0034",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Sugar Land/Fort Bend",
+      "location_status": "Verified on official individual location page",
+      "street_address": "14835 Southwest Fwy",
+      "city": "Sugar Land",
+      "state": "TX",
+      "zip": "77478",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; prostate MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/sugar-land-fort-bend",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence.",
+        "Location page has inconsistent modality lists: badges list 1.5T MRI without mammography; prose additionally mentions 3T MRI and mammography. Confirm those extras directly; not included as verified services."
+      ]
+    },
+    "L0035": {
+      "id": "L0035",
+      "verified_date": "2026-11-15",
+      "center": "Houston Medical Imaging Tomball",
+      "location_status": "Verified on official individual location page",
+      "street_address": "425 Holderrieth Blvd, #104",
+      "city": "Tomball",
+      "state": "TX",
+      "zip": "77375",
+      "phone": "(713) 797-1919",
+      "phone_type": "Central scheduling",
+      "services": "1.5T MRI; prostate MRI; CT; low-dose lung CT; ultrasound; X-ray; DEXA; 3D mammography",
+      "self_pay": "Yes; HMI billing page supports self-pay GFE requests before scheduling",
+      "email": null,
+      "email_status": "No usable public scheduling or pricing email found",
+      "current_exact_prices": null,
+      "advertised_prices": null,
+      "pricing_status": "Quote required; request procedure/site-specific GFE",
+      "quote_url": "https://texaspatientportal.com/home/gfe",
+      "sources": [
+        "https://houstonimaging.com/locations/tomball",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://texaspatientportal.com/home/gfe",
+        "https://houstonimaging.com/about/research"
+      ],
+      "caveats": [
+        "Phone is shared HMI scheduling, not a unique branch direct line.",
+        "No public general scheduling/pricing inquiry email verified. Research-only email shown obfuscated on research page is excluded.",
+        "GFE estimator requires name, date of birth, procedure and site. No personal details submitted.",
+        "Legacy cash-price PDF found on third-party shayahealth.com has title CASH PRICE VERSION april 9 2020; old official hmixray.com link now returns 404. Excluded as current price evidence."
+      ]
+    },
+    "L0036": {
+      "id": "L0036",
+      "verified_date": "2026-11-15",
+      "center": "Breastlink Chandler",
+      "location_status": "Verified official location and matched MDsave listing",
+      "street_address": "1727 W. Frye Rd #110",
+      "city": "Chandler",
+      "state": "AZ",
+      "zip": "85224",
+      "phone": "480-360-2775",
+      "central_scheduling": null,
+      "email": null,
+      "email_status": "No public usable scheduling/pricing inquiry email verified",
+      "self_pay": "Yes; location-specific prepaid MDsave options and network GFE policy",
+      "current_exact_prices": null,
+      "marketplace_prices": [
+        {
+          "exam": "2D diagnostic mammogram bilateral",
+          "amount": 448,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "2D diagnostic mammogram unilateral",
+          "amount": 368,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "2D screening mammogram",
+          "amount": 392,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "3D diagnostic mammogram bilateral",
+          "amount": 475,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "3D diagnostic mammogram unilateral",
+          "amount": 395,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "3D screening mammogram",
+          "amount": 423,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "DEXA bone density",
+          "amount": 135,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "Transvaginal ultrasound with pelvic echo",
+          "amount": 997,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        },
+        {
+          "exam": "Transvaginal ultrasound with pelvic echo (in office)",
+          "amount": 997,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology"
+        }
+      ],
+      "pricing_status": "Published location-specific MDsave prices; direct-center cash quote not verified",
+      "sources": [
+        "https://breastlink.com/locations/breastlink-chandler",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology",
+        "https://breastlink.com/billing",
+        "https://breastlink.com/contact",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology/3d-mammogram-screening-tomosynthesis/d287f9c560d5",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-dba-breastlink-chandler-imaging-and-radiology/dexa-scan-bone-density-scan/d287f9c566dd"
+      ],
+      "caveats": [
+        "MDsave prices require prepaid purchase before care, not direct walk-in cash rates; provider does not file insurance claim for these purchases. Recheck exact exam eligibility and total before buying.",
+        "Third-party booking-service emails belong to those services, not to this center; excluded.",
+        "Official page has inconsistent hours: header 7am-4pm and prose 8am-5pm.",
+        "DEXA $135 and 3D screening $423 individually verified; both include facility, physician interpretation and Tendo marketplace fees. DEXA requires physician order. Other procedures are listed on location-specific MDsave directory; confirm service availability, especially non-breast ultrasound."
+      ],
+      "services": "3D mammography; breast biopsy; breast ultrasound; DEXA; risk assessment; genetic testing; EBCD",
+      "contact_form": "https://breastlink.com/contact"
+    },
+    "L0037": {
+      "id": "L0037",
+      "verified_date": "2026-11-15",
+      "center": "Arizona Diagnostic Radiology Westgate",
+      "location_status": "Verified official location and matched MDsave listing",
+      "street_address": "7330 N 99th Ave, #125",
+      "city": "Glendale",
+      "state": "AZ",
+      "zip": "85307",
+      "phone": "(623) 223-7741",
+      "central_scheduling": "(480) 455-1850",
+      "email": null,
+      "email_status": "No public usable scheduling/pricing inquiry email verified",
+      "self_pay": "Yes; location-specific prepaid MDsave options and network GFE policy",
+      "current_exact_prices": null,
+      "marketplace_prices": [
+        {
+          "exam": "Carotid ultrasound/Doppler",
+          "amount": 451,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "Chest X-ray",
+          "amount": 111,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "Complex X-ray",
+          "amount": 133,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT angiography",
+          "amount": 620,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT abdomen/pelvis with and without contrast",
+          "amount": 748,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT abdomen/pelvis with contrast",
+          "amount": 679,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT abdomen/pelvis without contrast",
+          "amount": 468,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT with and without contrast",
+          "amount": 575,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT with contrast",
+          "amount": 438,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        },
+        {
+          "exam": "CT without contrast",
+          "amount": 329,
+          "currency": "USD",
+          "channel": "MDsave / One Call prepaid marketplace",
+          "source": "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology"
+        }
+      ],
+      "pricing_status": "Published location-specific MDsave prices; direct-center cash quote not verified",
+      "sources": [
+        "https://www.arizonadiagnosticradiology.com/locations/westgate",
+        "https://www.mdsave.com/p/arizona-diagnostic-radiology-group-westgate-imaging-and-radiology",
+        "https://www.arizonadiagnosticradiology.com/locations/dignity-westgate",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill"
+      ],
+      "caveats": [
+        "MDsave prices require prepaid purchase before care, not direct walk-in cash rates; provider does not file insurance claim for these purchases. Recheck exact exam eligibility and total before buying.",
+        "Third-party booking-service emails belong to those services, not to this center; excluded.",
+        "Original /locations/westgate redirects to /locations/dignity-westgate. Official extracts disagree: redirected page and business listing show (623) 223-7741; another canonical-page extract shows billing number (844) 870-3019. Central scheduling (480) 455-1850 is consistent.",
+        "Generic navigation mammography and DEXA are not evidence of branch-specific services.",
+        "Expected Healthcare starting-at $26 excluded: unclear exam/current applicability."
+      ],
+      "canonical_url": "https://www.arizonadiagnosticradiology.com/locations/dignity-westgate",
+      "services": "1.5T MRI; CT; ultrasound; digital X-ray; fluoroscopy; low-dose lung CT; arthrogram"
+    }
+  },
+  "duplicate_matches": [
+    {
+      "lead_id": "L0001",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0002",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0003",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0004",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0005",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0006",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0007",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0008",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0009",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0010",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0011",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0012",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0013",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0014",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0015",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0016",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0017",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0018",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0019",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0020",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0021",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0022",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0023",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0024",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0025",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0026",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0027",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0028",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0029",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0030",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0031",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0032",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0033",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0034",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0035",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0036",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0037",
+      "canonical": [],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": []
+    },
+    {
+      "lead_id": "L0038",
+      "canonical": [
+        "D-463"
+      ],
+      "live": [
+        "4a68998363423bc8a11e45a56e34e3cc71d0ea4161a111909c8dac2a8697a58c"
+      ],
+      "database_review": [
+        "4a68998363423bc8a11e45a56e34e3cc71d0ea4161a111909c8dac2a8697a58c"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "1977"
+      ]
+    },
+    {
+      "lead_id": "L0039",
+      "canonical": [
+        "D-464"
+      ],
+      "live": [
+        "fb5781482cd0efda18546e2659cbc704ccc299370c89ac1c503c1b0c36bf67b2"
+      ],
+      "database_review": [
+        "fb5781482cd0efda18546e2659cbc704ccc299370c89ac1c503c1b0c36bf67b2"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "1978"
+      ]
+    },
+    {
+      "lead_id": "L0040",
+      "canonical": [
+        "D-466"
+      ],
+      "live": [
+        "b50ef661ec32be25bf226a8eb38c51dfbcad80b05a52822feb074149f4a34654"
+      ],
+      "database_review": [
+        "b50ef661ec32be25bf226a8eb38c51dfbcad80b05a52822feb074149f4a34654"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "1980"
+      ]
+    },
+    {
+      "lead_id": "L0041",
+      "canonical": [
+        "D-469"
+      ],
+      "live": [
+        "b3688b782e9fd9478b85cc6d1547c6096e9757e345bebd4395ebc5aae08086a2"
+      ],
+      "database_review": [
+        "b3688b782e9fd9478b85cc6d1547c6096e9757e345bebd4395ebc5aae08086a2"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "1984"
+      ]
+    },
+    {
+      "lead_id": "L0042",
+      "canonical": [
+        "D-471"
+      ],
+      "live": [
+        "011f8a8770dea349c68db282576398d0f6b9d1a1564484c06870a42fbb07c462"
+      ],
+      "database_review": [
+        "011f8a8770dea349c68db282576398d0f6b9d1a1564484c06870a42fbb07c462"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3181"
+      ]
+    },
+    {
+      "lead_id": "L0043",
+      "canonical": [
+        "D-481"
+      ],
+      "live": [
+        "03d6878e03d8f22bc8d4ac02a44719170c068244d59b22c03597d62a2bbabc83"
+      ],
+      "database_review": [
+        "03d6878e03d8f22bc8d4ac02a44719170c068244d59b22c03597d62a2bbabc83"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3249"
+      ]
+    },
+    {
+      "lead_id": "L0044",
+      "canonical": [
+        "D-490"
+      ],
+      "live": [
+        "9a6091c12f1571a3725e9fab6ae1e09656a457143c8e9c87a924d8f73a0548ac"
+      ],
+      "database_review": [
+        "9a6091c12f1571a3725e9fab6ae1e09656a457143c8e9c87a924d8f73a0548ac"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3185"
+      ]
+    },
+    {
+      "lead_id": "L0045",
+      "canonical": [
+        "D-501"
+      ],
+      "live": [
+        "a94c1fcb45a20b52cfcb5856cf5a9a6dc67a296f6d7a5f1f01617a22200f19f0"
+      ],
+      "database_review": [
+        "a94c1fcb45a20b52cfcb5856cf5a9a6dc67a296f6d7a5f1f01617a22200f19f0"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "286"
+      ]
+    },
+    {
+      "lead_id": "L0046",
+      "canonical": [
+        "D-509"
+      ],
+      "live": [
+        "7530e30c90bd4998579d33ff32c6ac2187e1032e4a9b02d849bc5c787dfb1694"
+      ],
+      "database_review": [
+        "7530e30c90bd4998579d33ff32c6ac2187e1032e4a9b02d849bc5c787dfb1694"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3251"
+      ]
+    },
+    {
+      "lead_id": "L0047",
+      "canonical": [
+        "D-513"
+      ],
+      "live": [
+        "9370c0fb0229fc21dc927c502febac5783aae208a1b62afda993ecb2caa200a8"
+      ],
+      "database_review": [
+        "9370c0fb0229fc21dc927c502febac5783aae208a1b62afda993ecb2caa200a8"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3272"
+      ]
+    },
+    {
+      "lead_id": "L0048",
+      "canonical": [
+        "D-516"
+      ],
+      "live": [
+        "fe91f441b9c492eb6efaa1b2b721c7b4a84b7a5812c3d41606d1cf43cbff966d"
+      ],
+      "database_review": [
+        "fe91f441b9c492eb6efaa1b2b721c7b4a84b7a5812c3d41606d1cf43cbff966d"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3205"
+      ]
+    },
+    {
+      "lead_id": "L0049",
+      "canonical": [
+        "D-526"
+      ],
+      "live": [
+        "94d322b4e94289d3bc6ff805b3b71ef007222f5dd8f9ef4ee07281273476f5aa"
+      ],
+      "database_review": [
+        "94d322b4e94289d3bc6ff805b3b71ef007222f5dd8f9ef4ee07281273476f5aa"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3239"
+      ]
+    },
+    {
+      "lead_id": "L0050",
+      "canonical": [
+        "D-532"
+      ],
+      "live": [
+        "b1c423163c5d2b06b5ebd5b81f47fea217d67ee2a3922b813453aa12238e796c"
+      ],
+      "database_review": [
+        "b1c423163c5d2b06b5ebd5b81f47fea217d67ee2a3922b813453aa12238e796c"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "305"
+      ]
+    },
+    {
+      "lead_id": "L0051",
+      "canonical": [
+        "D-533"
+      ],
+      "live": [
+        "6547ba6e4e44d0482e0700958e506aaee3179ed3e0bd67fb63152d96c8b84d79"
+      ],
+      "database_review": [
+        "6547ba6e4e44d0482e0700958e506aaee3179ed3e0bd67fb63152d96c8b84d79"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3209"
+      ]
+    },
+    {
+      "lead_id": "L0052",
+      "canonical": [
+        "D-534"
+      ],
+      "live": [
+        "75e87a507ad0d5ca5d92f53a1e563b1831d682c4324173800ef7d31cdb85db9a"
+      ],
+      "database_review": [
+        "75e87a507ad0d5ca5d92f53a1e563b1831d682c4324173800ef7d31cdb85db9a"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3212"
+      ]
+    },
+    {
+      "lead_id": "L0053",
+      "canonical": [
+        "D-543"
+      ],
+      "live": [
+        "73d16f5d41ab3e7a0b7e877437f8e2e1c960f3f0dadca38b03c91986d94a1909"
+      ],
+      "database_review": [
+        "73d16f5d41ab3e7a0b7e877437f8e2e1c960f3f0dadca38b03c91986d94a1909"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3255"
+      ]
+    },
+    {
+      "lead_id": "L0054",
+      "canonical": [
+        "D-547"
+      ],
+      "live": [
+        "e8ab9826f43ab65f491c88cb9c80b80ccb8cc7d957dfda025ff2c2c28c76342e"
+      ],
+      "database_review": [
+        "e8ab9826f43ab65f491c88cb9c80b80ccb8cc7d957dfda025ff2c2c28c76342e"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3201"
+      ]
+    },
+    {
+      "lead_id": "L0055",
+      "canonical": [
+        "D-557"
+      ],
+      "live": [
+        "2a6c9a01dd6c0938bfc9260d2b54a5f859d5df72c478c7f3234154d888d88be0"
+      ],
+      "database_review": [
+        "2a6c9a01dd6c0938bfc9260d2b54a5f859d5df72c478c7f3234154d888d88be0"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3256"
+      ]
+    },
+    {
+      "lead_id": "L0056",
+      "canonical": [
+        "D-560"
+      ],
+      "live": [
+        "b9959e7424dd20cd5655227e3606e31fd424909d59c0f6d11693b117a0f80dfe"
+      ],
+      "database_review": [
+        "b9959e7424dd20cd5655227e3606e31fd424909d59c0f6d11693b117a0f80dfe"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3231"
+      ]
+    },
+    {
+      "lead_id": "L0057",
+      "canonical": [
+        "D-562"
+      ],
+      "live": [
+        "08d380f662ee488a76406117bdf65b8988d6e1a8cd6cbc6c50d7cfbe2ca8d575"
+      ],
+      "database_review": [
+        "08d380f662ee488a76406117bdf65b8988d6e1a8cd6cbc6c50d7cfbe2ca8d575"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3460"
+      ]
+    },
+    {
+      "lead_id": "L0058",
+      "canonical": [
+        "D-587"
+      ],
+      "live": [
+        "404e6a4544c3dee27e5aea4a150c049a94f9b1851bbb0875040c29f4c3988822"
+      ],
+      "database_review": [
+        "404e6a4544c3dee27e5aea4a150c049a94f9b1851bbb0875040c29f4c3988822"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3260"
+      ]
+    },
+    {
+      "lead_id": "L0059",
+      "canonical": [
+        "D-589"
+      ],
+      "live": [
+        "7996451d25d5cc95bc4af228e6f6355dcc25bc27d780fb280b1b32ec0e253ba6"
+      ],
+      "database_review": [
+        "7996451d25d5cc95bc4af228e6f6355dcc25bc27d780fb280b1b32ec0e253ba6"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3189"
+      ]
+    },
+    {
+      "lead_id": "L0060",
+      "canonical": [
+        "D-593"
+      ],
+      "live": [
+        "ab09f47765845d92fcb1a6483b5b9718ccc4dca87c97affe16b02c5e760f92a6"
+      ],
+      "database_review": [
+        "ab09f47765845d92fcb1a6483b5b9718ccc4dca87c97affe16b02c5e760f92a6"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3193"
+      ]
+    },
+    {
+      "lead_id": "L0061",
+      "canonical": [
+        "D-594"
+      ],
+      "live": [
+        "21304ed3c9417b71dd89e683f78b89ec62b0502c76e6098c09c012fd457dbb21"
+      ],
+      "database_review": [
+        "21304ed3c9417b71dd89e683f78b89ec62b0502c76e6098c09c012fd457dbb21"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3194"
+      ]
+    },
+    {
+      "lead_id": "L0062",
+      "canonical": [
+        "D-611"
+      ],
+      "live": [
+        "13240b1de4a76bb0c4eed8c2f3b7cd436a3853e8580a271d12e82093b6cb6c40"
+      ],
+      "database_review": [
+        "13240b1de4a76bb0c4eed8c2f3b7cd436a3853e8580a271d12e82093b6cb6c40"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3232"
+      ]
+    },
+    {
+      "lead_id": "L0063",
+      "canonical": [
+        "D-620"
+      ],
+      "live": [
+        "804eff21829c86637e6594c2766e74ce31795b6b43ff44ecdb55ea3dd075759c"
+      ],
+      "database_review": [
+        "804eff21829c86637e6594c2766e74ce31795b6b43ff44ecdb55ea3dd075759c"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3462"
+      ]
+    },
+    {
+      "lead_id": "L0064",
+      "canonical": [
+        "D-627"
+      ],
+      "live": [
+        "37ad38a41e51339dfad739c9ad57e115b8ea161c9608335555621da704136706"
+      ],
+      "database_review": [
+        "37ad38a41e51339dfad739c9ad57e115b8ea161c9608335555621da704136706"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "1983"
+      ]
+    },
+    {
+      "lead_id": "L0065",
+      "canonical": [
+        "D-632"
+      ],
+      "live": [
+        "4ef5eeaceb787c216a8de2393104652c60927bfb085611a7196415efb31edcaf"
+      ],
+      "database_review": [
+        "4ef5eeaceb787c216a8de2393104652c60927bfb085611a7196415efb31edcaf"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3464"
+      ]
+    },
+    {
+      "lead_id": "L0066",
+      "canonical": [
+        "D-633"
+      ],
+      "live": [
+        "d38dc25a372cb5c148eb9ffea50724d2f1f8771106f061cb3ea9d523dc6f01d4"
+      ],
+      "database_review": [
+        "d38dc25a372cb5c148eb9ffea50724d2f1f8771106f061cb3ea9d523dc6f01d4"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3466"
+      ]
+    },
+    {
+      "lead_id": "L0067",
+      "canonical": [
+        "D-634"
+      ],
+      "live": [
+        "9b42640f6ccebda648188556d627f60f03b41bbfc7fbb65345bb0d2ff752f5b4"
+      ],
+      "database_review": [
+        "9b42640f6ccebda648188556d627f60f03b41bbfc7fbb65345bb0d2ff752f5b4"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3247"
+      ]
+    },
+    {
+      "lead_id": "L0068",
+      "canonical": [
+        "D-638"
+      ],
+      "live": [
+        "ca063f48322486dd037cd96dfa62f7fd33f352e6dd7b86a0fe05e542f39ae817"
+      ],
+      "database_review": [
+        "ca063f48322486dd037cd96dfa62f7fd33f352e6dd7b86a0fe05e542f39ae817"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3262"
+      ]
+    },
+    {
+      "lead_id": "L0069",
+      "canonical": [
+        "D-641"
+      ],
+      "live": [
+        "c387a379760634fad6620d2c959263b3ad0db844f64ab0495e461051d9720a34"
+      ],
+      "database_review": [
+        "c387a379760634fad6620d2c959263b3ad0db844f64ab0495e461051d9720a34"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3465"
+      ]
+    },
+    {
+      "lead_id": "L0070",
+      "canonical": [
+        "D-645"
+      ],
+      "live": [
+        "694a7f9c26a3345f0ab83059eff05bdaaf15032fdded6d5191a65eee07a14bcf"
+      ],
+      "database_review": [
+        "694a7f9c26a3345f0ab83059eff05bdaaf15032fdded6d5191a65eee07a14bcf"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "348"
+      ]
+    },
+    {
+      "lead_id": "L0071",
+      "canonical": [
+        "D-647"
+      ],
+      "live": [
+        "7fb54eaa9f0d997af21495a036155321a1ff285efa0f8a91be0affcf6781e9c0"
+      ],
+      "database_review": [
+        "7fb54eaa9f0d997af21495a036155321a1ff285efa0f8a91be0affcf6781e9c0"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3259"
+      ]
+    },
+    {
+      "lead_id": "L0072",
+      "canonical": [
+        "D-691"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "269"
+      ]
+    },
+    {
+      "lead_id": "L0073",
+      "canonical": [
+        "D-692"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "276"
+      ]
+    },
+    {
+      "lead_id": "L0074",
+      "canonical": [
+        "D-693"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "277"
+      ]
+    },
+    {
+      "lead_id": "L0075",
+      "canonical": [
+        "D-702"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "259"
+      ]
+    },
+    {
+      "lead_id": "L0076",
+      "canonical": [
+        "D-703"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "260"
+      ]
+    },
+    {
+      "lead_id": "L0077",
+      "canonical": [
+        "D-702"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "259"
+      ]
+    },
+    {
+      "lead_id": "L0078",
+      "canonical": [
+        "D-704"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "266"
+      ]
+    },
+    {
+      "lead_id": "L0079",
+      "canonical": [
+        "D-709"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "262"
+      ]
+    },
+    {
+      "lead_id": "L0080",
+      "canonical": [
+        "D-710"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "268"
+      ]
+    },
+    {
+      "lead_id": "L0081",
+      "canonical": [
+        "D-715"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "315"
+      ]
+    },
+    {
+      "lead_id": "L0082",
+      "canonical": [
+        "D-719"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3142"
+      ]
+    },
+    {
+      "lead_id": "L0083",
+      "canonical": [
+        "D-721"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "271"
+      ]
+    },
+    {
+      "lead_id": "L0084",
+      "canonical": [
+        "D-723"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "272"
+      ]
+    },
+    {
+      "lead_id": "L0085",
+      "canonical": [
+        "D-725"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "273"
+      ]
+    },
+    {
+      "lead_id": "L0086",
+      "canonical": [
+        "D-726"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "335"
+      ]
+    },
+    {
+      "lead_id": "L0087",
+      "canonical": [
+        "D-727"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "357"
+      ]
+    },
+    {
+      "lead_id": "L0088",
+      "canonical": [
+        "D-728"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "278"
+      ]
+    },
+    {
+      "lead_id": "L0089",
+      "canonical": [
+        "D-729"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "280"
+      ]
+    },
+    {
+      "lead_id": "L0090",
+      "canonical": [
+        "D-732"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "281"
+      ]
+    },
+    {
+      "lead_id": "L0091",
+      "canonical": [
+        "D-734"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "284"
+      ]
+    },
+    {
+      "lead_id": "L0092",
+      "canonical": [
+        "D-735"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "285"
+      ]
+    },
+    {
+      "lead_id": "L0093",
+      "canonical": [
+        "D-736"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "358"
+      ]
+    },
+    {
+      "lead_id": "L0094",
+      "canonical": [
+        "D-737"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3145"
+      ]
+    },
+    {
+      "lead_id": "L0095",
+      "canonical": [
+        "D-738"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3146"
+      ]
+    },
+    {
+      "lead_id": "L0096",
+      "canonical": [
+        "D-739"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3147"
+      ]
+    },
+    {
+      "lead_id": "L0097",
+      "canonical": [
+        "D-743"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "293"
+      ]
+    },
+    {
+      "lead_id": "L0098",
+      "canonical": [
+        "D-746"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "256"
+      ]
+    },
+    {
+      "lead_id": "L0099",
+      "canonical": [
+        "D-747"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "314"
+      ]
+    },
+    {
+      "lead_id": "L0100",
+      "canonical": [
+        "D-748"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "332"
+      ]
+    },
+    {
+      "lead_id": "L0101",
+      "canonical": [
+        "D-749"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "347"
+      ]
+    },
+    {
+      "lead_id": "L0102",
+      "canonical": [
+        "D-751"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "296"
+      ]
+    },
+    {
+      "lead_id": "L0103",
+      "canonical": [
+        "D-753"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "292"
+      ]
+    },
+    {
+      "lead_id": "L0104",
+      "canonical": [
+        "D-754"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "299"
+      ]
+    },
+    {
+      "lead_id": "L0105",
+      "canonical": [
+        "D-760"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "257"
+      ]
+    },
+    {
+      "lead_id": "L0106",
+      "canonical": [
+        "D-761"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "300"
+      ]
+    },
+    {
+      "lead_id": "L0107",
+      "canonical": [
+        "D-765"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "302"
+      ]
+    },
+    {
+      "lead_id": "L0108",
+      "canonical": [
+        "D-767"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3148"
+      ]
+    },
+    {
+      "lead_id": "L0109",
+      "canonical": [
+        "D-769"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "306"
+      ]
+    },
+    {
+      "lead_id": "L0110",
+      "canonical": [
+        "D-771"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "310"
+      ]
+    },
+    {
+      "lead_id": "L0111",
+      "canonical": [
+        "D-773"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "311"
+      ]
+    },
+    {
+      "lead_id": "L0112",
+      "canonical": [
+        "D-774"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3149"
+      ]
+    },
+    {
+      "lead_id": "L0113",
+      "canonical": [
+        "D-785"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "316"
+      ]
+    },
+    {
+      "lead_id": "L0114",
+      "canonical": [
+        "D-788"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "317"
+      ]
+    },
+    {
+      "lead_id": "L0115",
+      "canonical": [
+        "D-789"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "261"
+      ]
+    },
+    {
+      "lead_id": "L0116",
+      "canonical": [
+        "D-790"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "298"
+      ]
+    },
+    {
+      "lead_id": "L0117",
+      "canonical": [
+        "D-791"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "318"
+      ]
+    },
+    {
+      "lead_id": "L0118",
+      "canonical": [
+        "D-803"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "263"
+      ]
+    },
+    {
+      "lead_id": "L0119",
+      "canonical": [
+        "D-804"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "320"
+      ]
+    },
+    {
+      "lead_id": "L0120",
+      "canonical": [
+        "D-806"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "267"
+      ]
+    },
+    {
+      "lead_id": "L0121",
+      "canonical": [
+        "D-807"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "321"
+      ]
+    },
+    {
+      "lead_id": "L0122",
+      "canonical": [
+        "D-808"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "338"
+      ]
+    },
+    {
+      "lead_id": "L0123",
+      "canonical": [
+        "D-812"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "324"
+      ]
+    },
+    {
+      "lead_id": "L0124",
+      "canonical": [
+        "D-813"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "325"
+      ]
+    },
+    {
+      "lead_id": "L0125",
+      "canonical": [
+        "D-816"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "326"
+      ]
+    },
+    {
+      "lead_id": "L0126",
+      "canonical": [
+        "D-819"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "264"
+      ]
+    },
+    {
+      "lead_id": "L0127",
+      "canonical": [
+        "D-820"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "327"
+      ]
+    },
+    {
+      "lead_id": "L0128",
+      "canonical": [
+        "D-825"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "3143"
+      ]
+    },
+    {
+      "lead_id": "L0129",
+      "canonical": [
+        "D-824"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "336"
+      ]
+    },
+    {
+      "lead_id": "L0130",
+      "canonical": [
+        "D-827"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "322"
+      ]
+    },
+    {
+      "lead_id": "L0131",
+      "canonical": [
+        "D-828"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "340"
+      ]
+    },
+    {
+      "lead_id": "L0132",
+      "canonical": [
+        "D-830"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "265"
+      ]
+    },
+    {
+      "lead_id": "L0133",
+      "canonical": [
+        "D-833"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "343"
+      ]
+    },
+    {
+      "lead_id": "L0134",
+      "canonical": [
+        "D-835"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "344"
+      ]
+    },
+    {
+      "lead_id": "L0135",
+      "canonical": [
+        "D-836"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "297"
+      ]
+    },
+    {
+      "lead_id": "L0136",
+      "canonical": [
+        "D-837"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "345"
+      ]
+    },
+    {
+      "lead_id": "L0137",
+      "canonical": [
+        "D-838"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "350"
+      ]
+    },
+    {
+      "lead_id": "L0138",
+      "canonical": [
+        "D-843"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "346"
+      ]
+    },
+    {
+      "lead_id": "L0139",
+      "canonical": [
+        "D-845"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "351"
+      ]
+    },
+    {
+      "lead_id": "L0140",
+      "canonical": [
+        "D-849"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "342"
+      ]
+    },
+    {
+      "lead_id": "L0141",
+      "canonical": [
+        "D-850"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "339"
+      ]
+    },
+    {
+      "lead_id": "L0142",
+      "canonical": [
+        "D-852"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "352"
+      ]
+    },
+    {
+      "lead_id": "L0143",
+      "canonical": [
+        "D-853"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "354"
+      ]
+    },
+    {
+      "lead_id": "L0144",
+      "canonical": [
+        "D-856"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "356"
+      ]
+    },
+    {
+      "lead_id": "L0145",
+      "canonical": [
+        "D-859"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "360"
+      ]
+    },
+    {
+      "lead_id": "L0146",
+      "canonical": [
+        "D-871"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "279"
+      ]
+    },
+    {
+      "lead_id": "L0147",
+      "canonical": [
+        "D-874"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "283"
+      ]
+    },
+    {
+      "lead_id": "L0148",
+      "canonical": [
+        "D-879"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "304"
+      ]
+    },
+    {
+      "lead_id": "L0149",
+      "canonical": [
+        "D-880"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "307"
+      ]
+    },
+    {
+      "lead_id": "L0150",
+      "canonical": [
+        "D-885"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "341"
+      ]
+    },
+    {
+      "lead_id": "L0151",
+      "canonical": [
+        "D-888"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "331"
+      ]
+    },
+    {
+      "lead_id": "L0152",
+      "canonical": [
+        "D-890"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "275"
+      ]
+    },
+    {
+      "lead_id": "L0153",
+      "canonical": [
+        "D-892"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "337"
+      ]
+    },
+    {
+      "lead_id": "L0154",
+      "canonical": [
+        "D-916"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "355"
+      ]
+    },
+    {
+      "lead_id": "L0155",
+      "canonical": [
+        "D-921"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "353"
+      ]
+    },
+    {
+      "lead_id": "L0156",
+      "canonical": [
+        "D-1027"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2564"
+      ]
+    },
+    {
+      "lead_id": "L0157",
+      "canonical": [
+        "D-1033"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2534"
+      ]
+    },
+    {
+      "lead_id": "L0158",
+      "canonical": [
+        "D-1034"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2535"
+      ]
+    },
+    {
+      "lead_id": "L0159",
+      "canonical": [
+        "D-1035"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2536"
+      ]
+    },
+    {
+      "lead_id": "L0160",
+      "canonical": [
+        "D-1036"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2537"
+      ]
+    },
+    {
+      "lead_id": "L0161",
+      "canonical": [
+        "D-1037"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2545"
+      ]
+    },
+    {
+      "lead_id": "L0162",
+      "canonical": [
+        "D-1038"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2538"
+      ]
+    },
+    {
+      "lead_id": "L0163",
+      "canonical": [
+        "D-1039"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2539"
+      ]
+    },
+    {
+      "lead_id": "L0164",
+      "canonical": [
+        "D-1040"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2540"
+      ]
+    },
+    {
+      "lead_id": "L0165",
+      "canonical": [
+        "D-1041"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2541"
+      ]
+    },
+    {
+      "lead_id": "L0166",
+      "canonical": [
+        "D-1042"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2542"
+      ]
+    },
+    {
+      "lead_id": "L0167",
+      "canonical": [
+        "D-1045"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2546"
+      ]
+    },
+    {
+      "lead_id": "L0168",
+      "canonical": [
+        "D-1046"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2547"
+      ]
+    },
+    {
+      "lead_id": "L0169",
+      "canonical": [
+        "D-1047"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2548"
+      ]
+    },
+    {
+      "lead_id": "L0170",
+      "canonical": [
+        "D-1048"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2549"
+      ]
+    },
+    {
+      "lead_id": "L0171",
+      "canonical": [
+        "D-1050"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2551"
+      ]
+    },
+    {
+      "lead_id": "L0172",
+      "canonical": [
+        "D-1053"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2552"
+      ]
+    },
+    {
+      "lead_id": "L0173",
+      "canonical": [
+        "D-1055"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2554"
+      ]
+    },
+    {
+      "lead_id": "L0174",
+      "canonical": [
+        "D-1056"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2559"
+      ]
+    },
+    {
+      "lead_id": "L0175",
+      "canonical": [
+        "D-1059"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2556"
+      ]
+    },
+    {
+      "lead_id": "L0176",
+      "canonical": [
+        "D-1060"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2558"
+      ]
+    },
+    {
+      "lead_id": "L0177",
+      "canonical": [
+        "D-1061"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2560"
+      ]
+    },
+    {
+      "lead_id": "L0178",
+      "canonical": [
+        "D-1062"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2561"
+      ]
+    },
+    {
+      "lead_id": "L0179",
+      "canonical": [
+        "D-1063"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2562"
+      ]
+    },
+    {
+      "lead_id": "L0180",
+      "canonical": [
+        "D-1064"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "2563"
+      ]
+    },
+    {
+      "lead_id": "L0181",
+      "canonical": [
+        "D-1127"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "312"
+      ]
+    },
+    {
+      "lead_id": "L0182",
+      "canonical": [
+        "D-1195"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "270"
+      ]
+    },
+    {
+      "lead_id": "L0183",
+      "canonical": [
+        "D-1196"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "282"
+      ]
+    },
+    {
+      "lead_id": "L0184",
+      "canonical": [
+        "D-1202"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "301"
+      ]
+    },
+    {
+      "lead_id": "L0185",
+      "canonical": [
+        "D-1205"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "303"
+      ]
+    },
+    {
+      "lead_id": "L0186",
+      "canonical": [
+        "D-1206"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "255"
+      ]
+    },
+    {
+      "lead_id": "L0187",
+      "canonical": [
+        "D-1207"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "290"
+      ]
+    },
+    {
+      "lead_id": "L0188",
+      "canonical": [
+        "D-1208"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "313"
+      ]
+    },
+    {
+      "lead_id": "L0189",
+      "canonical": [
+        "D-1218"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "328"
+      ]
+    },
+    {
+      "lead_id": "L0190",
+      "canonical": [
+        "D-1219"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "349"
+      ]
+    },
+    {
+      "lead_id": "L0191",
+      "canonical": [
+        "D-1220"
+      ],
+      "live": [],
+      "database_review": [],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "359"
+      ]
+    },
+    {
+      "lead_id": "L0192",
+      "canonical": [
+        "D-1240"
+      ],
+      "live": [
+        "687b95e423ca7909764996bfe9cd72999872c1d09ed74f70fa936f748269e19b"
+      ],
+      "database_review": [
+        "687b95e423ca7909764996bfe9cd72999872c1d09ed74f70fa936f748269e19b"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "254"
+      ]
+    },
+    {
+      "lead_id": "L0193",
+      "canonical": [
+        "D-1246"
+      ],
+      "live": [
+        "23118979659dacecb6037e4534667b444de056adc9f20d552887fba3bdebf88f"
+      ],
+      "database_review": [
+        "23118979659dacecb6037e4534667b444de056adc9f20d552887fba3bdebf88f"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "258"
+      ]
+    },
+    {
+      "lead_id": "L0194",
+      "canonical": [
+        "D-1267"
+      ],
+      "live": [
+        "97e85fbbaafb3fe6b8b70e12e3ac4acfe8d5f998c08f53670420cf4a3bbfe1af"
+      ],
+      "database_review": [
+        "97e85fbbaafb3fe6b8b70e12e3ac4acfe8d5f998c08f53670420cf4a3bbfe1af"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "274"
+      ]
+    },
+    {
+      "lead_id": "L0195",
+      "canonical": [
+        "D-1288"
+      ],
+      "live": [
+        "121130ad9ca3b74f62ab0976a9f56eb580a51ace4340cb77455fd5a153325a5f"
+      ],
+      "database_review": [
+        "121130ad9ca3b74f62ab0976a9f56eb580a51ace4340cb77455fd5a153325a5f"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "288"
+      ]
+    },
+    {
+      "lead_id": "L0196",
+      "canonical": [
+        "D-1289"
+      ],
+      "live": [
+        "a810eb39add7b6dbe64041ecceac2845546a4edad0592e46206e9081c781d041"
+      ],
+      "database_review": [
+        "a810eb39add7b6dbe64041ecceac2845546a4edad0592e46206e9081c781d041"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "289"
+      ]
+    },
+    {
+      "lead_id": "L0197",
+      "canonical": [
+        "D-1290"
+      ],
+      "live": [
+        "67507442ca50c6f6ee79bdf87c3344bf477d748cffa9e20d61226fb51d1bdb36"
+      ],
+      "database_review": [
+        "67507442ca50c6f6ee79bdf87c3344bf477d748cffa9e20d61226fb51d1bdb36"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "295"
+      ]
+    },
+    {
+      "lead_id": "L0198",
+      "canonical": [
+        "D-1291"
+      ],
+      "live": [
+        "ba4ea6a55766e05f699fe89a742ff3b1e4284bb708068d993d960a2cf8559372"
+      ],
+      "database_review": [
+        "ba4ea6a55766e05f699fe89a742ff3b1e4284bb708068d993d960a2cf8559372"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "319"
+      ]
+    },
+    {
+      "lead_id": "L0199",
+      "canonical": [
+        "D-1292"
+      ],
+      "live": [
+        "f1f677a369ce8ed768a1bc59a0c49b96886da8f7074b2a56aee7f2cc5185640a"
+      ],
+      "database_review": [
+        "f1f677a369ce8ed768a1bc59a0c49b96886da8f7074b2a56aee7f2cc5185640a"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "329"
+      ]
+    },
+    {
+      "lead_id": "L0200",
+      "canonical": [
+        "D-1310"
+      ],
+      "live": [
+        "c1fb5472534bfbb94e640ddcd5d4ac81c23565cd4412252cde2533949778d2d5"
+      ],
+      "database_review": [
+        "c1fb5472534bfbb94e640ddcd5d4ac81c23565cd4412252cde2533949778d2d5"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "287"
+      ]
+    },
+    {
+      "lead_id": "L0201",
+      "canonical": [
+        "D-1320"
+      ],
+      "live": [
+        "cb449bec2a1930add5a0bdc9f63e519a9049dafff0faa15e34770d275bcb1437"
+      ],
+      "database_review": [
+        "cb449bec2a1930add5a0bdc9f63e519a9049dafff0faa15e34770d275bcb1437"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "291"
+      ]
+    },
+    {
+      "lead_id": "L0202",
+      "canonical": [
+        "D-1336"
+      ],
+      "live": [
+        "76b3ce6fe5af8744cd87495c8b1072db499b1f696a852a6751004f06648680c0"
+      ],
+      "database_review": [
+        "76b3ce6fe5af8744cd87495c8b1072db499b1f696a852a6751004f06648680c0"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "294"
+      ]
+    },
+    {
+      "lead_id": "L0203",
+      "canonical": [
+        "D-1356"
+      ],
+      "live": [
+        "442984b9f2a6982bc7bb9e742aa822dfe10d306a481426d5f5f2b39563b937bc"
+      ],
+      "database_review": [
+        "442984b9f2a6982bc7bb9e742aa822dfe10d306a481426d5f5f2b39563b937bc"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "308"
+      ]
+    },
+    {
+      "lead_id": "L0204",
+      "canonical": [
+        "D-1362"
+      ],
+      "live": [
+        "38715da559f873a44fca3a5b6c32e2a7151f14be623e0c2ba8b1036baeb98022"
+      ],
+      "database_review": [
+        "38715da559f873a44fca3a5b6c32e2a7151f14be623e0c2ba8b1036baeb98022"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "309"
+      ]
+    },
+    {
+      "lead_id": "L0205",
+      "canonical": [
+        "D-1378"
+      ],
+      "live": [
+        "71b13b4d61688d648436e15879cbe90de3b519c3b5c3098812dc21481e9ac59c"
+      ],
+      "database_review": [
+        "71b13b4d61688d648436e15879cbe90de3b519c3b5c3098812dc21481e9ac59c"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "323"
+      ]
+    },
+    {
+      "lead_id": "L0206",
+      "canonical": [
+        "D-1388"
+      ],
+      "live": [
+        "71e125d52b1090c00a20efa6452c1a7cb6724e7f95ea89f9275a8c9cb4b646cb"
+      ],
+      "database_review": [
+        "71e125d52b1090c00a20efa6452c1a7cb6724e7f95ea89f9275a8c9cb4b646cb"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "330"
+      ]
+    },
+    {
+      "lead_id": "L0207",
+      "canonical": [
+        "D-1396"
+      ],
+      "live": [
+        "632b7440856b71a7fd1a492acf978ad9c30d49da3339178c4b0f476c05324b12"
+      ],
+      "database_review": [
+        "632b7440856b71a7fd1a492acf978ad9c30d49da3339178c4b0f476c05324b12"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "333"
+      ]
+    },
+    {
+      "lead_id": "L0208",
+      "canonical": [
+        "D-1398"
+      ],
+      "live": [
+        "4142a1d45958a0362f09a77f8110202b6e1b954ce383b8e7f770ee0a39112a15"
+      ],
+      "database_review": [
+        "4142a1d45958a0362f09a77f8110202b6e1b954ce383b8e7f770ee0a39112a15"
+      ],
+      "prior_daily": [],
+      "repository_main_csv": [
+        "334"
+      ]
+    }
+  ]
+}
