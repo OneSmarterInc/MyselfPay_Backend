@@ -27,6 +27,21 @@ class CenterRequestSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
 
 
+class CenterPriceItemSerializer(serializers.Serializer):
+    exam = serializers.ChoiceField(choices=('MRI', 'CT'))
+    amount = serializers.DecimalField(max_digits=7, decimal_places=2, min_value=1, max_value=20000)
+    price_type = serializers.ChoiceField(choices=('fixed', 'from'), default='fixed')
+    contrast = serializers.ChoiceField(choices=('without', 'with', 'either', 'unknown'), default='unknown')
+    interpretation_included = serializers.ChoiceField(choices=('yes', 'no', 'unknown'), default='unknown')
+    note = serializers.CharField(max_length=300, allow_blank=True, default='')
+
+
+class CenterPriceSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+    consent = serializers.BooleanField()
+    prices = CenterPriceItemSerializer(many=True, allow_empty=False, max_length=6)
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
     password = serializers.CharField(max_length=128, trim_whitespace=False, write_only=True)
