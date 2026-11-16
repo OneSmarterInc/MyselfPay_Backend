@@ -78,9 +78,6 @@ class CenterPortalTests(unittest.TestCase):
             self.assertEqual(db.execute('SELECT COUNT(*) n FROM center_login_checks').fetchone()['n'],0)
 
 
-if __name__ == '__main__':
-    unittest.main()
-
 
 class CenterPriceTests(unittest.TestCase):
     """Center-entered prices are stored for review and never change the directory."""
@@ -169,3 +166,120 @@ class CenterPriceApprovalTests(CenterPriceTests):
         import center_price_apply
         with self.assertRaises(center_price_apply.PriceError):
             center_price_apply.approve(self.db, self.submit(), ' ')
+
+
+class CenterContactTests(unittest.TestCase):
+    """Email and phone changes need a code sent to the new value."""
+    setUp = test_booking.BookingTests.setUp
+    tearDown = test_booking.BookingTests.tearDown
+    verify_email = test_booking.BookingTests.verify_email
+    verify_phone = test_booking.BookingTests.verify_phone
+    create = test_booking.BookingTests.create
+    login = CenterPortalTests.login
+
+    def code_from(self, send):
+        return send.call_args.args[0].get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
+
+    def test_email_change_needs_code_then_login_moves_to_new_email(self):
+        import center_contact
+        request = self.create()
+        token, csrf = self.login()
+        with patch('booking_mail.send_message') as send:
+            started = center_contact.start(self.db, token, csrf, 'email', 'New.Owner@Example.test')
+        message = send.call_args.args[0]
+        self.assertEqual(send.call_args.args[1], 'new.owner@example.test')
+        self.assertIn('appointments@example.test', message.get_body(preferencelist=('plain',)).get_content())
+        code = message.get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
+        bad = '000000' if code != '000000' else '111111'
+        with self.assertRaisesRegex(booking.BookingError, 'Incorrect'):
+            center_contact.confirm(self.db, token, csrf, started['verification_id'], bad)
+        with booking.connection(self.db) as db:
+            self.assertEqual(json.loads(db.execute("SELECT payload FROM entries WHERE entry_key='clinic-1' AND batch_id=(SELECT value FROM settings WHERE key='active_batch')").fetchone()['payload'])['email'], 'appointments@example.test')
+        with patch('booking_mail.send_message'):
+            result = center_contact.confirm(self.db, token, csrf, started['verification_id'], code)
+        self.assertTrue(result['login_required'])
+        with self.assertRaises(booking.BookingError):
+            center_portal.dashboard(self.db, token)
+        with patch('booking_mail.send_message'):
+            with self.assertRaisesRegex(booking.BookingError, 'contact support'):
+                center_portal.issue(self.db, 'appointments@example.test')
+        token2, csrf2 = self.login('new.owner@example.test')
+        board = center_portal.dashboard(self.db, token2)
+        self.assertEqual(board['centers'][0]['email'], 'new.owner@example.test')
+        self.assertEqual([r['id'] for r in board['requests']], [request['id']])
+        self.assertEqual(center_portal.open_request(self.db, token2, csrf2, request['id'])['id'], request['id'])
+        with booking.connection(self.db) as db:
+            self.assertEqual(db.execute('SELECT field,old_value,new_value FROM center_contact_changes').fetchone()['new_value'], 'new.owner@example.test')
+
+    def test_email_already_used_by_other_listing_is_refused(self):
+        import center_contact
+        token, csrf = self.login()
+        with booking.connection(self.db) as db:
+            db.execute('INSERT INTO entries VALUES(?,?,?,?)', ('batch', 'clinic-2', 'h2', json.dumps({**self.center, 'email': 'other@example.test'})))
+        with patch('booking_mail.send_message') as send:
+            with self.assertRaisesRegex(booking.BookingError, 'another center'):
+                center_contact.start(self.db, token, csrf, 'email', 'other@example.test')
+            send.assert_not_called()
+
+    def test_code_is_bound_to_session_and_csrf_is_checked(self):
+        import center_contact
+        token, csrf = self.login()
+        with patch('booking_mail.send_message') as send:
+            with self.assertRaisesRegex(booking.BookingError, 'refresh'):
+                center_contact.start(self.db, token, 'wrong', 'email', 'new.owner@example.test')
+            started = center_contact.start(self.db, token, csrf, 'email', 'new.owner@example.test')
+        code = self.code_from(send)
+        with booking.connection(self.db) as db:
+            db.execute('INSERT INTO entries VALUES(?,?,?,?)', ('batch', 'clinic-2', 'h2', json.dumps({**self.center, 'email': 'other@example.test'})))
+        other, other_csrf = self.login('other@example.test')
+        with self.assertRaisesRegex(booking.BookingError, 'expired or already used'):
+            center_contact.confirm(self.db, other, other_csrf, started['verification_id'], code)
+
+    def test_phone_change_updates_only_that_listing_after_sms_code(self):
+        import center_contact
+        token, csrf = self.login()
+        with patch('booking_sms.send_code', return_value='VE' + '1' * 32) as send:
+            started = center_contact.start(self.db, token, csrf, 'phone', '+1 937 555 0142', 'clinic-1')
+        send.assert_called_once_with('+19375550142')
+        with patch('booking_sms.check_code', return_value=False):
+            with self.assertRaisesRegex(booking.BookingError, 'Incorrect'):
+                center_contact.confirm(self.db, token, csrf, started['verification_id'], '123456')
+        with patch('booking_sms.check_code', return_value=True):
+            result = center_contact.confirm(self.db, token, csrf, started['verification_id'], '123456')
+        self.assertEqual(result['phone'], '+19375550142')
+        self.assertEqual(center_portal.dashboard(self.db, token)['centers'][0]['phone'], '+19375550142')
+
+    def test_send_limit(self):
+        import center_contact
+        token, csrf = self.login()
+        with patch('booking_mail.send_message'):
+            for n in range(center_contact.SEND_LIMIT):
+                center_contact.start(self.db, token, csrf, 'email', f'n{n}@example.test')
+            with self.assertRaisesRegex(booking.BookingError, 'Too many'):
+                center_contact.start(self.db, token, csrf, 'email', 'n9@example.test')
+
+    def test_live_price_is_shown_to_center_after_approval(self):
+        import center_price_apply
+        token, csrf = self.login()
+        ident = center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
+            [{'exam': 'MRI', 'amount': '450', 'price_type': 'fixed', 'contrast': 'without', 'interpretation_included': 'yes', 'note': ''}], True)['saved'][0]['id']
+        self.assertEqual(center_portal.dashboard(self.db, token)['live_prices'], [])
+        center_price_apply.approve(self.db, ident, 'vikram')
+        live = center_portal.dashboard(self.db, token)['live_prices']
+        self.assertEqual([(p['exam'], p['amount_cents'], p['contrast'], p['interpretation_included'], p['price_type']) for p in live], [('MRI', 45000, 'without', 'yes', 'fixed')])
+
+
+    def test_history_lists_contact_changes_and_price_decisions(self):
+        import center_contact
+        token, csrf = self.login()
+        with patch('booking_sms.send_code', return_value='VE' + '1' * 32):
+            started = center_contact.start(self.db, token, csrf, 'phone', '+19375550142', 'clinic-1')
+        with patch('booking_sms.check_code', return_value=True):
+            center_contact.confirm(self.db, token, csrf, started['verification_id'], '123456')
+        board = center_portal.dashboard(self.db, token)
+        self.assertEqual([(h['field'], h['new_value']) for h in board['contact_history']], [('phone', '+19375550142')])
+        self.assertTrue(board['contact_history'][0]['changed'] > 0)
+
+
+if __name__ == '__main__':
+    unittest.main()

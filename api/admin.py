@@ -43,8 +43,13 @@ class SelfPayAdminSite(AdminSite):
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
                 path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
                 path('prices/',self.admin_view(self.prices_view),name='center_prices'),
+                path('pricing/',self.admin_view(self.pricing_alias),name='center_pricing_alias'),
                 path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
+
+    def pricing_alias(self, request):
+        from django.shortcuts import redirect
+        return redirect('admin:center_prices')
 
     def prices_view(self, request):
         import center_price_apply

@@ -59,7 +59,7 @@ def approve(path, ident, by):
         offer = {
             'id': 'center-' + ident, 'entry_name': center.get('name'), 'entry_hash': entry['content_hash'],
             'mod': sub['exam'], 'contrast': contrast, 'type': 'fixed' if sub['price_type'] == 'fixed' else 'starting',
-            'amount': sub['amount_cents'] / 100, 'region': region,
+            'amount': sub['amount_cents'] / 100, 'region': region, 'interpretation_included': sub['interpretation_included'],
             'scope': f"{sub['exam']} {CONTRAST_TEXT[contrast]}",
             'included': READING.get(sub['interpretation_included'], READING['unknown']),
             'order': sub['note'] or '', 'source': f'Price confirmed by center, {today}',

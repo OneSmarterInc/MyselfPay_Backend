@@ -91,7 +91,8 @@ class CenterPortalView(ResourceView):
 
     def get_serializer(self, *args, **kwargs):
         serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
-                      'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
+                      'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer,
+                      'contact': inputs.CenterContactSerializer, 'contact-verify': inputs.CenterVerifySerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
         return serializer(*args, **kwargs)
 
     def cookie_name(self):
@@ -120,6 +121,16 @@ class CenterPortalView(ResourceView):
             return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment')))
         if action == 'price':
             return Response(center_portal.submit_prices(database(), token, csrf, str(data['id']), data['prices'], data['consent']), status=201)
+        if action == 'contact':
+            import center_contact
+            return Response(center_contact.start(database(), token, csrf, data['field'], data['value'], data.get('id') or None))
+        if action == 'contact-verify':
+            import center_contact
+            result = center_contact.confirm(database(), token, csrf, str(data['verification_id']), data['code'])
+            response = Response(result)
+            if result.get('login_required'):
+                response.delete_cookie(self.cookie_name(), path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
+            return response
         if action == 'logout':
             with booking.connection(database(), write=True) as db:
                 center_portal.identity(db, token, csrf)
