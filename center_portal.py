@@ -22,6 +22,37 @@ def centers(db, email):
     return found
 
 
+def previous_emails(db, email):
+    """Earlier login emails of this center, newest first, so open requests follow an email change."""
+    found, current = [], email
+    for _ in range(10):
+        row = db.execute('SELECT old_cipher FROM center_email_history WHERE new_hash=? ORDER BY changed DESC LIMIT 1', (booking.digest(current),)).fetchone()
+        if not row:
+            break
+        current = booking.cipher().decrypt(row['old_cipher'].encode()).decode()
+        found.append(current)
+    return found
+
+
+def live_prices(db, keys):
+    """Prices now published for these listings, so the center can see and change them."""
+    out = []
+    if not keys:
+        return out
+    marks = ','.join('?' * len(keys))
+    for r in db.execute('SELECT id,entry_key,amount_cents,payload FROM offers WHERE batch_id=? AND amount_cents IS NOT NULL AND entry_key IN (' + marks + ')',
+                        (core.active_batch(db), *keys)).fetchall():
+        p = json.loads(r['payload'])
+        if p.get('mod') not in ('MRI', 'CT') or p.get('type') not in ('fixed', 'starting'):
+            continue
+        out.append({'id': r['id'], 'entry_key': r['entry_key'], 'exam': p['mod'], 'amount_cents': r['amount_cents'],
+                    'price_type': 'from' if p['type'] == 'starting' else 'fixed',
+                    'contrast': 'either' if p.get('contrast') == 'both' else p.get('contrast', 'unknown'),
+                    'interpretation_included': p.get('interpretation_included', 'unknown'),
+                    'confirmed': p.get('confirmed_by_center', ''), 'source': p.get('source', '')})
+    return out
+
+
 def issue(path, address):
     email = str(address).strip().lower()
     if len(email) > 254 or not booking.EMAIL.fullmatch(email):
@@ -87,11 +118,13 @@ def dashboard(path, token):
     with booking.connection(path) as db:
         email, listings, csrf = identity(db, token)
         keys = {item['id'] for item in listings}
-        rows = db.execute('SELECT b.* FROM booking_requests b JOIN center_request_routes r ON r.request_id=b.id WHERE r.email_hash=? ORDER BY b.created DESC', (booking.digest(email),)).fetchall()
+        owned = [email, *previous_emails(db, email)]
+        hashes = [booking.digest(x) for x in owned]
+        rows = db.execute('SELECT b.* FROM booking_requests b JOIN center_request_routes r ON r.request_id=b.id WHERE r.email_hash IN (' + ','.join('?' * len(hashes)) + ') ORDER BY b.created DESC', hashes).fetchall()
         requests = []
         for row in rows:
             p = booking.unpack(row)
-            if p['clinic_id'] not in keys or p['recipient'].strip().lower() != email:
+            if p['clinic_id'] not in keys or p['recipient'].strip().lower() not in owned:
                 continue
             if (row['closed'] or row['link_expires']) + 30 * 86400 <= time.time():
                 continue
@@ -101,9 +134,13 @@ def dashboard(path, token):
                 item['status'] = 'expired'
             requests.append(item)
         prices = [dict(r) for r in db.execute(
-            'SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status FROM center_price_submissions '
-            'WHERE email_hash=? ORDER BY submitted DESC LIMIT 50', (booking.digest(email),)).fetchall()]
-        return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices}
+            'SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status,decided FROM center_price_submissions '
+            'WHERE email_hash IN (' + ','.join('?' * len(hashes)) + ') ORDER BY submitted DESC LIMIT 200', hashes).fetchall()]
+        contact_history = [{'field': r['field'], 'old_value': r['old_value'], 'new_value': r['new_value'], 'changed': r['changed'], 'entry_keys': json.loads(r['entry_keys'])}
+                           for r in db.execute('SELECT field,old_value,new_value,entry_keys,changed FROM center_contact_changes ORDER BY changed DESC LIMIT 500').fetchall()
+                           if keys & set(json.loads(r['entry_keys']))][:100]
+        return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
+                'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history}
 
 
 def open_request(path, token, csrf, ident, status=None, appointment=None):
@@ -111,7 +148,7 @@ def open_request(path, token, csrf, ident, status=None, appointment=None):
         email, listings, _ = identity(db, token, csrf)
         row = booking.get_row(db, ident, lock=True)
         p = booking.unpack(row)
-        if p['clinic_id'] not in {item['id'] for item in listings} or p['recipient'].strip().lower() != email:
+        if p['clinic_id'] not in {item['id'] for item in listings} or p['recipient'].strip().lower() not in [email, *previous_emails(db, email)]:
             raise booking.BookingError('Request unavailable.', 404)
         if status is not None:
             if row['link_expires'] <= time.time():

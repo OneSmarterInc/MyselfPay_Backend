@@ -132,6 +132,24 @@ def send_center_code(recipient: str, code: str) -> None:
     send_message(message, recipient)
 
 
+def send_center_contact_code(recipient: str, code: str, old_email: str) -> None:
+    message = EmailMessage()
+    message['Subject'] = 'Confirm your new MySelfPay center login email'
+    message.set_content(f'You asked to change your MySelfPay center login email from {old_email} to this address.\n\nYour confirmation code is: {code}\n\nExpires in 10 minutes. After you enter it, you sign in with this new email. Do not share this code.\nIf you did not ask for this change, ignore this email. Nothing changes without the code.\n\nMySelfPay by One Smarter, Inc.\nPlease do not reply to this automated email.')
+    message.add_alternative(otp_html(code, label='EMAIL CHANGE',
+        title='Confirm your new center login email.',
+        instructions=f'You are changing your center login email from {old_email} to this address. Enter this code on MySelfPay to confirm. After that, sign in with this new email.',
+        note='If you did not ask for this change, ignore this email. Nothing changes without the code.'), subtype='html')
+    send_message(message, recipient)
+
+
+def send_center_contact_notice(old_email: str, new_email: str) -> None:
+    message = EmailMessage()
+    message['Subject'] = 'Your MySelfPay center login email changed'
+    message.set_content(f'The login email for your MySelfPay center listing changed to {new_email}.\n\nIf you did not make this change, contact support right away.\n\nMySelfPay by One Smarter, Inc.\nPlease do not reply to this automated email.')
+    send_message(message, old_email)
+
+
 def send_patient_code(recipient: str, code: str) -> None:
     host = os.environ.get('SMTP_HOST', '')
     username = os.environ.get('SMTP_USERNAME', '')
