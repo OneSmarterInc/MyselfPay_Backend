@@ -36,3 +36,8 @@ A signed-in center can send MRI and CT self-pay prices for its own listing with 
 Submissions go to `center_price_submissions` as `pending`. They never edit the published directory. A newer pending price for the same listing and exam replaces the older one. The dashboard lists a center's own submissions as `price_submissions`.
 
 Review on the server with `python manage.py review_center_prices` (pending list as CSV), then `--approve ID --by NAME` or `--reject ID --by NAME`. Approval only marks the row. Apply approved prices through the existing Vikram-approved directory change workflow. Run `manage.py migrate` first: migration 0018 creates the table.
+
+
+## Approving center prices
+
+Open Admin > Center prices (`/admin/prices/`). Approve publishes the price as a new directory batch. The previous batch stays, so a bad approval can be rolled back with `core.publish(previous_batch)`. An approved price replaces the same exam and contrast, or a quote-only offer for that exam. Reject changes nothing in the app. The page records the reviewer's admin username.

@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 import booking
 import center_portal
+import core
 import test_booking
 
 
@@ -123,3 +124,48 @@ class CenterPriceTests(unittest.TestCase):
         with booking.connection(self.db) as db:
             rows = db.execute("SELECT amount_cents,status FROM center_price_submissions ORDER BY submitted").fetchall()
         self.assertEqual([(r['amount_cents'], r['status']) for r in rows], [(40000, 'replaced'), (42500, 'pending')])
+
+
+class CenterPriceApprovalTests(CenterPriceTests):
+    """Approving a price publishes it as a new batch; rejecting changes nothing."""
+
+    def submit(self, amount='450.00'):
+        token, csrf = self.login()
+        return center_portal.submit_prices(self.db, token, csrf, 'clinic-1', self.prices(amount), True)['saved'][0]['id']
+
+    def test_approve_makes_price_visible_and_keeps_old_batch(self):
+        import center_price_apply
+        ident = self.submit()
+        self.assertEqual(len(center_price_apply.pending(self.db)), 1)
+        result = center_price_apply.approve(self.db, ident, 'vikram')
+        self.assertEqual(result['previous_batch'], 'batch')
+        offers = core.catalog(self.db)['offers']
+        self.assertEqual([(o['mod'], o['amount'], o['type']) for o in offers], [('MRI', 450.0, 'fixed')])
+        self.assertIn('Price confirmed by center', offers[0]['source'])
+        with booking.connection(self.db) as db:
+            self.assertEqual(core.active_batch(db), result['batch'])
+            self.assertEqual(db.execute("SELECT status,decided_by FROM center_price_submissions WHERE id=?", (ident,)).fetchone()['status'], 'approved')
+            self.assertEqual(db.execute("SELECT COUNT(*) AS n FROM offers WHERE batch_id='batch'").fetchone()['n'], 0)
+        with self.assertRaises(center_price_apply.PriceError):
+            center_price_apply.approve(self.db, ident, 'vikram')
+
+    def test_second_approval_replaces_same_exam_price(self):
+        import center_price_apply
+        center_price_apply.approve(self.db, self.submit('450'), 'vikram')
+        center_price_apply.approve(self.db, self.submit('400'), 'vikram')
+        self.assertEqual([o['amount'] for o in core.catalog(self.db)['offers']], [400.0])
+
+    def test_reject_leaves_directory_unchanged(self):
+        import center_price_apply
+        ident = self.submit()
+        center_price_apply.reject(self.db, ident, 'vikram')
+        self.assertEqual(core.catalog(self.db)['offers'], [])
+        with booking.connection(self.db) as db:
+            self.assertEqual(core.active_batch(db), 'batch')
+        with self.assertRaises(center_price_apply.PriceError):
+            center_price_apply.approve(self.db, ident, 'vikram')
+
+    def test_reviewer_name_required(self):
+        import center_price_apply
+        with self.assertRaises(center_price_apply.PriceError):
+            center_price_apply.approve(self.db, self.submit(), ' ')
