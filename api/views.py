@@ -91,7 +91,7 @@ class CenterPortalView(ResourceView):
 
     def get_serializer(self, *args, **kwargs):
         serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
-                      'request': inputs.CenterRequestSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
+                      'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
         return serializer(*args, **kwargs)
 
     def cookie_name(self):
@@ -118,6 +118,8 @@ class CenterPortalView(ResourceView):
             return response
         if action == 'request':
             return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment')))
+        if action == 'price':
+            return Response(center_portal.submit_prices(database(), token, csrf, str(data['id']), data['prices'], data['consent']), status=201)
         if action == 'logout':
             with booking.connection(database(), write=True) as db:
                 center_portal.identity(db, token, csrf)

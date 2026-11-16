@@ -3,6 +3,7 @@ import hmac
 import json
 import secrets
 import time
+from decimal import Decimal
 import booking
 import booking_mail
 import booking_chat
@@ -99,7 +100,10 @@ def dashboard(path, token):
             if row['status'] not in booking.TERMINAL and row['link_expires'] <= time.time():
                 item['status'] = 'expired'
             requests.append(item)
-        return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf}
+        prices = [dict(r) for r in db.execute(
+            'SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status FROM center_price_submissions '
+            'WHERE email_hash=? ORDER BY submitted DESC LIMIT 50', (booking.digest(email),)).fetchall()]
+        return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices}
 
 
 def open_request(path, token, csrf, ident, status=None, appointment=None):
@@ -124,3 +128,25 @@ def open_request(path, token, csrf, ident, status=None, appointment=None):
             if row['status'] not in booking.TERMINAL:
                 result['status'] = 'expired'
         return result
+
+
+def submit_prices(path, token, csrf, entry_key, prices, consent):
+    """Store center-entered prices as pending. They never change the published directory."""
+    if consent is not True:
+        raise booking.BookingError('Confirm that these are your current self-pay prices.')
+    with booking.connection(path, write=True) as db:
+        email, listings, _ = identity(db, token, csrf)
+        if entry_key not in {item['id'] for item in listings}:
+            raise booking.BookingError('Listing unavailable.', 404)
+        now, saved = time.time(), []
+        for item in prices:
+            cents = int((Decimal(str(item['amount'])) * 100).to_integral_value())
+            db.execute("UPDATE center_price_submissions SET status='replaced',decided=? WHERE entry_key=? AND exam=? AND status='pending'",
+                       (now, entry_key, item['exam']))
+            ident = secrets.token_urlsafe(12)
+            db.execute('INSERT INTO center_price_submissions(id,entry_key,email_hash,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted) '
+                       'VALUES(?,?,?,?,?,?,?,?,?,?)',
+                       (ident, entry_key, booking.digest(email), item['exam'], cents, item['price_type'],
+                        item['contrast'], item['interpretation_included'], item.get('note', '').strip(), now))
+            saved.append({'id': ident, 'exam': item['exam'], 'amount_cents': cents, 'status': 'pending'})
+        return {'saved': saved, 'message': 'Thank you. Your prices will appear after review.'}
