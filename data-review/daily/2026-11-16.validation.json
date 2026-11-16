@@ -1,0 +1,37 @@
+{
+  "batch_date": "2026-11-16",
+  "date_basis": "UTC+05:30 latest direct data-task collaborator offset",
+  "checked_utc_date": "2026-11-16",
+  "canonical_version": 59,
+  "canonical_source_rows": 5404,
+  "canonical_changed": false,
+  "qualified_new_rows": 0,
+  "email_complete_qualified_rows": 0,
+  "email_related_hold_rows": 2,
+  "hold_state_counts": {
+    "IA": 2
+  },
+  "already_reviewed_excluded": 3,
+  "already_reviewed_details": [
+    "Mississippi Motion Hattiesburg DAILY-20261109-002",
+    "Mississippi Motion Madison DAILY-20261109-003",
+    "Audubon DAILY-20261108-X050 / NOV7-EXCLUDED-21"
+  ],
+  "other_excluded": 1,
+  "other_excluded_reason": "Mississippi Motion Magee is advertised as Monday procedures only; standalone diagnostic imaging not established",
+  "published_fixed_price_new_rows": 0,
+  "live_database_writes": 0,
+  "source_rows_not_comprehensively_reverified": 5404,
+  "limitations": [
+    "Target of 100 qualified additions not met.",
+    "Prior hold/review-batch reconciliation incomplete, so two hold candidates are not claimed newly unique.",
+    "No numeric MRI/CT cash price verified for held candidates.",
+    "No email deliverability testing or provider contact.",
+    "CSV is not a backend import; backend currently accepts XLSX/JSON.",
+    "No current per-facility CMS CAH roster established; historical IHA hospital listing used only for discovery."
+  ],
+  "data_schema_columns": 76,
+  "canonical_columns_preserved": 52,
+  "rollback": "Remove only files introduced in this run after confirming no subsequent edits; no canonical or live database rollback needed.",
+  "prior_main_commit": "72f41ba53b5672ea091739134d607fb601127014"
+}
