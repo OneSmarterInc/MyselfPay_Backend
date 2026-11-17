@@ -180,8 +180,8 @@ def submit_prices(path, token, csrf, entry_key, prices, consent):
         now, saved = time.time(), []
         for item in prices:
             cents = int((Decimal(str(item['amount'])) * 100).to_integral_value())
-            db.execute("UPDATE center_price_submissions SET status='replaced',decided=? WHERE entry_key=? AND exam=? AND status='pending'",
-                       (now, entry_key, item['exam']))
+            db.execute("UPDATE center_price_submissions SET status='replaced',decided=? WHERE entry_key=? AND exam=? AND contrast=? AND status='pending'",
+                       (now, entry_key, item['exam'], item['contrast']))
             ident = secrets.token_urlsafe(12)
             db.execute('INSERT INTO center_price_submissions(id,entry_key,email_hash,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted) '
                        'VALUES(?,?,?,?,?,?,?,?,?,?)',

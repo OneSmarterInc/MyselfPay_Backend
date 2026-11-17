@@ -302,6 +302,17 @@ class CenterContactTests(unittest.TestCase):
         with self.assertRaisesRegex(booking.BookingError, 'already confirmed'):
             center_profile.confirm_price(self.db, token, csrf, offer_id)
 
+    def test_one_exam_keeps_separate_prices_per_contrast(self):
+        import center_price_apply
+        token, csrf = self.login()
+        rows = [{'exam': 'MRI', 'amount': a, 'price_type': 'fixed', 'contrast': c, 'interpretation_included': 'yes', 'note': ''}
+                for a, c in (('400', 'without'), ('550', 'with'))]
+        saved = center_portal.submit_prices(self.db, token, csrf, 'clinic-1', rows, True)['saved']
+        for item in saved:
+            center_price_apply.approve(self.db, item['id'], 'vikram')
+        live = center_portal.dashboard(self.db, token)['live_prices']
+        self.assertEqual(sorted((x['contrast'], x['amount_cents']) for x in live), [('with', 55000), ('without', 40000)])
+
 
 
 class CenterProfileTests(unittest.TestCase):
