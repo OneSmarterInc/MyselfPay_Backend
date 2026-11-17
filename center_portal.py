@@ -115,6 +115,7 @@ def identity(db, token, csrf=None):
 
 
 def dashboard(path, token):
+    import center_profile
     with booking.connection(path) as db:
         email, listings, csrf = identity(db, token)
         keys = {item['id'] for item in listings}
@@ -140,7 +141,8 @@ def dashboard(path, token):
                            for r in db.execute('SELECT field,old_value,new_value,entry_keys,changed FROM center_contact_changes ORDER BY changed DESC LIMIT 500').fetchall()
                            if keys & set(json.loads(r['entry_keys']))][:100]
         return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
-                'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history}
+                'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history,
+                'profile_edits': center_profile.listing(db, hashes)}
 
 
 def open_request(path, token, csrf, ident, status=None, appointment=None):

@@ -15,7 +15,7 @@ urlpatterns = [
     path('api/mailer/unsubscribe', unsubscribe_view, name='mailer-unsubscribe-query'),
     re_path(r'^api/mailer/unsubscribe/(?P<token>[^/]+)/?$', unsubscribe_view, name='mailer-unsubscribe'),
     path('api/health', views.HealthView.as_view(), name='health'),
-    re_path(r'^api/center/(?P<action>code|verify|dashboard|request|price|contact-verify|contact|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
+    re_path(r'^api/center/(?P<action>code|verify|dashboard|request|price|profile|contact-verify|contact|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
     path('api/guest', views.GuestView.as_view(), name='guest'),
     re_path(r'^api/registration/mobile/(?P<action>code|verify)$', views.RegistrationMobileView.as_view()),
