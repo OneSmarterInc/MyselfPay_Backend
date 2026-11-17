@@ -34,6 +34,10 @@ class CenterContactSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
 
+class CenterPriceConfirmSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+
+
 class CenterProfileSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     field = serializers.ChoiceField(choices=('address', 'website'))

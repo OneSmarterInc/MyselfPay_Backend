@@ -101,3 +101,26 @@ def approve(path, ident, by):
                                                        {'center_profile': row['field'], 'approved_by': by.strip(), 'entry': row['entry_key']})
         db.execute("UPDATE center_profile_edits SET status='approved',decided=?,decided_by=? WHERE id=?", (time.time(), by.strip(), ident))
     return {'batch': batch, 'previous_batch': previous}
+
+
+def confirm_price(path, token, csrf, offer_id):
+    """The center confirms a published price as it stands. The value does not change, so no review is needed."""
+    from datetime import date
+    with booking.connection(path) as db:
+        _, listings, _ = center_portal.identity(db, token, csrf)
+        owned = {item['id'] for item in listings}
+    with core.connect(path) as db:
+        active = core.active_batch(db)
+        row = db.execute('SELECT id,entry_key,payload FROM offers WHERE batch_id=? AND id=?', (active, offer_id)).fetchone()
+        if not row or row['entry_key'] not in owned:
+            raise booking.BookingError('Price unavailable.', 404)
+        offer = json.loads(row['payload'])
+        if offer.get('confirmed_by_center'):
+            raise booking.BookingError('This price is already confirmed.')
+        today = date.today().isoformat()
+        offer['confirmed_by_center'] = today
+        entry = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, row['entry_key'])).fetchone()
+        batch, previous = center_contact._clone_batch(db, 'confirm-' + offer_id, {row['entry_key']: json.loads(entry['payload'])},
+                                                       {'center_confirm': offer_id, 'entry': row['entry_key']})
+        db.execute('UPDATE offers SET payload=? WHERE batch_id=? AND id=?', (core.canonical(offer), batch, offer_id))
+    return {'confirmed': offer_id, 'date': today, 'message': 'Thank you. Your price is marked as confirmed by you, ' + today + '.'}
