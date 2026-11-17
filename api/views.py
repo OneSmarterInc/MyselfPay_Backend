@@ -102,11 +102,41 @@ class CenterPortalView(ResourceView):
         import center_portal
         if action != 'dashboard':
             raise NotFound()
-        return Response(center_portal.dashboard(database(), request.COOKIES.get(self.cookie_name(), '')))
+        token = request.COOKIES.get(self.cookie_name(), '')
+        return self.audited(request, action, token, {}, lambda: Response(center_portal.dashboard(database(), token)))
+
+    def audited(self, request, action, token, data, run):
+        """Record who did what, from where, and whether it worked. Secrets are never recorded."""
+        import audit
+        import center_portal
+        audit.bind(request, 'center', data.get('email', '') if action == 'code' else center_portal.actor_email(database(), token))
+        what = {'price': lambda: '; '.join(f"{p['exam']} \u0024{p['amount']} ({p['contrast']})" for p in data.get('prices', [])),
+                'profile': lambda: f"{data.get('field')}: {data.get('value')}",
+                'contact': lambda: f"{data.get('field')}: {data.get('value')}",
+                'request': lambda: f"{data.get('status') or ''} {data.get('appointment') or ''}".strip()}
+        scope = str(data.get('id', '')) if action in ('price', 'profile', 'confirm-price', 'contact') else ''
+        new = what.get(action, lambda: '')()
+        try:
+            response = run()
+        except Exception as exc:
+            audit.log('center.' + action, scope=scope, target_id=str(data.get('id', '')), new=new, result='denied',
+                      detail={'error': str(exc)[:200]})
+            audit.unbind()
+            raise
+        if action in ('verify',):
+            audit.set_actor('center', center_portal.actor_email(database(), response.cookies.get(self.cookie_name()).value if response.cookies.get(self.cookie_name()) else ''))
+        audit.log('center.' + action, scope=scope, target_id=str(data.get('id', '')), new=new)
+        audit.unbind()
+        return response
 
     def post(self, request, action):
         import center_portal
         data = self.validated(request)
+        token = request.COOKIES.get(self.cookie_name(), '')
+        return self.audited(request, action, token, data, lambda: self.handle(request, action, data))
+
+    def handle(self, request, action, data):
+        import center_portal
         token = request.COOKIES.get(self.cookie_name(), '')
         csrf = request.headers.get('X-Center-CSRF', '')
         if action == 'code':

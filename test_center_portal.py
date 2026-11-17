@@ -1,5 +1,7 @@
 """Center OTP ownership and shared booking status integration."""
 import json
+import os
+import sqlite3
 import unittest
 from unittest.mock import patch
 import booking
@@ -454,6 +456,85 @@ class AdminAlertTests(unittest.TestCase):
             result = center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
                 [{'exam': 'MRI', 'amount': '450', 'price_type': 'fixed', 'contrast': 'without', 'interpretation_included': 'yes', 'note': ''}], True)
         self.assertEqual(result['saved'][0]['status'], 'pending')
+
+
+class AuditStoreTests(unittest.TestCase):
+    """The audit trail is chained, append-only and shows centers only their own events."""
+
+    def setUp(self):
+        import audit, tempfile
+        self.audit = audit
+        self.dir = tempfile.TemporaryDirectory()
+        self.path = os.path.join(self.dir.name, 'audit.sqlite3')
+        audit.initialize(self.path)
+        self.env = patch.dict(os.environ, {'AUDIT_DATABASE_URL': self.path, 'AUDIT_MODE': 'observe'})
+        self.env.start()
+        audit._health.update(at=0.0)
+
+    def tearDown(self):
+        self.env.stop()
+        self.audit.unbind()
+        self.dir.cleanup()
+
+    def test_rows_are_chained_and_edits_are_refused(self):
+        a = self.audit
+        for i in range(3):
+            a.log('center.price', scope='c1', actor='a@example.test', actor_type='center', new=f'MRI ${i}')
+        self.assertEqual(a.verify_chain(), (3, None, ''))
+        con = sqlite3.connect(self.path)
+        with self.assertRaises(sqlite3.DatabaseError):
+            con.execute("UPDATE audit_log SET new_value='x' WHERE seq=2")
+        with self.assertRaises(sqlite3.DatabaseError):
+            con.execute('DELETE FROM audit_log WHERE seq=2')
+        con.close()
+
+    def test_tampering_is_found(self):
+        a = self.audit
+        for i in range(3):
+            a.log('center.price', scope='c1', new=str(i))
+        con = sqlite3.connect(self.path)
+        con.execute('DROP TRIGGER audit_no_update')
+        con.execute("UPDATE audit_log SET new_value='changed' WHERE seq=2")
+        con.commit()
+        con.close()
+        self.assertEqual(a.verify_chain()[1], 2)
+
+    def test_center_sees_only_its_own_events_without_ip_or_staff(self):
+        a = self.audit
+        a.log('center.price', scope='c1', actor='a@example.test', actor_type='center', new='MRI $400')
+        a.log('center.price', scope='c2', actor='b@example.test', actor_type='center', new='MRI $999')
+        a.log('admin.price.approve', scope='c1', actor='vikram', actor_type='admin', new='MRI $400')
+        a.log('center.verify', actor='a@example.test', actor_type='center')
+        a.log('center.verify', actor='other@example.test', actor_type='center')
+        feed = a.for_center(['c1'], ['a@example.test'])
+        self.assertEqual(sorted(x['what'] for x in feed), ['Price approved by MySelfPay', 'Prices sent to publish', 'Signed in'])
+        self.assertTrue(all(not ({'ip', 'actor', 'user_agent'} & set(x)) for x in feed))
+        self.assertNotIn('vikram', json.dumps(feed))
+        self.assertNotIn('999', json.dumps(feed))
+
+    def test_proxy_count_decides_which_address_is_trusted(self):
+        a = self.audit
+        request = type('R', (), {'META': {'REMOTE_ADDR': '10.0.0.5', 'HTTP_X_FORWARDED_FOR': '6.6.6.6, 203.0.113.9, 10.0.0.9'}})()
+        self.assertEqual(a.client_ip(request), '10.0.0.5')
+        with patch.dict(os.environ, {'AUDIT_TRUSTED_PROXIES': '2'}):
+            self.assertEqual(a.client_ip(request), '203.0.113.9')
+        with patch.dict(os.environ, {'AUDIT_TRUSTED_PROXIES': '1'}):
+            self.assertEqual(a.client_ip(request), '10.0.0.9')
+
+    def test_enforce_mode_blocks_when_the_store_is_missing(self):
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': '', 'AUDIT_MODE': 'enforce'}):
+            with self.assertRaises(self.audit.AuditUnavailable):
+                self.audit.log('center.price')
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': '', 'AUDIT_MODE': 'observe'}):
+            self.assertIsNone(self.audit.log('center.price'))
+
+    def test_anchor_is_signed(self):
+        a = self.audit
+        a.log('center.price', scope='c1')
+        with patch.dict(os.environ, {'AUDIT_ANCHOR_KEY': 'k'}):
+            first = a.anchor()
+        self.assertEqual(first['last_seq'], 1)
+        self.assertEqual(len(first['signature']), 64)
 
 
 

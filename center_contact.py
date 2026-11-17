@@ -129,6 +129,10 @@ def confirm(path, token, csrf, ident, code):
         batch, previous = _clone_batch(db, ident, edits, {'center_contact': row['field'], 'entries': keys})
         db.execute('INSERT INTO center_contact_changes VALUES(?,?,?,?,?,?,?,?)', (ident, row['field'], old, new, json.dumps(keys), batch, previous, now))
         db.execute('DELETE FROM center_contact_checks WHERE id=?', (ident,))
+        import audit
+        for key in keys:
+            audit.log('center.contact.changed', scope=key, target_type=row['field'], target_id=ident, actor=email, actor_type='center',
+                      old=old, new=new, detail={'batch': batch, 'previous_batch': previous})
         if row['field'] == 'email':
             db.execute('INSERT INTO center_email_history VALUES(?,?,?,?)', (booking.digest(new), booking.digest(old), booking.cipher().encrypt(old.encode()).decode(), now))
             db.execute('DELETE FROM center_portal_sessions WHERE token_hash=?', (booking.digest(token),))

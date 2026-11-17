@@ -114,7 +114,20 @@ def identity(db, token, csrf=None):
     return email, listings, row['csrf']
 
 
+def actor_email(path, token):
+    """The signed-in center email for the audit trail, or '' when there is no valid session."""
+    try:
+        with booking.connection(path) as db:
+            row = db.execute('SELECT * FROM center_portal_sessions WHERE token_hash=?', (booking.digest(token),)).fetchone()
+            if row and row['expires'] > time.time():
+                return booking.cipher().decrypt(row['email_cipher'].encode()).decode()
+    except Exception:
+        pass
+    return ''
+
+
 def dashboard(path, token):
+    import audit
     import center_profile
     with booking.connection(path) as db:
         email, listings, csrf = identity(db, token)
@@ -142,7 +155,8 @@ def dashboard(path, token):
                            if keys & set(json.loads(r['entry_keys']))][:100]
         return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
                 'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history,
-                'profile_edits': center_profile.listing(db, hashes)}
+                'profile_edits': center_profile.listing(db, hashes),
+                'activity': audit.for_center(keys, owned)}
 
 
 def open_request(path, token, csrf, ident, status=None, appointment=None):
