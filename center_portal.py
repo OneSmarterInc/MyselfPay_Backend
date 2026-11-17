@@ -49,7 +49,7 @@ def live_prices(db, keys):
                     'price_type': 'from' if p['type'] == 'starting' else 'fixed',
                     'contrast': 'either' if p.get('contrast') == 'both' else p.get('contrast', 'unknown'),
                     'interpretation_included': p.get('interpretation_included', 'unknown'),
-                    'confirmed': p.get('confirmed_by_center', ''), 'source': p.get('source', '')})
+                    'confirmed': p.get('confirmed_by_center', ''), 'updated': p.get('updated_at', 0), 'source': p.get('source', '')})
     return out
 
 
@@ -188,4 +188,8 @@ def submit_prices(path, token, csrf, entry_key, prices, consent):
                        (ident, entry_key, booking.digest(email), item['exam'], cents, item['price_type'],
                         item['contrast'], item['interpretation_included'], item.get('note', '').strip(), now))
             saved.append({'id': ident, 'exam': item['exam'], 'amount_cents': cents, 'status': 'pending'})
-        return {'saved': saved, 'message': 'Thank you. Your prices will appear after review.'}
+        center_name = next((x.get('name') for x in listings if x['id'] == entry_key), entry_key)
+        summary = '\n'.join(f"{p['exam']} ${p['amount']}" + ('' if p['contrast'] == 'unknown' else f" ({p['contrast']} contrast)") for p in prices)
+    import admin_alerts
+    admin_alerts.notify('prices', center_name, summary)
+    return {'saved': saved, 'message': 'Thank you. Your prices will appear after review.'}

@@ -49,6 +49,8 @@ def submit(path, token, csrf, entry_key, field, value):
         ident = secrets.token_urlsafe(12)
         db.execute('INSERT INTO center_profile_edits(id,entry_key,email_hash,field,value,old_value,submitted) VALUES(?,?,?,?,?,?,?)',
                    (ident, entry_key, digest, field, value, current_value, now))
+    import admin_alerts
+    admin_alerts.notify('profile', current.get('name', entry_key), f'{FIELDS[field]}: {value}')
     return {'saved': {'id': ident, 'entry_key': entry_key, 'field': field, 'value': value, 'status': 'pending'},
             'message': f'{FIELDS[field]} sent for review. Patients see it after approval.'}
 
@@ -67,7 +69,7 @@ def pending(path, status='pending'):
         out = []
         for r in rows:
             e = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, r['entry_key'])).fetchone()
-            out.append({**dict(r), 'center': json.loads(e['payload']).get('name', r['entry_key']) if e else r['entry_key'], 'label': FIELDS.get(r['field'], r['field'])})
+            out.append({**dict(r), 'sent_text': __import__('admin_alerts').when(r['submitted']), 'decided_text': __import__('admin_alerts').when(r['decided']), 'center': json.loads(e['payload']).get('name', r['entry_key']) if e else r['entry_key'], 'label': FIELDS.get(r['field'], r['field'])})
         return out
 
 
@@ -119,6 +121,7 @@ def confirm_price(path, token, csrf, offer_id):
             raise booking.BookingError('This price is already confirmed.')
         today = date.today().isoformat()
         offer['confirmed_by_center'] = today
+        offer['updated_at'] = time.time()
         entry = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, row['entry_key'])).fetchone()
         batch, previous = center_contact._clone_batch(db, 'confirm-' + offer_id, {row['entry_key']: json.loads(entry['payload'])},
                                                        {'center_confirm': offer_id, 'entry': row['entry_key']})

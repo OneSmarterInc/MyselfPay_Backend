@@ -36,6 +36,13 @@ class SelfPayAdminSite(AdminSite):
     def has_permission(self, request):
         return bool(request.user.is_active and request.user.is_superuser)
 
+    def each_context(self, request):
+        import admin_alerts
+        context = super().each_context(request)
+        if self.has_permission(request):
+            context['pending_prices'], context['pending_profiles'] = admin_alerts.pending_counts(settings.DOMAIN_DATABASE)
+        return context
+
     def get_urls(self):
         import admin_mailer
         return [path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),

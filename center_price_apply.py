@@ -38,7 +38,8 @@ def pending(path, status='pending'):
             e = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, r['entry_key'])).fetchone()
             names[r['entry_key']] = json.loads(e['payload']).get('name', r['entry_key']) if e else r['entry_key']
         return [{**dict(r), 'center': names[r['entry_key']], 'amount': f"{r['amount_cents'] / 100:,.2f}",
-                 'type_text': 'Starting at' if r['price_type'] == 'from' else 'Fixed'} for r in rows]
+                 'type_text': 'Starting at' if r['price_type'] == 'from' else 'Fixed',
+                 'sent_text': __import__('admin_alerts').when(r['submitted']), 'decided_text': __import__('admin_alerts').when(r['decided'])} for r in rows]
 
 
 def reject(path, ident, by):
@@ -77,7 +78,7 @@ def approve(path, ident, by):
             'scope': sub['exam'] if other else f"{sub['exam']} {CONTRAST_TEXT[contrast]}",
             'included': READING.get(sub['interpretation_included'], READING['unknown']),
             'order': sub['note'] or '', 'source': f'Price confirmed by center, {today}',
-            'confirmed_by_center': today, 'submission_id': ident,
+            'confirmed_by_center': today, 'updated_at': time.time(), 'submission_id': ident,
         }
         old = db.execute('SELECT id,payload FROM offers WHERE batch_id=? AND entry_key=?', (active, sub['entry_key'])).fetchall()
         keep = []
