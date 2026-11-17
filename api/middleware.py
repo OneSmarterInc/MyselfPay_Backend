@@ -28,7 +28,7 @@ class RequestSecurityMiddleware:
                 request.get_host()
             except DisallowedHost:
                 return JsonResponse({'error': 'Host rejected.'}, status=400)
-        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') != settings.FRONTEND_ORIGIN:
+        if request.method not in ('GET', 'HEAD', 'OPTIONS') and request.headers.get('Origin') not in (settings.FRONTEND_ORIGIN, *getattr(settings, 'ADDITIONAL_FRONTEND_ORIGINS', [])):
             return JsonResponse({'error': 'Origin rejected.'}, status=403)
         if request.path == '/admin/login/' and request.method == 'POST':
             from api.throttles import AdminLoginThrottle
