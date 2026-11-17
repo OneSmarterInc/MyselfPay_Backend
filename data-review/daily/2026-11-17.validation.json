@@ -1,0 +1,32 @@
+{
+  "batch_date": "2026-11-17",
+  "date_basis": "Continuation of established daily data-task UTC+05:30 convention; UTC date also Nov 17",
+  "qualified_new_rows": 0,
+  "email_complete_qualified_rows": 0,
+  "new_candidate_holds": 3,
+  "carried_holds": 2,
+  "hold_state_counts": {
+    "IA": 4,
+    "NE": 1
+  },
+  "new_holds_with_published_usable_email": 2,
+  "new_email_related_holds": 1,
+  "carried_email_related_holds": 2,
+  "published_fixed_price_new_rows": 0,
+  "target_100_met": false,
+  "duplicate_check_limits": "Available local workbook all sheets and bounded main search only. Latest canonical identity/version, full prior branch batches and live database not revalidated; candidates are not claimed uniquely new.",
+  "mitchell_followup": "Still hold. Chamber-hosted brownjel@mercyhealth.com is undated; current email scope unverified. Hospital 616 N 8th vs clinic 620 requires modality-site resolution; order unknown. See https://docu.team/photogrid.php?action=show_item&item=35162&store=8774 and https://www.mercyone.org/location/mitchell-county-regional-health-center-emergency-department .",
+  "carry_limits": "Kossuth and Mitchell rows copied unchanged from Nov 16, not represented as fresh comprehensive checks.",
+  "gordon_note": "Current official radiology page supplies radiology@gordonmemorial.org and 308-337-4879. Archived indexed 308-282-6236/info email not substituted. General provider-order prose does not establish exact mandatory order policy.",
+  "ringgold_note": "General information info@rchmtayr.org qualifies in purpose; billing-only medicalbills@rchmtayr.org does not. MRI/mobile nuclear medicine weekly; no numeric price verified.",
+  "grape_note": "Indexed email not corroborated by retrieved current pages; remains blank.",
+  "limits": [
+    "No provider contact or email test",
+    "No DB write or import",
+    "CSV is staging only, not directly imported by backend",
+    "Only three new candidates researched in detail; not an exhaustive national sweep",
+    "No source row deleted or canonical edited"
+  ],
+  "rollback": "Only new Nov 17 files introduced; previous results unchanged. Recover by removing only introduced files after verifying no later edits.",
+  "schema_columns": 76
+}
