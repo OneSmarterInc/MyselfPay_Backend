@@ -14,7 +14,8 @@ class DatabaseWindowThrottle(BaseThrottle):
     def allow_request(self, request, view):
         now = time.time()
         self.retry_after = max(1, math.ceil(60 - now % 60))
-        ip = request.META.get('REMOTE_ADDR', 'unknown')
+        import audit
+        ip = audit.client_ip(request)  # the trusted visitor address, the same one the audit log records
         key = hashlib.sha256(f'{self.scope}:{ip}'.casefold().encode()).hexdigest()
         with core.connect(settings.DOMAIN_DATABASE) as con:
             row = con.execute(
