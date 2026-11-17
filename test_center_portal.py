@@ -280,6 +280,29 @@ class CenterContactTests(unittest.TestCase):
         self.assertEqual([(h['field'], h['new_value']) for h in board['contact_history']], [('phone', '+19375550142')])
         self.assertTrue(board['contact_history'][0]['changed'] > 0)
 
+    def test_center_confirms_scraped_price(self):
+        import center_price_apply, center_profile, core
+        token, csrf = self.login()
+        ident = center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
+            [{'exam': 'MRI', 'amount': '450', 'price_type': 'fixed', 'contrast': 'without', 'interpretation_included': 'yes', 'note': ''}], True)['saved'][0]['id']
+        center_price_apply.approve(self.db, ident, 'vikram')
+        offer_id = 'center-' + ident
+        with core.connect(self.db) as db:
+            row = db.execute('SELECT payload FROM offers WHERE batch_id=? AND id=?', (core.active_batch(db), offer_id)).fetchone()
+            data = json.loads(row['payload'])
+            data.pop('confirmed_by_center')
+            db.execute('UPDATE offers SET payload=? WHERE batch_id=? AND id=?', (core.canonical(data), core.active_batch(db), offer_id))
+        self.assertEqual(center_portal.dashboard(self.db, token)['live_prices'][0]['confirmed'], '')
+        with self.assertRaises(booking.BookingError):
+            center_profile.confirm_price(self.db, token, csrf, 'missing')
+        result = center_profile.confirm_price(self.db, token, csrf, offer_id)
+        live = center_portal.dashboard(self.db, token)['live_prices']
+        self.assertEqual(live[0]['confirmed'], result['date'])
+        self.assertEqual(live[0]['amount_cents'], 45000)
+        with self.assertRaisesRegex(booking.BookingError, 'already confirmed'):
+            center_profile.confirm_price(self.db, token, csrf, offer_id)
+
+
 
 class CenterProfileTests(unittest.TestCase):
     """Address and website edits wait for admin approval."""
