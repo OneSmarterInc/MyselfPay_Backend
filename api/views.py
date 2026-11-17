@@ -422,6 +422,34 @@ class BookingView(ResourceView):
         return self.serializers_by_action[self.kwargs['action']](*args, **kwargs)
 
     def post(self, request, action):
+        import audit
+        who = ('patient', booking.digest(request.auth['id'])) if request.auth else ('clinic', '')
+        audit.bind(request, *who)
+        payload = request.data if hasattr(request.data, 'get') else {}
+        scope, ident = str(payload.get('clinic_id', ''))[:200], str(payload.get('id', ''))[:80]
+        try:
+            try:
+                response = self.handle(request, action)
+            except Exception as exc:
+                code = getattr(exc, 'status', None) or getattr(exc, 'status_code', None) or 500
+                audit.log('booking.' + action, scope=scope, target_type='appointment_request', target_id=ident,
+                          result='denied' if code < 500 else 'error', detail={'error': str(exc)[:200], 'status': code})
+                raise
+            body = response.data if isinstance(response.data, dict) else {}
+            detail, new = {'status': response.status_code}, ''
+            if action == 'create':
+                # Only an ID and a hash of what the patient sent. The content stays in the booking store.
+                detail['content_sha256'] = hashlib.sha256(core.canonical(dict(payload)).encode()).hexdigest()
+                detail['offer_id'] = str(payload.get('offer_id', ''))[:200]
+                ident = str(body.get('id') or ident)[:80]
+            elif action == 'status':
+                new = str(payload.get('status', ''))[:40]
+            audit.log('booking.' + action, scope=scope, target_type='appointment_request', target_id=ident, new=new, detail=detail)
+            return response
+        finally:
+            audit.unbind()
+
+    def handle(self, request, action):
         db, data = database(), self.validated(request)
         if action == 'options':
             result = booking.options(db, data['clinic_id'], data['offer_id'])

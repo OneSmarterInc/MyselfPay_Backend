@@ -476,6 +476,33 @@ class AuditStoreTests(unittest.TestCase):
         self.audit.unbind()
         self.dir.cleanup()
 
+    def test_mail_results_and_directory_publishes_are_recorded(self):
+        import booking_mail, core, tempfile
+        from email.message import EmailMessage
+        message = EmailMessage()
+        message['Subject'] = 'Your code'
+        message.set_content('secret body text')
+        with patch('booking_mail._deliver') as deliver:
+            booking_mail.send_message(message, 'Person@Example.test')
+            deliver.side_effect = booking_mail.MailUnavailable('SMTP failed')
+            with self.assertRaises(booking_mail.MailUnavailable):
+                booking_mail.send_message(message, 'person@example.test')
+        rows = self.audit.search(limit=10)
+        self.assertEqual(sorted(r['result'] for r in rows if r['action'] == 'mail.send'), ['failed', 'ok'])
+        blob = json.dumps(rows)
+        self.assertNotIn('person@example.test'.lower(), blob.lower())
+        self.assertNotIn('secret body text', blob)
+        db = os.path.join(self.dir.name, 'dir.db')
+        core.initialize(db)
+        with core.connect(db) as c:
+            c.execute("INSERT INTO batches VALUES('b1','h1','s',0,'staged','{}')")
+            c.execute("INSERT INTO batches VALUES('b2','h2','s',0,'staged','{}')")
+        core.publish('b1', db)
+        core.publish('b2', db)
+        core.publish('b1', db)
+        kinds = [r['action'] for r in self.audit.search(limit=20) if r['action'].startswith('admin.directory')]
+        self.assertEqual(sorted(kinds), ['admin.directory.publish', 'admin.directory.publish', 'admin.directory.rollback'])
+
     def test_rows_are_chained_and_edits_are_refused(self):
         a = self.audit
         for i in range(3):
