@@ -45,7 +45,7 @@ class CenterProfileSerializer(serializers.Serializer):
 
 
 class CenterPriceItemSerializer(serializers.Serializer):
-    exam = serializers.ChoiceField(choices=('MRI', 'CT'))
+    exam = serializers.ChoiceField(choices=('MRI', 'CT', 'Ultrasound', 'X-ray'))
     amount = serializers.DecimalField(max_digits=7, decimal_places=2, min_value=1, max_value=20000)
     price_type = serializers.ChoiceField(choices=('fixed', 'from'), default='fixed')
     contrast = serializers.ChoiceField(choices=('without', 'with', 'either', 'unknown'), default='unknown')
@@ -56,7 +56,7 @@ class CenterPriceItemSerializer(serializers.Serializer):
 class CenterPriceSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     consent = serializers.BooleanField()
-    prices = CenterPriceItemSerializer(many=True, allow_empty=False, max_length=6)
+    prices = CenterPriceItemSerializer(many=True, allow_empty=False, max_length=10)
 
 
 class LoginSerializer(serializers.Serializer):

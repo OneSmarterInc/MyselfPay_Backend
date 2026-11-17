@@ -43,7 +43,7 @@ def live_prices(db, keys):
     for r in db.execute('SELECT id,entry_key,amount_cents,payload FROM offers WHERE batch_id=? AND amount_cents IS NOT NULL AND entry_key IN (' + marks + ')',
                         (core.active_batch(db), *keys)).fetchall():
         p = json.loads(r['payload'])
-        if p.get('mod') not in ('MRI', 'CT') or p.get('type') not in ('fixed', 'starting'):
+        if p.get('mod') not in ('MRI', 'CT', 'Ultrasound', 'X-ray') or p.get('type') not in ('fixed', 'starting'):
             continue
         out.append({'id': r['id'], 'entry_key': r['entry_key'], 'exam': p['mod'], 'amount_cents': r['amount_cents'],
                     'price_type': 'from' if p['type'] == 'starting' else 'fixed',

@@ -313,6 +313,28 @@ class CenterContactTests(unittest.TestCase):
         live = center_portal.dashboard(self.db, token)['live_prices']
         self.assertEqual(sorted((x['contrast'], x['amount_cents']) for x in live), [('with', 55000), ('without', 40000)])
 
+    def test_ultrasound_and_xray_prices_reach_listing_text(self):
+        import center_price_apply
+        self.create()
+        token, csrf = self.login()
+        payload = CenterProfileTests.payload.__get__(self)
+        rows = [{'exam': e, 'amount': a, 'price_type': 'fixed', 'contrast': 'unknown', 'interpretation_included': 'yes', 'note': ''}
+                for e, a in (('Ultrasound', '300'), ('X-ray', '100'))]
+        for item in center_portal.submit_prices(self.db, token, csrf, 'clinic-1', rows, True)['saved']:
+            center_price_apply.approve(self.db, item['id'], 'vikram')
+        self.assertEqual(sorted((x['exam'], x['amount_cents']) for x in center_portal.dashboard(self.db, token)['live_prices']),
+                         [('Ultrasound', 30000), ('X-ray', 10000)])
+        other = payload()['other']
+        self.assertIn('Ultrasound: $300 (confirmed by center', other)
+        self.assertIn('X-ray: $100 (confirmed by center', other)
+        again = center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
+            [{'exam': 'Ultrasound', 'amount': '350', 'price_type': 'fixed', 'contrast': 'unknown', 'interpretation_included': 'yes', 'note': ''}], True)['saved'][0]
+        center_price_apply.approve(self.db, again['id'], 'vikram')
+        other = payload()['other']
+        self.assertIn('Ultrasound: $350', other)
+        self.assertNotIn('Ultrasound: $300', other)
+        self.assertIn('X-ray: $100', other)
+
 
 
 class CenterProfileTests(unittest.TestCase):
