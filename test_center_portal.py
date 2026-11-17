@@ -503,6 +503,14 @@ class AuditStoreTests(unittest.TestCase):
         kinds = [r['action'] for r in self.audit.search(limit=20) if r['action'].startswith('admin.directory')]
         self.assertEqual(sorted(kinds), ['admin.directory.publish', 'admin.directory.publish', 'admin.directory.rollback'])
 
+    def test_a_failing_store_never_breaks_the_caller_in_observe_mode(self):
+        bad = os.path.join(self.dir.name, 'missing-folder', 'audit.sqlite3')
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': bad, 'AUDIT_MODE': 'observe'}):
+            self.assertIsNone(self.audit.log('center.price', scope='c1', actor='a@example.test', actor_type='center'))
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': bad, 'AUDIT_MODE': 'enforce'}):
+            with self.assertRaises(self.audit.AuditUnavailable):
+                self.audit.log('center.price', scope='c1', actor='a@example.test', actor_type='center')
+
     def test_rows_are_chained_and_edits_are_refused(self):
         a = self.audit
         for i in range(3):
