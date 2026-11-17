@@ -34,6 +34,12 @@ class CenterContactSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
 
+class CenterProfileSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+    field = serializers.ChoiceField(choices=('address', 'website'))
+    value = serializers.CharField(max_length=300)
+
+
 class CenterPriceItemSerializer(serializers.Serializer):
     exam = serializers.ChoiceField(choices=('MRI', 'CT'))
     amount = serializers.DecimalField(max_digits=7, decimal_places=2, min_value=1, max_value=20000)

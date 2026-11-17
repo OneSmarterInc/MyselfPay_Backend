@@ -37,6 +37,7 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/center-portal.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-prices.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-contact.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/center-profile.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-chat.sql').read_text())
             # CI database is disposable and must never point at production.
             for table in ['mobile_accounts', 'booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:

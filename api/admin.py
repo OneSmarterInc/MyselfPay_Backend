@@ -43,9 +43,34 @@ class SelfPayAdminSite(AdminSite):
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
                 path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
                 path('prices/',self.admin_view(self.prices_view),name='center_prices'),
+                path('profiles/',self.admin_view(self.profiles_view),name='center_profiles'),
                 path('pricing/',self.admin_view(self.pricing_alias),name='center_pricing_alias'),
                 path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
+
+    def profiles_view(self, request):
+        import center_profile
+        from django.contrib import messages
+        from django.shortcuts import redirect
+        db = settings.DOMAIN_DATABASE
+        if request.method == 'POST':
+            ident, action = request.POST.get('id', ''), request.POST.get('action')
+            by = request.user.get_username()
+            try:
+                if action == 'approve':
+                    center_profile.approve(db, ident, by)
+                    messages.success(request, 'Approved. Patients now see the change.')
+                elif action == 'reject':
+                    center_profile.reject(db, ident, by)
+                    messages.success(request, 'Rejected. Nothing changed in the app.')
+                else:
+                    raise center_profile.ProfileError('Unknown action.')
+            except center_profile.ProfileError as exc:
+                messages.error(request, str(exc))
+            return redirect('admin:center_profiles')
+        status = request.GET.get('status') if request.GET.get('status') in ('approved', 'rejected') else 'pending'
+        context = {**self.each_context(request), 'title': 'Center info changes', 'status': status, 'items': center_profile.pending(db, status)}
+        return TemplateResponse(request, 'admin/center_profiles.html', context)
 
     def pricing_alias(self, request):
         from django.shortcuts import redirect

@@ -281,5 +281,88 @@ class CenterContactTests(unittest.TestCase):
         self.assertTrue(board['contact_history'][0]['changed'] > 0)
 
 
+class CenterProfileTests(unittest.TestCase):
+    """Address and website edits wait for admin approval."""
+    setUp = test_booking.BookingTests.setUp
+    tearDown = test_booking.BookingTests.tearDown
+    verify_email = test_booking.BookingTests.verify_email
+    verify_phone = test_booking.BookingTests.verify_phone
+    create = test_booking.BookingTests.create
+    login = CenterPortalTests.login
+
+    def payload(self):
+        with booking.connection(self.db) as db:
+            return json.loads(db.execute("SELECT payload FROM entries WHERE entry_key='clinic-1' AND batch_id=(SELECT value FROM settings WHERE key='active_batch')").fetchone()['payload'])
+
+    def test_edit_waits_then_approval_publishes(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        old = self.payload().get('source')
+        center_profile.submit(self.db, token, csrf, 'clinic-1', 'website', 'https://example.test/prices')
+        self.assertEqual(self.payload().get('source'), old)
+        board = center_portal.dashboard(self.db, token)
+        self.assertEqual(board['profile_edits'][0]['status'], 'pending')
+        item = center_profile.pending(self.db)[0]
+        center_profile.approve(self.db, item['id'], 'admin1')
+        self.assertEqual(self.payload()['source'], 'https://example.test/prices')
+        self.assertEqual(center_portal.dashboard(self.db, token)['profile_edits'][0]['status'], 'approved')
+        with self.assertRaises(center_profile.ProfileError):
+            center_profile.approve(self.db, item['id'], 'admin1')
+
+    def test_address_approval_flags_geocode(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', '12 Main Street, Dayton, OH 45402')
+        center_profile.approve(self.db, center_profile.pending(self.db)[0]['id'], 'admin1')
+        data = self.payload()
+        self.assertEqual(data['address'], '12 Main Street, Dayton, OH 45402')
+        self.assertTrue(data['address_needs_geocode'])
+
+    def test_reject_changes_nothing(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        before = self.payload()
+        center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', '12 Main Street, Dayton, OH 45402')
+        center_profile.reject(self.db, center_profile.pending(self.db)[0]['id'], 'admin1')
+        self.assertEqual(self.payload(), before)
+        self.assertEqual(center_profile.pending(self.db), [])
+
+    def test_new_edit_replaces_pending_one(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', '12 Main Street, Dayton, OH 45402')
+        center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', '14 Main Street, Dayton, OH 45402')
+        rows = center_profile.pending(self.db)
+        self.assertEqual([r['value'] for r in rows], ['14 Main Street, Dayton, OH 45402'])
+
+    def test_validation_and_ownership(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        for bad in ('http://example.test', 'https://nodot', 'https://u:p@example.test', 'https://exa mple.test', 'ftp://example.test'):
+            with self.assertRaises(booking.BookingError):
+                center_profile.submit(self.db, token, csrf, 'clinic-1', 'website', bad)
+        with self.assertRaises(booking.BookingError):
+            center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', 'abc')
+        with self.assertRaises(booking.BookingError):
+            center_profile.submit(self.db, token, csrf, 'clinic-1', 'name', 'Other Name')
+        with self.assertRaises(booking.BookingError):
+            center_profile.submit(self.db, token, csrf, 'not-mine', 'address', '12 Main Street, Dayton, OH 45402')
+        with self.assertRaises(booking.BookingError):
+            center_profile.submit(self.db, token, 'wrong-csrf', 'clinic-1', 'address', '12 Main Street, Dayton, OH 45402')
+
+    def test_rate_limit(self):
+        import center_profile
+        self.create()
+        token, csrf = self.login()
+        with self.assertRaisesRegex(booking.BookingError, 'Too many'):
+            for i in range(25):
+                center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', f'{i + 10} Main Street, Dayton, OH 45402')
+
+
 if __name__ == '__main__':
     unittest.main()
