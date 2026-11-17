@@ -255,6 +255,27 @@ class APITests(unittest.TestCase):
         self.assertGreater(int(response['Retry-After']), 0)
         self.assertIn('error', response.json())
 
+    def test_booking_flow_is_audited_with_ids_and_hashes_only(self):
+        import audit
+        audit_path = str(Path(self.temp.name) / 'booking-audit.db')
+        audit.initialize(audit_path)
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': audit_path}):
+            self.test_mobile_account_booking_create_tracking_and_center_approval()
+            rows = audit.search(limit=200)
+            actions = {(r['action'], r['result']) for r in rows}
+            for expected in (('booking.options', 'ok'), ('booking.create', 'ok'), ('booking.code', 'ok'), ('booking.verify', 'ok'),
+                             ('booking.status', 'ok'), ('booking.status', 'denied')):
+                self.assertIn(expected, actions)
+            created = [r for r in rows if r['action'] == 'booking.create'][0]
+            self.assertTrue(created['target_id'].startswith('MSP-'))
+            self.assertEqual(created['actor_type'], 'patient')
+            self.assertEqual(len(json.loads(created['detail'])['content_sha256']), 64)
+            blob = json.dumps(rows)
+            self.assertNotIn('Synthetic', blob.replace('Synthetic Imaging', ''))
+            self.assertNotIn('morning', blob)
+            self.assertEqual([r['new_value'] for r in rows if r['action'] == 'booking.status' and r['result'] == 'ok'], ['scheduled'])
+            self.assertEqual(audit.verify_chain(), (len(rows), None, ''))
+
     def test_booking_capabilities_work_without_a_session_but_reject_forgery(self):
         # A patient capability is independent of a browser login. Invalid
         # capabilities are rejected by the booking service, not session auth.

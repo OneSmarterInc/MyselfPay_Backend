@@ -25,7 +25,7 @@ def configuration():
         raise MailUnavailable('Email settings could not be loaded. Please contact support.') from None
 
 
-def send_message(message, recipient):
+def _deliver(message, recipient):
     values = configuration()
     host, username, password, sender = (values[key] for key in ('host', 'username', 'password', 'sender'))
     use_ssl, use_tls = values['ssl'], values['tls']
@@ -107,6 +107,23 @@ def send_message(message, recipient):
             else:
                 detail = f'SMTP {stage} failed before sending. Check server connectivity, port and security settings.'
             raise MailUnavailable(detail) from None
+
+
+def send_message(message, recipient):
+    """Send one message and record the result in the audit log. Only hashes of the recipient and subject are kept."""
+    import audit
+    import hashlib
+    fingerprint = {'to_sha256': hashlib.sha256(str(recipient).strip().lower().encode()).hexdigest(),
+                   'subject_sha256': hashlib.sha256(str(message['Subject'] or '').encode()).hexdigest()}
+    try:
+        _deliver(message, recipient)
+    except MailDeliveryUncertain as exc:
+        audit.log('mail.send', target_type='email', result='uncertain', detail={**fingerprint, 'error': str(exc)[:200]}, actor_type='system')
+        raise
+    except MailUnavailable as exc:
+        audit.log('mail.send', target_type='email', result='failed', detail={**fingerprint, 'error': str(exc)[:200]}, actor_type='system')
+        raise
+    audit.log('mail.send', target_type='email', detail=fingerprint, actor_type='system')
 
 
 def send_clinic_code(recipient, ident, code):

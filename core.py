@@ -177,7 +177,10 @@ def publish(batch,path=DB):
         if old==batch: return {'active_batch':batch,'unchanged':True}
         db.execute("INSERT INTO settings VALUES('active_batch',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",(batch,))
         db.execute("UPDATE batches SET status='published' WHERE id=?",(batch,))
-        db.execute('INSERT INTO publish_events(batch_id,previous_batch,created,action) VALUES(?,?,?,?)',(batch,old,time.time(),'publish' if row['status']=='staged' else 'rollback'))
+        kind='publish' if row['status']=='staged' else 'rollback'
+        db.execute('INSERT INTO publish_events(batch_id,previous_batch,created,action) VALUES(?,?,?,?)',(batch,old,time.time(),kind))
+        import audit
+        audit.log('admin.directory.'+kind,target_type='batch',target_id=batch,old=str(old),new=batch,detail={'previous_batch':old})
     return {'active_batch':batch,'previous_batch':old}
 
 def directory_summary(path=DB):
