@@ -3,6 +3,7 @@
 The previous batch is kept, so a bad approval can be rolled back with core.publish(previous_batch).
 """
 import json
+import re
 import time
 import uuid
 from datetime import date
@@ -11,6 +12,16 @@ import core
 CONTRAST = {'without': 'without', 'with': 'with', 'either': 'both', 'unknown': 'unknown'}
 CONTRAST_TEXT = {'without': 'without contrast', 'with': 'with contrast', 'both': 'with or without contrast', 'unknown': 'contrast not stated'}
 READING = {'yes': 'Radiologist reading included.', 'no': 'Radiologist reading billed separately.', 'unknown': 'Radiologist reading: ask the center.'}
+
+
+OTHER_EXAMS = ('Ultrasound', 'X-ray')
+
+
+def other_text(current, exam, amount, today):
+    """Add the center's price to the listing's 'Other imaging' text. A newer price for the same exam replaces the older one."""
+    kept = re.sub(r'\s*' + re.escape(exam) + r': \$[\d,.]+ \(confirmed by center[^)]*\)\.?', '', str(current or '')).strip()
+    line = f'{exam}: ${amount:,.2f} (confirmed by center {today}).'.replace('.00 (', ' (')
+    return (kept + ' ' + line).strip()
 
 
 class PriceError(ValueError):
@@ -53,6 +64,9 @@ def approve(path, ident, by):
             raise PriceError('This listing is not in the published directory.')
         center = json.loads(entry['payload'])
         contrast = CONTRAST.get(sub['contrast'], 'unknown')
+        other = sub['exam'] in OTHER_EXAMS
+        if other:
+            contrast = 'unknown'
         today = date.today().isoformat()
         loc = (center.get('locations') or [{}])[0]
         region = ', '.join(x for x in (loc.get('city') or center.get('area'), loc.get('state')) if x)
@@ -60,7 +74,7 @@ def approve(path, ident, by):
             'id': 'center-' + ident, 'entry_name': center.get('name'), 'entry_hash': entry['content_hash'],
             'mod': sub['exam'], 'contrast': contrast, 'type': 'fixed' if sub['price_type'] == 'fixed' else 'starting',
             'amount': sub['amount_cents'] / 100, 'region': region, 'interpretation_included': sub['interpretation_included'],
-            'scope': f"{sub['exam']} {CONTRAST_TEXT[contrast]}",
+            'scope': sub['exam'] if other else f"{sub['exam']} {CONTRAST_TEXT[contrast]}",
             'included': READING.get(sub['interpretation_included'], READING['unknown']),
             'order': sub['note'] or '', 'source': f'Price confirmed by center, {today}',
             'confirmed_by_center': today, 'submission_id': ident,
@@ -76,6 +90,10 @@ def approve(path, ident, by):
         signature = core.digest({'parent': active, 'center_price': ident})
         db.execute('INSERT INTO batches VALUES(?,?,?,?,?,?)', (batch, signature, 'Center price ' + ident, time.time(), 'staged', '{}'))
         db.execute('INSERT INTO entries(batch_id,entry_key,content_hash,payload) SELECT ?,entry_key,content_hash,payload FROM entries WHERE batch_id=?', (batch, active))
+        if other:
+            center['other'] = other_text(center.get('other'), sub['exam'], sub['amount_cents'] / 100, today)
+            db.execute('DELETE FROM entries WHERE batch_id=? AND entry_key=?', (batch, sub['entry_key']))
+            db.execute('INSERT INTO entries VALUES(?,?,?,?)', (batch, sub['entry_key'], core.digest(center), core.canonical(center)))
         db.execute('INSERT INTO offers(batch_id,id,entry_key,amount_cents,max_cents,price_type,payload) '
                    'SELECT ?,id,entry_key,amount_cents,max_cents,price_type,payload FROM offers WHERE batch_id=? AND entry_key<>?', (batch, active, sub['entry_key']))
         for oid in keep:
