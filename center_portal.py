@@ -188,4 +188,8 @@ def submit_prices(path, token, csrf, entry_key, prices, consent):
                        (ident, entry_key, booking.digest(email), item['exam'], cents, item['price_type'],
                         item['contrast'], item['interpretation_included'], item.get('note', '').strip(), now))
             saved.append({'id': ident, 'exam': item['exam'], 'amount_cents': cents, 'status': 'pending'})
-        return {'saved': saved, 'message': 'Thank you. Your prices will appear after review.'}
+        center_name = next((x.get('name') for x in listings if x['id'] == entry_key), entry_key)
+        summary = '\n'.join(f"{p['exam']} ${p['amount']}" + ('' if p['contrast'] == 'unknown' else f" ({p['contrast']} contrast)") for p in prices)
+    import admin_alerts
+    admin_alerts.notify('prices', center_name, summary)
+    return {'saved': saved, 'message': 'Thank you. Your prices will appear after review.'}

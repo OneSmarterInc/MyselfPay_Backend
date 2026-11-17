@@ -49,6 +49,8 @@ def submit(path, token, csrf, entry_key, field, value):
         ident = secrets.token_urlsafe(12)
         db.execute('INSERT INTO center_profile_edits(id,entry_key,email_hash,field,value,old_value,submitted) VALUES(?,?,?,?,?,?,?)',
                    (ident, entry_key, digest, field, value, current_value, now))
+    import admin_alerts
+    admin_alerts.notify('profile', current.get('name', entry_key), f'{FIELDS[field]}: {value}')
     return {'saved': {'id': ident, 'entry_key': entry_key, 'field': field, 'value': value, 'status': 'pending'},
             'message': f'{FIELDS[field]} sent for review. Patients see it after approval.'}
 

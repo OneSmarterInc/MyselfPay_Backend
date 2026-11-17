@@ -420,5 +420,40 @@ class CenterProfileTests(unittest.TestCase):
                 center_profile.submit(self.db, token, csrf, 'clinic-1', 'address', f'{i + 10} Main Street, Dayton, OH 45402')
 
 
+class AdminAlertTests(unittest.TestCase):
+    """Administrators learn about changes that wait for approval."""
+    setUp = test_booking.BookingTests.setUp
+    tearDown = test_booking.BookingTests.tearDown
+    verify_email = test_booking.BookingTests.verify_email
+    verify_phone = test_booking.BookingTests.verify_phone
+    create = test_booking.BookingTests.create
+    login = CenterPortalTests.login
+
+    def test_prices_and_profile_changes_email_admins_and_count(self):
+        import admin_alerts, center_profile
+        token, csrf = self.login()
+        self.assertEqual(admin_alerts.pending_counts(self.db), (0, 0))
+        with patch('admin_alerts.admin_emails', return_value=['boss@example.test', 'two@example.test']), patch('booking_mail.send_message') as send:
+            center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
+                [{'exam': 'MRI', 'amount': '450', 'price_type': 'fixed', 'contrast': 'without', 'interpretation_included': 'yes', 'note': ''},
+                 {'exam': 'X-ray', 'amount': '100', 'price_type': 'fixed', 'contrast': 'unknown', 'interpretation_included': 'yes', 'note': ''}], True)
+            self.assertEqual([c.args[1] for c in send.call_args_list], ['boss@example.test', 'two@example.test'])
+            body = send.call_args_list[0].args[0].get_body(preferencelist=('plain',)).get_content()
+            self.assertIn('MRI $450 (without contrast)', body)
+            self.assertIn('X-ray $100', body)
+            self.assertIn('Center prices', body)
+            center_profile.submit(self.db, token, csrf, 'clinic-1', 'website', 'https://example.test/p')
+            self.assertEqual(send.call_count, 4)
+        self.assertEqual(admin_alerts.pending_counts(self.db), (2, 1))
+
+    def test_mail_failure_does_not_block_the_center(self):
+        token, csrf = self.login()
+        with patch('admin_alerts.admin_emails', return_value=['boss@example.test']), patch('booking_mail.send_message', side_effect=RuntimeError('smtp down')):
+            result = center_portal.submit_prices(self.db, token, csrf, 'clinic-1',
+                [{'exam': 'MRI', 'amount': '450', 'price_type': 'fixed', 'contrast': 'without', 'interpretation_included': 'yes', 'note': ''}], True)
+        self.assertEqual(result['saved'][0]['status'], 'pending')
+
+
+
 if __name__ == '__main__':
     unittest.main()
