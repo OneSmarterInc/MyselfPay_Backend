@@ -28,7 +28,8 @@ def session_token(request):
 
 
 def client_ip(request):
-    return request.META.get('REMOTE_ADDR', 'unknown')
+    import audit
+    return audit.client_ip(request)
 
 
 def session_response(data, status=200, token=None):
