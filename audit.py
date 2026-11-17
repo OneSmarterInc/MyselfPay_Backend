@@ -18,7 +18,7 @@ from contextlib import contextmanager
 import booking
 import core
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 GENESIS = 'GENESIS'
 LOCK_KEY = 7201
 FIELDS = ('seq', 'ts', 'request_id', 'actor_type', 'actor', 'scope', 'action', 'target_type', 'target_id',
@@ -146,7 +146,7 @@ def log(action, *, scope='', target_type='', target_id='', old='', new='', resul
                        tuple(row[key] for key in FIELDS) + (prev, row_hash))
         return row['seq']
     except Exception as exc:
-        log.error('AUDIT WRITE FAILED for %s: %s', action, type(exc).__name__)
+        logger.error('AUDIT WRITE FAILED for %s: %s', action, type(exc).__name__)
         if mode() == 'enforce':
             raise AuditUnavailable('The audit store is not available.') from exc
         return None
