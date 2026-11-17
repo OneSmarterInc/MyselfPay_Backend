@@ -46,9 +46,13 @@ def reject(path, ident, by):
     if not by.strip():
         raise PriceError('Reviewer name is required.')
     with core.connect(path) as db:
-        if not db.execute("UPDATE center_price_submissions SET status='rejected',decided=?,decided_by=? WHERE id=? AND status='pending'",
-                          (time.time(), by.strip(), ident)).rowcount:
+        sub = db.execute("SELECT entry_key,exam,amount_cents,contrast FROM center_price_submissions WHERE id=? AND status='pending'", (ident,)).fetchone()
+        if not sub or not db.execute("UPDATE center_price_submissions SET status='rejected',decided=?,decided_by=? WHERE id=? AND status='pending'",
+                                     (time.time(), by.strip(), ident)).rowcount:
             raise PriceError('No pending submission with that id.')
+        import audit
+        audit.log('admin.price.reject', scope=sub['entry_key'], target_type='price', target_id=ident, actor=by.strip(), actor_type='admin',
+                  new=f"{sub['exam']} ${sub['amount_cents'] / 100:g} ({sub['contrast']})")
 
 
 def approve(path, ident, by):
@@ -81,12 +85,14 @@ def approve(path, ident, by):
             'confirmed_by_center': today, 'updated_at': time.time(), 'submission_id': ident,
         }
         old = db.execute('SELECT id,payload FROM offers WHERE batch_id=? AND entry_key=?', (active, sub['entry_key'])).fetchall()
-        keep = []
+        keep, replaced_prices = [], []
         for r in old:
             p = json.loads(r['payload'])
             replaced = p.get('mod') == sub['exam'] and (p.get('contrast') == contrast or p.get('type') == 'quote')
             if not replaced:
                 keep.append(r['id'])
+            else:
+                replaced_prices.append(f"{p.get('mod')} ${p.get('amount')} ({p.get('contrast')})")
         batch = str(uuid.uuid4())
         signature = core.digest({'parent': active, 'center_price': ident})
         db.execute('INSERT INTO batches VALUES(?,?,?,?,?,?)', (batch, signature, 'Center price ' + ident, time.time(), 'staged', '{}'))
@@ -109,4 +115,8 @@ def approve(path, ident, by):
         db.execute("INSERT INTO settings VALUES('active_batch',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (batch,))
         db.execute('INSERT INTO publish_events(batch_id,previous_batch,created,action) VALUES(?,?,?,?)', (batch, active, time.time(), 'publish'))
         db.execute("UPDATE center_price_submissions SET status='approved',decided=?,decided_by=? WHERE id=?", (time.time(), by.strip(), ident))
+        import audit
+        audit.log('admin.price.approve', scope=sub['entry_key'], target_type='price', target_id=ident, actor=by.strip(), actor_type='admin',
+                  old='; '.join(replaced_prices) or 'no earlier price', new=f"{sub['exam']} ${sub['amount_cents'] / 100:g} ({contrast})",
+                  detail={'batch': batch, 'previous_batch': active})
     return {'batch': batch, 'previous_batch': active}

@@ -49,6 +49,9 @@ def submit(path, token, csrf, entry_key, field, value):
         ident = secrets.token_urlsafe(12)
         db.execute('INSERT INTO center_profile_edits(id,entry_key,email_hash,field,value,old_value,submitted) VALUES(?,?,?,?,?,?,?)',
                    (ident, entry_key, digest, field, value, current_value, now))
+        import audit
+        audit.log('center.profile.change', scope=entry_key, target_type=field, target_id=ident, actor=email, actor_type='center',
+                  old=current_value, new=value)
     import admin_alerts
     admin_alerts.notify('profile', current.get('name', entry_key), f'{FIELDS[field]}: {value}')
     return {'saved': {'id': ident, 'entry_key': entry_key, 'field': field, 'value': value, 'status': 'pending'},
@@ -77,9 +80,13 @@ def reject(path, ident, by):
     if not by.strip():
         raise ProfileError('Reviewer name is required.')
     with core.connect(path) as db:
-        if not db.execute("UPDATE center_profile_edits SET status='rejected',decided=?,decided_by=? WHERE id=? AND status='pending'",
-                          (time.time(), by.strip(), ident)).rowcount:
+        row = db.execute("SELECT entry_key,field,value,old_value FROM center_profile_edits WHERE id=? AND status='pending'", (ident,)).fetchone()
+        if not row or not db.execute("UPDATE center_profile_edits SET status='rejected',decided=?,decided_by=? WHERE id=? AND status='pending'",
+                                     (time.time(), by.strip(), ident)).rowcount:
             raise ProfileError('No pending change with that id.')
+        import audit
+        audit.log('admin.profile.reject', scope=row['entry_key'], target_type=row['field'], target_id=ident, actor=by.strip(),
+                  actor_type='admin', old=row['old_value'], new=row['value'])
 
 
 def approve(path, ident, by):
@@ -102,6 +109,9 @@ def approve(path, ident, by):
         batch, previous = center_contact._clone_batch(db, 'profile-' + ident, {row['entry_key']: payload},
                                                        {'center_profile': row['field'], 'approved_by': by.strip(), 'entry': row['entry_key']})
         db.execute("UPDATE center_profile_edits SET status='approved',decided=?,decided_by=? WHERE id=?", (time.time(), by.strip(), ident))
+        import audit
+        audit.log('admin.profile.approve', scope=row['entry_key'], target_type=row['field'], target_id=ident, actor=by.strip(),
+                  actor_type='admin', old=row['old_value'], new=row['value'], detail={'batch': batch, 'previous_batch': previous})
     return {'batch': batch, 'previous_batch': previous}
 
 
@@ -126,4 +136,8 @@ def confirm_price(path, token, csrf, offer_id):
         batch, previous = center_contact._clone_batch(db, 'confirm-' + offer_id, {row['entry_key']: json.loads(entry['payload'])},
                                                        {'center_confirm': offer_id, 'entry': row['entry_key']})
         db.execute('UPDATE offers SET payload=? WHERE batch_id=? AND id=?', (core.canonical(offer), batch, offer_id))
+        import audit
+        audit.log('center.price.confirmed', scope=row['entry_key'], target_type='price', target_id=offer_id, actor_type='center',
+                  old='not confirmed by the center', new=f"{offer.get('mod')} ${offer.get('amount')} ({offer.get('contrast')})",
+                  detail={'batch': batch, 'previous_batch': previous})
     return {'confirmed': offer_id, 'date': today, 'message': 'Thank you. Your price is marked as confirmed by you, ' + today + '.'}
