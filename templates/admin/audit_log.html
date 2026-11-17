@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% block content_title %}{% endblock %}
+{% block content %}<div class="sp-page-heading"><div><span class="sp-eyebrow">SECURITY</span><h1>Audit log</h1><p>Every portal and Admin action: who, what, when, from where. Rows are added only. Each row holds the hash of the row before it.</p></div>
+<form method="post" style="display:inline">{% csrf_token %}<button class="sp-button" type="submit">Check the chain</button></form></div>
+{% if messages %}<ul class="messagelist">{% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}</ul>{% endif %}
+<section class="sp-panel" style="padding:16px;margin-bottom:16px"><strong>Store:</strong> {% if store_ok %}working{% else %}<span style="color:#97172b">not working. {{ store_why }}</span>{% endif %}. Mode: {{ mode }}.<br>
+<strong>Address check:</strong> the server sees REMOTE_ADDR <code>{{ seen_remote }}</code>, X-Forwarded-For <code>{{ seen_forwarded|default:"(none)" }}</code>. Trusted proxies setting: {{ proxies }}. Address recorded for you: <code>{{ seen_ip }}</code>. This must be your own public address. If it is not, tell your developer to change AUDIT_TRUSTED_PROXIES.</section>
+<form method="get" class="sp-panel" style="padding:16px;margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+<label>Who<br><input name="actor" value="{{ q.actor }}"></label><label>Action<br><input name="action" value="{{ q.action }}" placeholder="center.price"></label>
+<label>Center key<br><input name="scope" value="{{ q.scope }}"></label><label>Text or IP<br><input name="text" value="{{ q.text }}"></label>
+<label>From<br><input type="date" name="from" value="{{ q.from }}"></label><label>To<br><input type="date" name="to" value="{{ q.to }}"></label>
+<button class="sp-button" type="submit">Filter</button> <button class="sp-button" type="submit" name="export" value="csv">Export CSV</button></form>
+<section class="sp-panel"><div class="sp-table-scroll"><table class="sp-user-table"><thead><tr><th>#</th><th>When</th><th>Who</th><th>Action</th><th>Center / target</th><th>Old</th><th>New</th><th>Result</th><th>IP</th><th>Browser</th></tr></thead><tbody>{% for r in rows %}<tr><td>{{ r.seq }}</td><td>{{ r.when }}</td><td>{{ r.actor_type }}<br>{{ r.actor }}</td><td>{{ r.action }}</td><td>{{ r.scope }}<br>{{ r.target_id }}</td><td>{{ r.old_value }}</td><td>{{ r.new_value }}</td><td>{{ r.result }}</td><td>{{ r.ip }}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">{{ r.user_agent }}</td></tr>{% empty %}<tr><td colspan="10">Nothing here.</td></tr>{% endfor %}</tbody></table></div></section>
+<p>{% if prev_offset is not None %}<a class="sp-button" href="?offset={{ prev_offset }}">Newer</a>{% endif %} {% if next_offset %}<a class="sp-button" href="?offset={{ next_offset }}">Older</a>{% endif %}</p>{% endblock %}

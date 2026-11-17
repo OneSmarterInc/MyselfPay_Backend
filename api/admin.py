@@ -36,10 +36,21 @@ class SelfPayAdminSite(AdminSite):
     def has_permission(self, request):
         return bool(request.user.is_active and request.user.is_superuser)
 
+    def admin_view(self, view, cacheable=False):
+        import admin_audit
+        return super().admin_view(admin_audit.wrap(view), cacheable)
+
+    def audit_view(self, request):
+        import admin_audit
+        return admin_audit.page(self, request)
+
     def each_context(self, request):
         import admin_alerts
         context = super().each_context(request)
         if self.has_permission(request):
+            import audit
+            ok, why = audit.healthy()
+            context['audit_alert'] = '' if ok else why
             context['pending_prices'], context['pending_profiles'] = admin_alerts.pending_counts(settings.DOMAIN_DATABASE)
         return context
 
@@ -49,6 +60,7 @@ class SelfPayAdminSite(AdminSite):
                 path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
                 path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
+                path('audit/',self.admin_view(self.audit_view),name='audit_log'),
                 path('prices/',self.admin_view(self.prices_view),name='center_prices'),
                 path('profiles/',self.admin_view(self.profiles_view),name='center_profiles'),
                 path('pricing/',self.admin_view(self.pricing_alias),name='center_pricing_alias'),

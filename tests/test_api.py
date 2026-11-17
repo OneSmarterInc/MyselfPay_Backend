@@ -114,6 +114,46 @@ class APITests(unittest.TestCase):
         self.assertEqual(logout.status_code,200,logout.content)
         self.assertEqual(self.client.get('/api/center/dashboard').status_code,401)
 
+    def test_center_actions_are_audited_with_ip_and_failures(self):
+        import audit
+        audit_path = str(Path(self.temp.name) / 'audit.db')
+        audit.initialize(audit_path)
+        with patch.dict(os.environ, {'AUDIT_DATABASE_URL': audit_path, 'AUDIT_TRUSTED_PROXIES': '1'}):
+            with core.connect(self.db) as db:
+                db.execute("INSERT INTO batches VALUES('center-batch','center-hash','test',0,'published','{}') ON CONFLICT(id) DO NOTHING")
+                db.execute("INSERT INTO settings(key,value) VALUES('active_batch','center-batch') ON CONFLICT(key) DO UPDATE SET value='center-batch'")
+                db.execute('INSERT INTO entries VALUES(?,?,?,?) ON CONFLICT(batch_id,entry_key) DO UPDATE SET payload=excluded.payload',
+                           ('center-batch','synthetic-center','center-hash',json.dumps({'name':'Synthetic Center','email':'center@example.test'})))
+            origin = {'HTTP_ORIGIN': 'http://localhost:5173', 'HTTP_X_FORWARDED_FOR': '198.51.100.7', 'HTTP_USER_AGENT': 'TestBrowser/1'}
+            with patch('booking_mail.send_message') as send:
+                issued = self.client.post('/api/center/code', json.dumps({'email': 'center@example.test'}), content_type='application/json', **origin)
+            code = send.call_args.args[0].get_body(preferencelist=('plain',)).get_content().split('code is: ')[1].split()[0]
+            self.client.post('/api/center/verify', json.dumps({'verification_id': issued.json()['verification_id'], 'code': code}), content_type='application/json', **origin)
+            self.client.post('/api/center/verify', json.dumps({'verification_id': issued.json()['verification_id'], 'code': '000000'}), content_type='application/json', **origin)
+            dashboard = self.client.get('/api/center/dashboard', **origin)
+            header = dict(origin, HTTP_X_CENTER_CSRF=dashboard.json()['center_csrf'])
+            self.client.post('/api/center/price', json.dumps({'id': 'synthetic-center', 'consent': True, 'prices': [{'exam': 'MRI', 'amount': '0'}]}), content_type='application/json', **header)
+            self.client.post('/api/center/price', json.dumps({'id': 'synthetic-center', 'consent': True, 'prices': [{'exam': 'MRI', 'amount': '399.00'}]}), content_type='application/json', **header)
+            rows = audit.search(limit=100)
+            by_action = {}
+            for row in rows:
+                by_action.setdefault((row['action'], row['result']), []).append(row)
+            self.assertIn(('center.code', 'ok'), by_action)
+            self.assertIn(('center.verify', 'ok'), by_action)
+            self.assertIn(('center.verify', 'denied'), by_action)
+            self.assertIn(('center.dashboard', 'ok'), by_action)
+            self.assertIn(('center.price', 'ok'), by_action)
+            self.assertEqual(by_action[('center.verify', 'ok')][0]['actor'], 'center@example.test')
+            self.assertEqual(by_action[('center.price', 'ok')][0]['ip'], '198.51.100.7')
+            self.assertEqual(by_action[('center.price', 'ok')][0]['user_agent'], 'TestBrowser/1')
+            self.assertIn('MRI $399.00 (unknown)', by_action[('center.price', 'ok')][0]['new_value'])
+            self.assertNotIn(code, json.dumps(rows))
+            self.assertNotIn('000000', json.dumps(rows))
+            self.assertEqual(audit.verify_chain(), (len(rows), None, ''))
+            feed = self.client.get('/api/center/dashboard', **origin).json()['activity']
+            self.assertTrue(feed)
+            self.assertNotIn('198.51.100.7', json.dumps(feed))
+
     def test_registration_login_and_owner_isolation(self):
         self.guest()
         old_token = self.client.cookies['selfpay_session'].value
