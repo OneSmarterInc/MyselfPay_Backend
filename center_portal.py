@@ -49,7 +49,7 @@ def live_prices(db, keys):
                     'price_type': 'from' if p['type'] == 'starting' else 'fixed',
                     'contrast': 'either' if p.get('contrast') == 'both' else p.get('contrast', 'unknown'),
                     'interpretation_included': p.get('interpretation_included', 'unknown'),
-                    'confirmed': p.get('confirmed_by_center', ''), 'source': p.get('source', '')})
+                    'confirmed': p.get('confirmed_by_center', ''), 'updated': p.get('updated_at', 0), 'source': p.get('source', '')})
     return out
 
 

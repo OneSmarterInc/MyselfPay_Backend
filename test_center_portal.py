@@ -266,6 +266,7 @@ class CenterContactTests(unittest.TestCase):
         self.assertEqual(center_portal.dashboard(self.db, token)['live_prices'], [])
         center_price_apply.approve(self.db, ident, 'vikram')
         live = center_portal.dashboard(self.db, token)['live_prices']
+        self.assertGreater(live[0]['updated'], 0)
         self.assertEqual([(p['exam'], p['amount_cents'], p['contrast'], p['interpretation_included'], p['price_type']) for p in live], [('MRI', 45000, 'without', 'yes', 'fixed')])
 
 
@@ -298,6 +299,7 @@ class CenterContactTests(unittest.TestCase):
         result = center_profile.confirm_price(self.db, token, csrf, offer_id)
         live = center_portal.dashboard(self.db, token)['live_prices']
         self.assertEqual(live[0]['confirmed'], result['date'])
+        self.assertGreater(live[0]['updated'], 0)
         self.assertEqual(live[0]['amount_cents'], 45000)
         with self.assertRaisesRegex(booking.BookingError, 'already confirmed'):
             center_profile.confirm_price(self.db, token, csrf, offer_id)

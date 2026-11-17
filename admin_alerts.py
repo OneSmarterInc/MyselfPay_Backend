@@ -7,6 +7,19 @@ import booking_mail
 log = logging.getLogger(__name__)
 
 
+def when(stamp):
+    """A stamp as date and time in the server time zone, with the zone name."""
+    if not stamp:
+        return ''
+    try:
+        from datetime import datetime, timezone as tz
+        from django.utils import timezone
+        return timezone.localtime(datetime.fromtimestamp(float(stamp), tz.utc)).strftime('%b %d, %Y %I:%M %p %Z').replace(' 0', ' ', 1)
+    except Exception:
+        from datetime import datetime, timezone as tz
+        return datetime.fromtimestamp(float(stamp), tz.utc).strftime('%b %d, %Y %I:%M %p UTC')
+
+
 def pending_counts(path):
     """Waiting price submissions and profile edits, for the Admin menu."""
     try:
