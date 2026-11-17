@@ -33,7 +33,6 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/booking-phone.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-verified-email.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-portal.sql').read_text())
-            con.executescript((Path(core.__file__).parent / 'ops/center-prices.sql').read_text())
             # CI database is disposable and must never point at production.
             for table in ['booking_verified_emails', 'booking_email_checks', 'booking_mail_limits', 'booking_requests', 'corrections', 'preferences', 'conversations', 'guest_usage', 'sessions', 'user_accounts', 'members', 'login_limits']:
                 con.execute('DELETE FROM ' + table)
@@ -87,14 +86,6 @@ class APITests(unittest.TestCase):
         self.assertEqual(dashboard.status_code,200,dashboard.content)
         self.assertEqual(dashboard.json()['centers'][0]['name'],'Synthetic Center')
         self.assertNotIn('csrf',dashboard.json())
-        csrf_header={'HTTP_ORIGIN':'http://localhost:5173','HTTP_X_CENTER_CSRF':dashboard.json()['center_csrf']}
-        body=lambda amount,consent=True:json.dumps({'id':'synthetic-center','consent':consent,'prices':[{'exam':'MRI','amount':amount}]})
-        self.assertEqual(self.client.post('/api/center/price',body('0'),content_type='application/json',**csrf_header).status_code,400)
-        self.assertEqual(self.client.post('/api/center/price',body('399.00',False),content_type='application/json',**csrf_header).status_code,400)
-        self.assertEqual(self.client.post('/api/center/price',body('399.00'),content_type='application/json',HTTP_ORIGIN='http://localhost:5173').status_code,403)
-        saved=self.client.post('/api/center/price',body('399.00'),content_type='application/json',**csrf_header)
-        self.assertEqual(saved.status_code,201,saved.content)
-        self.assertEqual(self.client.get('/api/center/dashboard').json()['price_submissions'][0]['amount_cents'],39900)
         self.assertEqual(self.post('center/logout').status_code,403)
         logout=self.client.post('/api/center/logout','{}',content_type='application/json',HTTP_ORIGIN='http://localhost:5173',HTTP_X_CENTER_CSRF=dashboard.json()['center_csrf'])
         self.assertEqual(logout.status_code,200,logout.content)

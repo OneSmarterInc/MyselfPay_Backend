@@ -90,7 +90,6 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/booking-phone.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-verified-email.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-portal.sql').read_text())
-        con.executescript((core.ROOT / 'ops/center-prices.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-chat.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-chat-events.sql').read_text())
 
