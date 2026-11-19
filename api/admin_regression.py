@@ -19,11 +19,17 @@ class AdminTests(TransactionTestCase):
                 editor.create_model(model)
         with connection.cursor() as cursor:
             cursor.execute('CREATE TABLE sessions (token_hash TEXT PRIMARY KEY,member_id TEXT,csrf TEXT,expires REAL)')
+            import mobile_accounts
+            cursor.execute(mobile_accounts.SCHEMA)
+            cursor.execute('CREATE TABLE booking_requests(id TEXT PRIMARY KEY, owner_hash TEXT NOT NULL)')
+            cursor.execute('CREATE TABLE booking_outbox(request_id TEXT PRIMARY KEY REFERENCES booking_requests(id) ON DELETE CASCADE)')
+            cursor.execute('CREATE TABLE center_request_routes(request_id TEXT PRIMARY KEY REFERENCES booking_requests(id) ON DELETE CASCADE)')
 
     @classmethod
     def tearDownClass(cls):
         with connection.cursor() as cursor:
-            cursor.execute('DROP TABLE sessions')
+            for table in ('center_request_routes','booking_outbox','booking_requests','mobile_accounts','sessions'):
+                cursor.execute('DROP TABLE '+table)
         with connection.schema_editor() as editor:
             for model in (PortalSetting, PortalAccount, PortalMember): editor.delete_model(model)
         super().tearDownClass()
@@ -60,13 +66,52 @@ class AdminTests(TransactionTestCase):
         self.assertEqual(response.status_code,302)
         member=PortalMember.objects.get(pk='portal-test')
         self.assertEqual(member.name,'Updated User')
-        self.assertEqual(member.email,'updated@example.com')
+        self.assertEqual(member.email,'portal@example.test')
+        self.assertNotContains(self.client.get('/admin/api/portalaccount/portal-test/change/'),'name="email"')
         self.assertEqual(PortalSetting.objects.get(pk='account-disabled:portal-test').value,'1')
         self.assertEqual(member.password_hash,'scrypt-v1$'+accounts.password_hash('New-synthetic-password!',member.salt))
         response=self.client.post('/admin/api/portalaccount/portal-test/change/',
             {'name':'Updated User','email':'updated@example.com','phone':'+15550103333','active':'on','_save':'Save'},HTTP_ORIGIN='http://testserver')
         self.assertEqual(response.status_code,302)
         self.assertEqual(PortalSetting.objects.get(pk='account-disabled:portal-test').value,'0')
+
+    def test_registered_user_delete_requires_confirmation_and_revokes_access(self):
+        with connection.cursor() as cursor:
+            cursor.execute("INSERT INTO sessions VALUES('delete-session','portal-test','csrf',99999999999)")
+            cursor.execute("INSERT INTO mobile_accounts VALUES('portal-test','delete_user','delete_user','+15550102222',1)")
+            owner=__import__('hashlib').sha256(b'portal-test').hexdigest()
+            cursor.execute("INSERT INTO booking_requests VALUES('delete-owned',%s)",[owner])
+            cursor.execute("INSERT INTO booking_requests VALUES('keep-other','another-owner')")
+            cursor.execute("INSERT INTO booking_outbox VALUES('delete-owned')")
+            cursor.execute("INSERT INTO center_request_routes VALUES('delete-owned')")
+        url='/admin/api/portalaccount/portal-test/delete/'
+        confirmation=self.client.get(url)
+        self.assertEqual(confirmation.status_code,200)
+        self.assertContains(confirmation,'This cannot be undone')
+        self.assertTrue(PortalAccount.objects.filter(pk='portal-test').exists())
+        response=self.client.post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver')
+        self.assertEqual(response.status_code,302)
+        self.assertFalse(PortalAccount.objects.filter(pk='portal-test').exists())
+        self.assertFalse(PortalMember.objects.filter(pk='portal-test').exists())
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM sessions WHERE member_id='portal-test'")
+            self.assertEqual(cursor.fetchone()[0],0)
+            for table in ('mobile_accounts','booking_outbox','center_request_routes'):
+                cursor.execute('SELECT COUNT(*) FROM '+table)
+                self.assertEqual(cursor.fetchone()[0],0)
+            cursor.execute('SELECT id FROM booking_requests')
+            self.assertEqual(cursor.fetchall(),[('keep-other',)])
+        self.assertTrue(get_user_model().objects.filter(username='admin-test').exists())
+
+    def test_registered_user_delete_is_superuser_only_and_requires_csrf(self):
+        url='/admin/api/portalaccount/portal-test/delete/'
+        self.assertEqual(Client().post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver').status_code,302)
+        staff=get_user_model().objects.create_user('delete-staff',password='Synthetic-staff-password!',is_staff=True)
+        client=Client();client.force_login(staff)
+        self.assertEqual(client.post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver').status_code,302)
+        client=Client(enforce_csrf_checks=True);client.force_login(get_user_model().objects.get(username='admin-test'))
+        self.assertEqual(client.post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver').status_code,403)
+        self.assertTrue(PortalAccount.objects.filter(pk='portal-test').exists())
 
     def test_twilio_secret_is_encrypted_and_never_reflected(self):
         fields={'api_key_sid':'SK'+'1'*32,'api_key_secret':'synthetic-secret-value','account_sid':'AC'+'2'*32,'verify_service_sid':'VA'+'3'*32,'_save':'Save'}
@@ -149,7 +194,7 @@ class AdminTests(TransactionTestCase):
         try:
             item=fixture.create()
             session=fixture.authorize_clinic(item)
-            booking.clinic_details(fixture.db,item['id'],session,'scheduled')
+            booking.clinic_details(fixture.db,item['id'],session,'scheduled',{'preferred_index':0})
             with override_settings(DOMAIN_DATABASE=str(fixture.db)):
                 dashboard=self.client.get('/admin/')
                 self.assertContains(dashboard,'Approved requests')
@@ -157,7 +202,8 @@ class AdminTests(TransactionTestCase):
                 self.assertContains(listing,item['id'])
                 self.assertContains(listing,'Approved')
                 details=self.client.get('/admin/requests/'+item['id']+'/')
-                self.assertContains(details,'patient@example.test')
+                self.assertNotContains(details,'patient@example.test')
+                self.assertContains(details,'+16145550142')
                 self.assertContains(details,'appointments@example.test')
                 self.assertContains(details,'Synthetic Jamie')
                 self.assertContains(details,'Morning')

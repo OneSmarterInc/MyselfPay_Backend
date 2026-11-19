@@ -36,15 +36,11 @@ class MailDiagnosticsTests(unittest.TestCase):
         self.assertIn('not in the current', ' '.join(info['notes']))
         self.assertIn('currently disabled', ' '.join(info['notes']))
 
-    @patch.dict('os.environ', {'SECURE_MAIL_ENABLED': 'true'})
-    def test_secure_mail_rejects_same_patient_center_email_before_saving(self):
+    @patch.dict('os.environ', {'SECURE_MAIL_ENABLED':'true'})
+    def test_mobile_only_booking_does_not_need_distinct_patient_email(self):
         center = {**self.fixture.center, 'email': 'patient@example.test'}
         with booking.connection(self.fixture.db, write=True) as db:
             db.execute('UPDATE entries SET payload=? WHERE entry_key=?', (json.dumps(center), 'clinic-1'))
-        with patch('booking_mail.send_message') as send:
-            with self.assertRaisesRegex(booking.BookingError, 'different patient email'):
-                self.fixture.create()
-        send.assert_not_called()
+        self.assertTrue(self.fixture.create()['id'])
         with booking.connection(self.fixture.db) as db:
-            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM booking_requests').fetchone()['n'], 0)
-            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'], 0)
+            self.assertEqual(db.execute('SELECT COUNT(*) AS n FROM booking_chat').fetchone()['n'], 1)

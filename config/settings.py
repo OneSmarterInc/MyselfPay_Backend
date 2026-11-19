@@ -52,6 +52,7 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'api.middleware.DirectoryCompressionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -66,7 +67,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 USE_TZ = True
 APPEND_SLASH = False
 DATA_UPLOAD_MAX_MEMORY_SIZE = 100000
-CORS_ALLOWED_ORIGINS = [FRONTEND_ORIGIN]
+ADDITIONAL_FRONTEND_ORIGINS = list(dict.fromkeys(
+    origin.strip().rstrip('/') for origin in os.getenv('ADDITIONAL_FRONTEND_ORIGINS', '').split(',') if origin.strip()
+))
+for origin in ADDITIONAL_FRONTEND_ORIGINS:
+    parsed = urlparse(origin)
+    if (parsed.scheme not in ('http', 'https') or not parsed.netloc or parsed.path or parsed.query or parsed.fragment
+            or parsed.username or parsed.password or '*' in origin or (not DEBUG and parsed.scheme != 'https')):
+        raise ImproperlyConfigured('ADDITIONAL_FRONTEND_ORIGINS must be exact origins; production requires HTTPS.')
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys([FRONTEND_ORIGIN] + ADDITIONAL_FRONTEND_ORIGINS))
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['content-type', 'x-csrf-token', 'x-center-csrf']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'DELETE', 'OPTIONS']
@@ -96,7 +105,7 @@ TEMPLATES = [{'BACKEND': 'django.template.backends.django.DjangoTemplates',
                          'django.contrib.auth.context_processors.auth', 'django.contrib.messages.context_processors.messages']}}]
 STATIC_URL = '/admin-assets/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-CSRF_TRUSTED_ORIGINS = [FRONTEND_ORIGIN]
+CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 3600

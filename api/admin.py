@@ -13,12 +13,16 @@ from django.urls import reverse, path
 from django.template.response import TemplateResponse
 from django.http import Http404
 import admin_bookings
+import admin_accounts
 import booking
 import sqlite3
 import psycopg
 from .models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration, SMTPConfiguration
 from admin_settings import secret_cipher
 import accounts
+import core
+import mobile_accounts
+from django.conf import settings
 
 
 class SelfPayAdminSite(AdminSite):
@@ -32,9 +36,88 @@ class SelfPayAdminSite(AdminSite):
     def has_permission(self, request):
         return bool(request.user.is_active and request.user.is_superuser)
 
+    def admin_view(self, view, cacheable=False):
+        import admin_audit
+        return super().admin_view(admin_audit.wrap(view), cacheable)
+
+    def audit_view(self, request):
+        import admin_audit
+        return admin_audit.page(self, request)
+
+    def each_context(self, request):
+        import admin_alerts
+        context = super().each_context(request)
+        if self.has_permission(request):
+            import audit
+            ok, why = audit.healthy()
+            context['audit_alert'] = '' if ok else why
+            context['pending_prices'], context['pending_profiles'] = admin_alerts.pending_counts(settings.DOMAIN_DATABASE)
+        return context
+
     def get_urls(self):
-        return [path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
+        import admin_mailer
+        return [path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
+                path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
+                path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
+                path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),
+                path('audit/',self.admin_view(self.audit_view),name='audit_log'),
+                path('prices/',self.admin_view(self.prices_view),name='center_prices'),
+                path('profiles/',self.admin_view(self.profiles_view),name='center_profiles'),
+                path('pricing/',self.admin_view(self.pricing_alias),name='center_pricing_alias'),
+                path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
+
+    def profiles_view(self, request):
+        import center_profile
+        from django.contrib import messages
+        from django.shortcuts import redirect
+        db = settings.DOMAIN_DATABASE
+        if request.method == 'POST':
+            ident, action = request.POST.get('id', ''), request.POST.get('action')
+            by = request.user.get_username()
+            try:
+                if action == 'approve':
+                    center_profile.approve(db, ident, by)
+                    messages.success(request, 'Approved. Patients now see the change.')
+                elif action == 'reject':
+                    center_profile.reject(db, ident, by)
+                    messages.success(request, 'Rejected. Nothing changed in the app.')
+                else:
+                    raise center_profile.ProfileError('Unknown action.')
+            except center_profile.ProfileError as exc:
+                messages.error(request, str(exc))
+            return redirect('admin:center_profiles')
+        status = request.GET.get('status') if request.GET.get('status') in ('approved', 'rejected') else 'pending'
+        context = {**self.each_context(request), 'title': 'Center info changes', 'status': status, 'items': center_profile.pending(db, status)}
+        return TemplateResponse(request, 'admin/center_profiles.html', context)
+
+    def pricing_alias(self, request):
+        from django.shortcuts import redirect
+        return redirect('admin:center_prices')
+
+    def prices_view(self, request):
+        import center_price_apply
+        from django.contrib import messages
+        from django.shortcuts import redirect
+        db = settings.DOMAIN_DATABASE
+        if request.method == 'POST':
+            ident, action = request.POST.get('id', ''), request.POST.get('action')
+            by = request.user.get_username()
+            try:
+                if action == 'approve':
+                    center_price_apply.approve(db, ident, by)
+                    messages.success(request, 'Approved. The price is now live in the app.')
+                elif action == 'reject':
+                    center_price_apply.reject(db, ident, by)
+                    messages.success(request, 'Rejected. Nothing changed in the app.')
+                else:
+                    raise center_price_apply.PriceError('Unknown action.')
+            except center_price_apply.PriceError as exc:
+                messages.error(request, str(exc))
+            return redirect('admin:center_prices')
+        status = request.GET.get('status') if request.GET.get('status') in ('approved', 'rejected') else 'pending'
+        context = {**self.each_context(request), 'title': 'Center prices', 'status': status, 'items': center_price_apply.pending(db, status)}
+        return TemplateResponse(request, 'admin/center_prices.html', context)
 
     def requests_view(self, request):
         mode='approved' if request.GET.get('filter')=='approved' else 'all'
@@ -60,7 +143,7 @@ class SelfPayAdminSite(AdminSite):
         recent = list(PortalAccount.objects.order_by('-created')[:6])
         names = dict(PortalMember.objects.filter(pk__in=[a.pk for a in recent]).values_list('pk', 'name'))
         suspended = set(PortalSetting.objects.filter(key__in=['account-disabled:' + a.pk for a in recent], value='1').values_list('key', flat=True))
-        context['recent_accounts'] = [{'name': names.get(a.pk, 'Portal user'), 'email': a.email,
+        context['recent_accounts'] = [{'name': names.get(a.pk, 'Portal user'), 'phone': a.phone,
                                      'registered': datetime.fromtimestamp(a.created, timezone.utc).strftime('%d %b %Y'),
                                      'suspended': 'account-disabled:' + a.pk in suspended,
                                      'url': reverse('admin:api_portalaccount_change', args=[a.pk])} for a in recent]
@@ -80,7 +163,7 @@ class PortalAccountForm(forms.ModelForm):
 
     class Meta:
         model = PortalAccount
-        fields = ('name', 'email', 'phone', 'active', 'new_password')
+        fields = ('name', 'phone', 'active', 'new_password')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,19 +172,14 @@ class PortalAccountForm(forms.ModelForm):
             self.fields['name'].initial = member.name
             self.fields['active'].initial = not PortalSetting.objects.filter(key='account-disabled:' + member.pk, value='1').exists()
 
-    def clean_email(self):
-        try:
-            email = accounts.email_address(self.cleaned_data['email'])
-        except accounts.AccountError as exc:
-            raise ValidationError(str(exc)) from None
-        if PortalMember.objects.filter(email__iexact=email).exclude(pk=self.instance.pk).exists():
-            raise ValidationError('An account already uses this email address.')
-        return email
-
     def clean_phone(self):
         value = self.cleaned_data.get('phone', '').strip()
         if value and not re.fullmatch(r'[+0-9 ()\-.]{7,30}', value):
             raise ValidationError('Enter a valid phone number or leave it blank.')
+        with core.connect(settings.DOMAIN_DATABASE) as db:
+            row = db.execute('SELECT phone FROM mobile_accounts WHERE member_id=?', (self.instance.pk,)).fetchone()
+        if row and value != row['phone']:
+            raise ValidationError('A verified mobile number cannot be edited without verifying the replacement. Contact support for account recovery.')
         return value
 
     def clean_new_password(self):
@@ -115,16 +193,37 @@ class PortalAccountForm(forms.ModelForm):
 
 class PortalAccountAdmin(admin.ModelAdmin):
     form = PortalAccountForm
-    list_display = ('email', 'user_name', 'phone', 'registered_at', 'account_status')
-    search_fields = ('email', 'phone', 'member_id')
+    list_display = ('username', 'user_name', 'phone', 'registered_at', 'account_status')
+    search_fields = ('phone', 'member_id')
     ordering = ('-created',)
     list_per_page = 50
-    fields = ('name', 'email', 'phone', 'active', 'new_password', 'registered_at', 'member_id')
-    readonly_fields = ('registered_at', 'member_id')
+    fields = ('name', 'username', 'phone', 'active', 'new_password', 'registered_at', 'member_id')
+    readonly_fields = ('registered_at', 'member_id', 'username')
     actions = ('suspend_accounts', 'restore_accounts')
 
     def has_add_permission(self, request): return False
-    def has_delete_permission(self, request, obj=None): return False
+    def has_delete_permission(self, request, obj=None):
+        return bool(request.user.is_active and request.user.is_superuser)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        actions.pop('delete_selected', None)  # Confirm one account at a time.
+        return actions
+
+    def get_deleted_objects(self, objs, request):
+        deleted, counts, permissions, protected = super().get_deleted_objects(objs, request)
+        deleted.append('Their profile, verified mobile identity, sessions, saved searches and owned appointment requests. Center notifications and private request links will also be removed. This cannot be undone.')
+        return deleted, counts, permissions, protected
+
+    def delete_model(self, request, obj):
+        admin_accounts.delete_registered_user(obj.member_id)
+
+
+    @admin.display(description='Username')
+    def username(self, obj):
+        with core.connect(settings.DOMAIN_DATABASE) as db:
+            row = db.execute('SELECT username FROM mobile_accounts WHERE member_id=?', (obj.pk,)).fetchone()
+        return row['username'] if row else 'Setup required'
 
     @admin.display(description='Name')
     def user_name(self, obj):
@@ -144,18 +243,16 @@ class PortalAccountAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         member = PortalMember.objects.select_for_update().get(pk=obj.member_id)
-        changed_email = member.email != obj.email
         member.name = form.cleaned_data['name']
-        member.email = obj.email
         password = form.cleaned_data.get('new_password')
         if password:
             member.salt = secrets.token_hex(16)
             member.password_hash = 'scrypt-v1$' + accounts.password_hash(password, member.salt)
-        member.save(update_fields=['name', 'email', 'salt', 'password_hash'])
+        member.save(update_fields=['name', 'salt', 'password_hash'])
         obj.save()
         active = form.cleaned_data['active']
         PortalSetting.objects.update_or_create(key='account-disabled:' + obj.pk, defaults={'value': '0' if active else '1'})
-        if not active or password or changed_email:
+        if not active or password:
             self.revoke_sessions(obj.pk)
 
     @admin.action(description='Suspend selected users and revoke their sessions')

@@ -32,12 +32,12 @@ def status(con, ident, fallback='suppressed'):
 def deliver(path, ident):
     import booking
     import booking_chat
-    if booking_chat.enabled():
-        return False  # Clinic request links are delivered only inside Secure Mail.
     now = time.time()
     with booking.connection(path, write=True) as con:
         row = booking.get_row(con, ident, lock=True)
         payload = booking.unpack(row)
+        if booking_chat.enabled() and payload.get('delivery_route') != 'center_email':
+            return False  # Preserve delivery of historical Secure Mail requests.
         if mode(payload['recipient']) != 'enabled' or row['link_expires'] <= now or row['status'] in booking.TERMINAL:
             return False
         # A process can die after SMTP accepted DATA. Do not automatically replay

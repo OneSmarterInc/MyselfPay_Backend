@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -29,7 +30,7 @@ class PortalAccount(models.Model):
         verbose_name_plural = 'registered portal users'
 
     def __str__(self):
-        return self.email
+        return self.phone or self.member_id
 
 
 class PortalMember(models.Model):
@@ -93,3 +94,93 @@ class SMTPConfiguration(models.Model):
 
     def __str__(self):
         return 'MySelfPay email settings'
+
+
+class MailerMailbox(models.Model):
+    id = models.PositiveSmallIntegerField(primary_key=True, default=1, editable=False)
+    enabled = models.BooleanField(default=False)
+    host = models.CharField(max_length=253, default='imap.ionos.com')
+    port = models.PositiveIntegerField(default=993)
+    username = models.EmailField(blank=True, default='patientcare@onesmarterhealthweb.com')
+    password_encrypted = models.TextField(blank=True, editable=False)
+    folder = models.CharField(max_length=100, default='INBOX')
+    reply_to = models.EmailField(blank=True, default='patientcare@onesmarterhealthweb.com')
+    mailing_address = models.TextField(blank=True, max_length=1000, default="707 Miamisburg-Centerville Road, STE 223\nDayton, OH 45459")
+    cursor_identity = models.CharField(max_length=64, blank=True, editable=False)
+    uid_validity = models.CharField(max_length=100, blank=True, editable=False)
+    last_uid = models.PositiveBigIntegerField(default=0, editable=False)
+    last_sync = models.DateTimeField(null=True, editable=False)
+    sync_status = models.CharField(max_length=200, blank=True, editable=False)
+    sync_requested = models.BooleanField(default=False, editable=False)
+
+
+class MailerContact(models.Model):
+    center_key = models.CharField(max_length=300, blank=True, default="")
+    email = models.EmailField()
+    centers = models.JSONField(default=list)
+    city = models.CharField(max_length=200, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    imported_at = models.DateTimeField(db_index=True)
+    active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ['-imported_at', 'center_key', 'email', 'pk']
+        constraints = [models.UniqueConstraint(fields=['center_key', 'email'], name='mailer_center_email_unique')]
+
+
+class MailerTemplate(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class MailerCampaign(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    subject = models.CharField(max_length=200)
+    body = models.TextField()
+    selection = models.CharField(max_length=40)
+    reply_to = models.EmailField()
+    created_by = models.CharField(max_length=150)
+    created_at = models.DateTimeField(auto_now_add=True)
+    queued_at = models.DateTimeField(null=True)
+    state = models.CharField(max_length=20, default='draft', db_index=True)
+
+
+class MailerMessage(models.Model):
+    campaign = models.ForeignKey(MailerCampaign, on_delete=models.CASCADE, related_name='messages')
+    contact = models.ForeignKey(MailerContact, on_delete=models.PROTECT, related_name='outbound')
+    email = models.EmailField()
+    center_names = models.TextField()
+    template_context = models.JSONField(default=dict)
+    position = models.PositiveIntegerField()
+    message_id = models.CharField(max_length=254, unique=True)
+    state = models.CharField(max_length=20, default='draft', db_index=True)
+    sent_at = models.DateTimeField(null=True)
+    attempted_at = models.DateTimeField(null=True)
+    error = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['campaign', 'contact'], name='mailer_campaign_contact_unique')]
+
+
+class MailerReply(models.Model):
+    message = models.ForeignKey(MailerMessage, on_delete=models.CASCADE, related_name='replies')
+    identity = models.CharField(max_length=64, unique=True)
+    sender = models.EmailField()
+    subject = models.CharField(max_length=500)
+    body_encrypted = models.TextField()
+    received_at = models.DateTimeField()
+
+
+class MailerLease(models.Model):
+    name = models.CharField(max_length=40, primary_key=True)
+    token = models.CharField(max_length=64, blank=True)
+    expires = models.DateTimeField()
+
+
+class MailerSuppression(models.Model):
+    email = models.EmailField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=30, default='unsubscribe')
+    actor = models.CharField(max_length=150, blank=True)

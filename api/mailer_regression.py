@@ -1,0 +1,485 @@
+"""All mail and IMAP calls are mocked; never contact a real mailbox."""
+from datetime import timedelta
+from email.message import EmailMessage
+from unittest.mock import patch, MagicMock
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.test import TestCase, Client, override_settings
+from django.utils import timezone
+from admin_settings import secret_cipher
+from api.models import MailerContact, MailerMailbox, MailerMessage, MailerReply, MailerCampaign
+import admin_mailer
+
+
+@override_settings(ALLOWED_HOSTS=['testserver'], FRONTEND_ORIGIN='http://testserver',
+                   CSRF_TRUSTED_ORIGINS=['http://testserver'], SECURE_SSL_REDIRECT=False,
+                   PASSWORD_HASHERS=['django.contrib.auth.hashers.MD5PasswordHasher'])
+class MailerTests(TestCase):
+    def setUp(self):
+        self.admin = get_user_model().objects.create_superuser('mailer-admin', password='Synthetic-password!')
+        self.client.force_login(self.admin)
+        self.client.defaults['HTTP_ORIGIN'] = 'http://testserver'
+        now = timezone.now()
+        MailerContact.objects.bulk_create([MailerContact(email=f'center{n:03d}@example.test',
+            centers=[f'Synthetic center {n}'], imported_at=now - timedelta(days=n)) for n in range(1, 206)])
+        self.config = {'host': 'smtp.example.test', 'username': 'sender@example.test', 'password': 'synthetic',
+                       'sender': 'sender@example.test', 'allowed_recipients': ''}
+        self.patch = patch('admin_mailer.smtp_configuration', return_value=self.config)
+        self.patch.start()
+        self.addCleanup(self.patch.stop)
+        self.data = {'selection': '2', 'subject': 'Hello {{center_name}}', 'body': 'Contact {{email}}', 'template_name': ''}
+
+    def preview(self, selection='2'):
+        return admin_mailer.preview_campaign({**self.data, 'selection': selection}, 'mailer-admin')
+
+    def test_sent_first_order_is_shared_by_pages_and_range_selection(self):
+        older = MailerContact.objects.get(email='center205@example.test')
+        campaign = admin_mailer.preview_campaign({**self.data, 'selected_contacts': [older], 'selection': ''}, 'admin')
+        campaign.messages.update(state='sent', sent_at=timezone.now())
+        response = self.client.get('/admin/mailer/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data['rows'][0]['contact'].pk, older.pk)
+        self.assertEqual(response.context_data['rows'][0]['position'], 1)
+        second = self.client.get('/admin/mailer/?page=2')
+        self.assertEqual(second.context_data['rows'][0]['position'], 51)
+        ids = [row['contact'].pk for row in response.context_data['rows'] + second.context_data['rows']]
+        self.assertEqual(len(ids), len(set(ids)))
+        frozen = self.preview('1')
+        self.assertEqual(frozen.messages.get().contact_id, older.pk)
+
+    def test_replies_view_keeps_older_thread_when_newest_email_has_no_reply(self):
+        first = self.preview('1').messages.get()
+        first.state = 'sent'; first.save()
+        self.assertTrue(admin_mailer.import_reply(self.reply(first), 'mailbox', '1', 1))
+        newer = self.preview('1').messages.get()
+        newer.state = 'uncertain'; newer.save()
+        response = self.client.get('/admin/mailer/?audience=replied')
+        self.assertEqual(response.context_data['total'], 1)
+        row = response.context_data['rows'][0]
+        self.assertEqual(row['last'].pk, newer.pk)
+        self.assertEqual(row['thread_id'], first.pk)
+        self.assertEqual(row['reply_count'], 1)
+        self.assertContains(response, f'/admin/mailer/message/{first.pk}/')
+        self.assertContains(response, '&lt;script&gt;unsafe()&lt;/script&gt;')
+
+    def test_sent_and_other_filters_keep_same_email_centers_separate(self):
+        first = MailerContact.objects.get(email='center001@example.test')
+        second = MailerContact.objects.create(center_key='shared-other',email=first.email,centers=['Other center'],imported_at=timezone.now())
+        campaign = admin_mailer.preview_campaign({**self.data, 'selected_contacts': [first], 'selection': ''}, 'admin')
+        campaign.messages.update(state='sent')
+        self.assertEqual(list(admin_mailer.mailer_contacts(audience='sent').values_list('pk',flat=True)), [first.pk])
+        self.assertIn(second.pk, admin_mailer.mailer_contacts(audience='other').values_list('pk',flat=True))
+        self.assertNotIn(first.pk, admin_mailer.mailer_contacts(audience='other').values_list('pk',flat=True))
+        response=self.client.post('/admin/mailer/', {'action':'preview','audience_filter':'sent','selection':'1','subject':'Synthetic','body':'Synthetic'})
+        self.assertEqual(response.status_code,302)
+
+    def test_selection_is_one_based_inclusive_and_frozen(self):
+        self.assertEqual(admin_mailer.selection_range('100', 205), (1, 100))
+        self.assertEqual(admin_mailer.selection_range('100-200', 205), (100, 200))
+        for value in ('0', '-1', '10-2', '206', 'x', '1-206'):
+            with self.assertRaises(ValidationError):
+                admin_mailer.selection_range(value, 205)
+        campaign = self.preview('100-200')
+        self.assertEqual(campaign.messages.count(), 101)
+        self.assertEqual(campaign.messages.order_by('position').first().email, 'center100@example.test')
+        MailerContact.objects.create(email='new@example.test', centers=['New'], imported_at=timezone.now())
+        self.assertEqual(campaign.messages.order_by('position').last().email, 'center200@example.test')
+
+    def test_preview_does_not_send_and_confirm_is_idempotent(self):
+        with patch('booking_mail.send_message') as send:
+            campaign = self.preview()
+            self.assertEqual(campaign.state, 'draft')
+            self.assertTrue(admin_mailer.queue_campaign(campaign.pk))
+            self.assertFalse(admin_mailer.queue_campaign(campaign.pk))
+            send.assert_not_called()
+            self.assertEqual(admin_mailer.send_pending(), 2)
+            self.assertEqual(admin_mailer.send_pending(), 0)
+            self.assertEqual(send.call_count, 2)
+            message, recipient = send.call_args.args
+            self.assertEqual(message['Reply-To'], 'patientcare@onesmarterhealthweb.com')
+            self.assertIn('Synthetic center', message['Subject'])
+            self.assertEqual(len(message.get_all('Reply-To')), 1)
+            self.assertTrue(recipient.endswith('@example.test'))
+        self.assertEqual(campaign.messages.filter(state='sent').count(), 2)
+
+    def test_delivery_failure_is_not_automatically_replayed(self):
+        campaign = self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message', side_effect=TimeoutError()) as send:
+            self.assertEqual(admin_mailer.send_pending(), 0)
+            admin_mailer.send_pending()
+            self.assertEqual(send.call_count, 1)
+        self.assertEqual(campaign.messages.get().state, 'uncertain')
+
+    def test_known_smtp_failure_is_failed_not_uncertain_and_never_retried(self):
+        import booking_mail
+        campaign=self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message',side_effect=booking_mail.MailUnavailable('SMTP authentication failed (535). Check the mailbox username and password.')) as send:
+            admin_mailer.send_pending(); admin_mailer.send_pending()
+            self.assertEqual(send.call_count,1)
+        item=campaign.messages.get()
+        self.assertEqual(item.state,'failed')
+        self.assertIn('535',item.error)
+
+    def test_ambiguous_submission_is_still_uncertain(self):
+        import booking_mail
+        campaign=self.preview('1'); admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message',side_effect=booking_mail.MailDeliveryUncertain('Unconfirmed')):
+            admin_mailer.send_pending()
+        self.assertEqual(campaign.messages.get().state,'uncertain')
+
+    def test_allowlist_and_cancellation_prevent_sends(self):
+        campaign = self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        self.config['allowed_recipients'] = 'different@example.test'
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending()
+            send.assert_not_called()
+        self.assertEqual(campaign.messages.get().state, 'failed')
+        draft = self.preview('1')
+        self.client.post(f'/admin/mailer/campaign/{draft.pk}/', {'action': 'cancel'})
+        self.assertFalse(admin_mailer.queue_campaign(draft.pk))
+
+    def reply(self, item, sender=None, mid='<reply@example.test>'):
+        mail = EmailMessage()
+        mail['From'] = sender or item.email
+        mail['Message-ID'] = mid
+        mail['In-Reply-To'] = item.message_id
+        mail['Subject'] = 'Re: Your request'
+        mail.set_content('Thanks. <script>unsafe()</script>')
+        return mail.as_bytes()
+
+    def test_reply_matches_reference_and_sender_and_is_deduplicated_encrypted(self):
+        item = self.preview('1').messages.get()
+        item.state = 'sent'
+        item.save()
+        raw = self.reply(item)
+        self.assertTrue(admin_mailer.import_reply(raw, 'mailbox', '1', 10))
+        self.assertFalse(admin_mailer.import_reply(raw, 'mailbox', '2', 20))
+        self.assertFalse(admin_mailer.import_reply(self.reply(item, 'wrong@example.test', '<wrong@example.test>'), 'mailbox', '1', 11))
+        reply = MailerReply.objects.get()
+        self.assertNotIn('Thanks', reply.body_encrypted)
+        response = self.client.get(f'/admin/mailer/message/{item.pk}/')
+        self.assertContains(response, '&lt;script&gt;unsafe()&lt;/script&gt;')
+        self.assertNotContains(response, '<script>unsafe()</script>')
+
+    def test_mailbox_secret_is_write_only_and_admin_access_is_enforced(self):
+        response = self.client.post('/admin/mailer/', {'action': 'mailbox', 'enabled': 'on',
+            'host': 'imap.example.test', 'port': 993, 'username': 'reply@example.test',
+            'reply_to': 'reply@example.test', 'folder': 'INBOX', 'password': 'synthetic-imap-secret'})
+        self.assertEqual(response.status_code, 302)
+        saved = MailerMailbox.objects.get()
+        self.assertNotIn('synthetic-imap-secret', saved.password_encrypted)
+        self.assertNotContains(self.client.get('/admin/mailer/'), 'synthetic-imap-secret')
+        self.assertContains(self.client.get('/admin/mailer/'), 'Reply mailbox')
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.admin)
+        self.assertEqual(csrf_client.post('/admin/mailer/', {'action': 'contacts'}).status_code, 403)
+        self.client.logout()
+        self.assertEqual(self.client.get('/admin/mailer/').status_code, 302)
+        staff = get_user_model().objects.create_user('staff', password='Synthetic-password!', is_staff=True)
+        self.client.force_login(staff)
+        self.assertEqual(self.client.get('/admin/mailer/').status_code, 302)
+
+    def test_imap_uses_read_only_and_peek_and_only_imports_matched_message(self):
+        item = self.preview('1').messages.get()
+        item.state, item.attempted_at = 'sent', timezone.now()
+        item.save()
+        MailerMailbox.objects.create(enabled=True, host='imap.example.test', username='reply@example.test',
+            reply_to='reply@example.test', password_encrypted=secret_cipher('mailer-imap').encrypt(b'synthetic').decode())
+        mail = self.reply(item)
+        header = f'From: {item.email}\r\nIn-Reply-To: {item.message_id}\r\n\r\n'.encode()
+        client = MagicMock()
+        client.select.return_value = ('OK', [b'1'])
+        client.response.return_value = ('UIDVALIDITY', [b'123'])
+        client.uid.side_effect = [('OK', [b'10']), ('OK', [(b'1 (RFC822.SIZE 1000)', header), b')']),
+                                  ('OK', [(b'1 BODY', mail), b')'])]
+        with patch('admin_mailer.imaplib.IMAP4_SSL') as transport:
+            transport.return_value.__enter__.return_value = client
+            self.assertEqual(admin_mailer.sync_replies(), 1)
+        client.select.assert_called_once_with('"INBOX"', readonly=True)
+        self.assertIn('BODY.PEEK', client.uid.call_args_list[-1].args[-1])
+        self.assertEqual(MailerMailbox.objects.get().last_uid, 10)
+
+    def test_preview_pages_and_template_library(self):
+        response = self.client.post('/admin/mailer/', {'action': 'preview', **self.data, 'template_name': 'Welcome'})
+        self.assertEqual(response.status_code, 302)
+        campaign = MailerCampaign.objects.get()
+        self.assertContains(self.client.get(response.url), 'Confirm and queue 2 emails')
+        self.assertContains(self.client.get('/admin/mailer/'), 'Welcome')
+        self.assertContains(self.client.get(f'/admin/mailer/campaign/{campaign.pk}/'), 'center001@example.test')
+
+    def test_directory_sync_keeps_each_center_with_shared_email(self):
+        from types import SimpleNamespace
+        import json
+        rows = [{'entry_key': name, 'payload': json.dumps({'name': name, 'email': email}), 'first_created': stamp}
+                for name, email, stamp in [('Older', 'shared@example.test', 1000),
+                    ('Newer', 'SHARED@example.test', 2000), ('Invalid', 'not-an-email', 3000)]]
+        db = MagicMock()
+        db.execute.return_value.fetchall.return_value = rows
+        with patch('core.connect') as connect, patch('core.active_batch', return_value='active'):
+            connect.return_value.__enter__.return_value = db
+            self.assertEqual(admin_mailer.sync_contacts(), 2)
+        active = list(MailerContact.objects.filter(active=True))
+        self.assertEqual([c.email for c in active], ['shared@example.test', 'shared@example.test'])
+        self.assertEqual([c.centers for c in active], [['Newer'], ['Older']])
+        self.assertEqual(int(active[0].imported_at.timestamp()), 2000)
+        with patch('core.connect') as connect, patch('core.active_batch', return_value='active'):
+            connect.return_value.__enter__.return_value = db
+            admin_mailer.sync_contacts()
+        self.assertEqual(MailerContact.objects.filter(active=True).count(), 2)
+
+    def test_checked_centers_override_range_and_shared_email_sends_separately(self):
+        now = timezone.now()
+        a = MailerContact.objects.create(center_key='branch-a', email='shared@example.test', centers=['Branch A'], imported_at=now)
+        b = MailerContact.objects.create(center_key='branch-b', email='shared@example.test', centers=['Branch B'], imported_at=now)
+        with patch('booking_mail.send_message') as send:
+            response = self.client.post('/admin/mailer/', {**self.data, 'action': 'preview',
+                'selection': '1', 'selected_contacts': [str(a.pk), str(b.pk)]})
+            self.assertEqual(response.status_code, 302)
+            campaign = MailerCampaign.objects.get()
+            self.assertEqual(campaign.messages.count(), 2)
+            self.assertEqual(set(campaign.messages.values_list('center_names', flat=True)), {'Branch A', 'Branch B'})
+            self.assertEqual(campaign.messages.values('message_id').distinct().count(), 2)
+            send.assert_not_called()
+            admin_mailer.queue_campaign(campaign.pk)
+            admin_mailer.send_pending()
+            self.assertEqual(send.call_count, 2)
+            for call in send.call_args_list:
+                self.assertEqual(call.args[1], 'shared@example.test')
+        target = campaign.messages.get(contact=a)
+        self.assertTrue(admin_mailer.import_reply(self.reply(target), 'shared-mailbox', '1', 1))
+        self.assertEqual(target.replies.count(), 1)
+        self.assertEqual(campaign.messages.get(contact=b).replies.count(), 0)
+        page = self.client.get('/admin/mailer/')
+        self.assertContains(page, 'Select Branch A')
+        self.assertContains(page, 'Select Branch B')
+        self.assertContains(page, 'form="mailer-compose"')
+
+    def test_checkbox_selection_rejects_inactive_or_unknown_center(self):
+        item = MailerContact.objects.first()
+        item.active=False
+        item.save()
+        for ids in ([str(item.pk)], ['99999999']):
+            response=self.client.post('/admin/mailer/', {**self.data, 'action':'preview', 'selected_contacts':ids})
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(MailerCampaign.objects.count(), 0)
+
+    def test_blank_selection_requires_checkboxes_or_range(self):
+        form = admin_mailer.ComposeForm({**self.data, 'selection':''})
+        self.assertFalse(form.is_valid())
+
+    def test_email_search_is_case_insensitive_sorted_and_ranges_use_filtered_rows(self):
+        old = MailerContact.objects.create(center_key='search-old', email='team@filter.example.test', centers=['Older match'], imported_at=timezone.now()-timedelta(days=2))
+        new = MailerContact.objects.create(center_key='search-new', email='hello@filter.example.test', centers=['Newest match'], imported_at=timezone.now())
+        response = self.client.get('/admin/mailer/', {'email':'FILTER.example.test'})
+        self.assertEqual([row['contact'].pk for row in response.context['rows']], [new.pk, old.pk])
+        self.assertContains(response, 'Search email')
+        response = self.client.post('/admin/mailer/?email=FILTER.example.test', {**self.data, 'action':'preview', 'selection':'1', 'email_filter':'FILTER.example.test'})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(MailerCampaign.objects.get().messages.get().contact_id,new.pk)
+
+    def test_email_search_pagination_preserves_filter_and_empty_results(self):
+        response = self.client.get('/admin/mailer/', {'email':'@example.test','page':'2'})
+        self.assertEqual(response.context['page'].number,2)
+        self.assertContains(response,'email=%40example.test&amp;audience=all&amp;page=3')
+        response = self.client.get('/admin/mailer/', {'email':'missing@example.invalid'})
+        self.assertEqual(response.context['total'],0)
+        self.assertContains(response,'No centers match this email search.')
+
+    def test_checkbox_cannot_send_outside_filtered_results(self):
+        item=MailerContact.objects.first()
+        response=self.client.post('/admin/mailer/', {**self.data, 'action':'preview', 'email_filter':'no-match.invalid', 'selected_contacts':[str(item.pk)]})
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(MailerCampaign.objects.count(),0)
+
+    def test_campaign_email_has_branded_html_and_safe_plain_text(self):
+        data={**self.data, 'selection':'1', 'subject':'Hello {{center_name}} <script>bad</script>', 'body':'First line\nSecond line <img src=x onerror=bad()> & welcome {{center_name}}'}
+        campaign=admin_mailer.preview_campaign(data, 'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending()
+            message, recipient=send.call_args.args
+        self.assertEqual(message.get_content_type(),'multipart/alternative')
+        plain=message.get_body(preferencelist=('plain',)).get_content()
+        html=message.get_body(preferencelist=('html',)).get_content()
+        self.assertIn('MySelfPay by One Smarter, Inc.',plain)
+        self.assertIn('A message from MySelfPay',html)
+        self.assertIn('background:#a71930',html)
+        self.assertIn('Synthetic center 1',html)
+        self.assertIn('First line<br>',html)
+        self.assertNotIn('<script>bad</script>',html)
+        self.assertNotIn('<img src=x',html)
+        self.assertIn('&lt;img',html)
+        self.assertIn('mailto:patientcare@onesmarterhealthweb.com',html)
+        self.assertEqual(message['Reply-To'],'patientcare@onesmarterhealthweb.com')
+        response=self.client.get(f'/admin/mailer/campaign/{campaign.pk}/')
+        self.assertContains(response,'A message from MySelfPay')
+        self.assertNotContains(response,'<script>bad</script>')
+
+    def test_outreach_variables_are_frozen_and_personalized_without_recursive_substitution(self):
+        from api.models import MailerMailbox
+        item=MailerContact.objects.first();item.city='Dayton';item.state='OH';item.save()
+        campaign=admin_mailer.preview_campaign({**self.data,'selection':'1','subject':admin_mailer.OUTREACH_SUBJECT,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+        message=campaign.messages.get()
+        self.assertEqual(admin_mailer.personalize(campaign.subject,message), 'Synthetic center 1 is now searchable on MySelfPay')
+        body=admin_mailer.personalize(campaign.body,message)
+        for value in ('Dayton, OH','STE 223','/center-login','/api/mailer/unsubscribe?'):
+            self.assertIn(value,body)
+        self.assertNotIn('{{',body)
+        item.city='Changed';item.save()
+        self.assertIn('Dayton, OH',admin_mailer.personalize(campaign.body,message))
+        message.center_names='Center {{email}}'
+        self.assertEqual(admin_mailer.personalize('{{facility_name}}',message),'Center {{email}}')
+
+    def test_unsubscribe_is_confirmed_signed_and_stops_queued_shared_mail(self):
+        from django.urls import reverse
+        from django.core import signing
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first()
+        twin=MailerContact.objects.create(center_key='same-email',email=item.email,centers=['Shared center'],imported_at=timezone.now())
+        campaign=admin_mailer.preview_campaign({**self.data,'selected_contacts':[item,twin]},'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        url=reverse('mailer-unsubscribe',args=[token])
+        client=Client(enforce_csrf_checks=True)
+        response=client.get(url)
+        self.assertContains(response,'Email preferences')
+        self.assertFalse(MailerSuppression.objects.exists())
+        self.assertEqual(client.post(url,HTTP_ORIGIN='http://testserver').status_code,403)
+        csrf=client.cookies['csrftoken'].value
+        response=client.post(url,{'csrfmiddlewaretoken':csrf},HTTP_ORIGIN='http://testserver')
+        self.assertContains(response,'You are unsubscribed')
+        self.assertEqual(campaign.messages.filter(state='suppressed').count(),2)
+        self.assertNotIn(item.pk, admin_mailer.mailer_contacts().values_list('pk',flat=True))
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.assertEqual(client.get(url+'bad').status_code,400)
+        self.assertContains(client.post(url,{'csrfmiddlewaretoken':csrf},HTTP_ORIGIN='http://testserver'),'You are unsubscribed')
+        admin_mailer.suppress_email(item.email)
+        self.assertEqual(MailerSuppression.objects.count(),1)
+
+    def test_disable_is_admin_only_blocks_new_and_prepared_campaigns(self):
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first()
+        campaign=self.preview('1')
+        response=self.client.post('/admin/mailer/',{'action':'disable','contact_id':item.pk})
+        self.assertEqual(response.status_code,302)
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+        self.assertContains(self.client.get('/admin/mailer/unsubscribed/'),item.email)
+        with self.assertRaises(ValidationError):
+            admin_mailer.preview_campaign({**self.data,'selected_contacts':[item]},'mailer-admin')
+        admin_mailer.queue_campaign(campaign.pk)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.client.logout()
+        self.assertEqual(self.client.post('/admin/mailer/',{'action':'disable','contact_id':item.pk}).status_code,302)
+
+    def test_filters_use_email_history_across_shared_centers_and_all_replies(self):
+        item=MailerContact.objects.first()
+        twin=MailerContact.objects.create(center_key='history-twin',email=item.email,centers=['Twin'],imported_at=timezone.now())
+        campaign=self.preview('1');message=campaign.messages.get();message.state='sent';message.sent_at=timezone.now();message.save()
+        self.assertNotIn(twin.pk,admin_mailer.mailer_contacts(audience='never').values_list('pk',flat=True))
+        self.assertIn(twin.pk,admin_mailer.mailer_contacts(audience='no_reply').values_list('pk',flat=True))
+        admin_mailer.import_reply(self.reply(message),'box','1',1)
+        self.assertNotIn(twin.pk,admin_mailer.mailer_contacts(audience='no_reply').values_list('pk',flat=True))
+        admin_mailer.suppress_email(item.email)
+        self.assertIn(twin.pk,admin_mailer.mailer_contacts(audience='unsubscribed').values_list('pk',flat=True))
+        response=self.client.get('/admin/mailer/',{'audience':'never'})
+        self.assertContains(response,'Never emailed')
+
+    def test_template_rejects_unknown_variables_and_postal_email(self):
+        form=admin_mailer.ComposeForm({**self.data,'body':'{{unknown}}'})
+        self.assertFalse(form.is_valid())
+        MailerMailbox.objects.create(mailing_address='')
+        with self.assertRaises(ValidationError):
+            admin_mailer.preview_campaign({**self.data,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+
+    def test_suppression_is_checked_again_immediately_before_smtp(self):
+        from api.models import MailerSuppression
+        campaign=self.preview('1')
+        admin_mailer.queue_campaign(campaign.pk)
+        MailerSuppression.objects.create(email=campaign.messages.get().email)
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+
+    def test_outreach_rendering_uses_clickable_labels_not_long_signed_link_text(self):
+        campaign=admin_mailer.preview_campaign({**self.data,'selection':'1','subject':admin_mailer.OUTREACH_SUBJECT,'body':admin_mailer.OUTREACH_BODY},'mailer-admin')
+        item=campaign.messages.get();context=admin_mailer.variables(item)
+        html=admin_mailer.email_body_html(admin_mailer.personalize(campaign.body,item),context)
+        self.assertIn('>Open your center portal</a>',html)
+        self.assertIn('>Unsubscribe</a>',html)
+        self.assertIn('href="'+context['claim_link']+'"',html)
+        self.assertNotIn('>'+context['opt_out_link'],html)
+
+    def test_select_all_filtered_includes_every_page_and_respects_suppression(self):
+        from api.models import MailerSuppression
+        blocked=MailerContact.objects.first()
+        admin_mailer.suppress_email(blocked.email)
+        response=self.client.post('/admin/mailer/',{**self.data,'action':'preview','email_filter':'@example.test','audience_filter':'never','select_all_filtered':'1','selection':''})
+        self.assertEqual(response.status_code,302)
+        campaign=MailerCampaign.objects.get()
+        self.assertEqual(campaign.messages.count(),204)
+        self.assertFalse(campaign.messages.filter(email=blocked.email).exists())
+        self.assertEqual(campaign.selection,'All 204 matching centers')
+        response=self.client.get('/admin/mailer/',{'audience':'never','all_matching':'1','page':'2'})
+        self.assertTrue(response.context['all_matching'])
+        self.assertContains(response,'Select all 204 matching centers across every page')
+        self.assertContains(response,'all_matching=1&amp;page=3')
+
+    def test_query_unsubscribe_link_and_legacy_path_with_or_without_slash(self):
+        from django.core import signing
+        from urllib.parse import urlsplit
+        campaign=self.preview('1');item=campaign.messages.get()
+        url=admin_mailer.variables(item)['opt_out_link']
+        local=urlsplit(url).path+'?'+urlsplit(url).query
+        self.assertContains(self.client.get(local),'Email preferences')
+        token=signing.dumps({'email':item.email},salt='mailer-unsubscribe-v1',compress=True)
+        for path in ('/api/mailer/unsubscribe/'+token, '/api/mailer/unsubscribe/'+token+'/'):
+            self.assertContains(self.client.get(path),'Email preferences')
+        self.assertEqual(self.client.get('/api/mailer/unsubscribe?token=invalid').status_code,400)
+        self.assertFalse(__import__('api.models',fromlist=['MailerSuppression']).MailerSuppression.objects.exists())
+
+    def test_previous_draft_claim_links_use_the_direct_center_login(self):
+        item=self.preview('1').messages.get()
+        item.template_context={'claim_link':'http://testserver/#center'}
+        self.assertEqual(admin_mailer.variables(item)['claim_link'],'http://testserver/center-login')
+
+    def test_enable_address_is_post_only_superuser_csrf_protected_and_does_not_resend(self):
+        from api.models import MailerSuppression
+        from django.contrib.admin.models import LogEntry
+        item=MailerContact.objects.first();campaign=self.preview('1')
+        admin_mailer.suppress_email(item.email)
+        suppression=MailerSuppression.objects.get()
+        url='/admin/mailer/unsubscribed/'
+        data={'action':'enable','suppression_id':suppression.pk}
+        self.assertContains(self.client.get(url),'Enable email')
+        self.assertTrue(MailerSuppression.objects.exists())
+        secure=Client(enforce_csrf_checks=True);secure.force_login(self.admin)
+        self.assertEqual(secure.post(url,data,HTTP_ORIGIN='http://testserver').status_code,403)
+        self.assertTrue(MailerSuppression.objects.exists())
+        anonymous=Client()
+        self.assertEqual(anonymous.post(url,data,HTTP_ORIGIN='http://testserver').status_code,302)
+        response=self.client.post(url+'?email='+item.email,data)
+        self.assertEqual(response.status_code,302)
+        self.assertFalse(MailerSuppression.objects.exists())
+        self.assertIn(item.pk,admin_mailer.mailer_contacts().values_list('pk',flat=True))
+        self.assertEqual(campaign.messages.get().state,'suppressed')
+        self.assertTrue(LogEntry.objects.filter(user=self.admin,object_repr=item.email).exists())
+        with patch('booking_mail.send_message') as send:
+            admin_mailer.send_pending();send.assert_not_called()
+        fresh=admin_mailer.preview_campaign({**self.data,'selected_contacts':[item]},'mailer-admin')
+        self.assertEqual(fresh.messages.count(),1)
+
+    def test_filtered_directory_exposes_inline_enable_for_disabled_address(self):
+        from api.models import MailerSuppression
+        item=MailerContact.objects.first();admin_mailer.suppress_email(item.email)
+        response=self.client.get('/admin/mailer/',{'audience':'unsubscribed','email':item.email})
+        self.assertContains(response,'Enable email')
+        self.assertContains(response,'name="suppression_id" value="'+str(MailerSuppression.objects.get().pk)+'"')
+        self.assertContains(response,'name="return_to" value="mailer"')
+        response=self.client.post('/admin/mailer/unsubscribed/',{'action':'enable','suppression_id':MailerSuppression.objects.get().pk,'return_to':'mailer'})
+        self.assertEqual(response.url,'/admin/mailer/')
+        self.assertFalse(MailerSuppression.objects.exists())

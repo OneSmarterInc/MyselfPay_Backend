@@ -12,6 +12,7 @@ from api.authentication import AccountMemberOnly
 from api import serializers as inputs
 from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, BookingCreateThrottle
 import accounts
+import mobile_accounts
 import booking
 import core
 import chat_questions
@@ -27,7 +28,8 @@ def session_token(request):
 
 
 def client_ip(request):
-    return request.META.get('REMOTE_ADDR', 'unknown')
+    import audit
+    return audit.client_ip(request)
 
 
 def session_response(data, status=200, token=None):
@@ -43,7 +45,7 @@ def session_response(data, status=200, token=None):
 
 
 def session_details(member):
-    return {'member': {key: value for key, value in member.items() if key != 'csrf'}, 'csrf': member['csrf']}
+    return {'member': {key: value for key, value in member.items() if key not in ('csrf', 'email')}, 'csrf': member['csrf']}
 
 
 class ResourceView(APIView):
@@ -77,6 +79,8 @@ class HealthView(ResourceView):
                 con.execute('SELECT member_id FROM account_zip_codes LIMIT 0')
                 con.execute('SELECT request_id FROM booking_outbox LIMIT 0')
                 con.execute('SELECT id FROM booking_phone_checks LIMIT 0')
+                con.execute('SELECT member_id FROM mobile_accounts LIMIT 0')
+                con.execute('SELECT challenge_hash FROM password_reset_requests LIMIT 0')
             return Response({'status': 'ok'})
         except Exception:
             return Response({'status': 'unavailable'}, status=503)
@@ -88,7 +92,8 @@ class CenterPortalView(ResourceView):
 
     def get_serializer(self, *args, **kwargs):
         serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
-                      'request': inputs.CenterRequestSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
+                      'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer,
+                      'contact': inputs.CenterContactSerializer, 'profile': inputs.CenterProfileSerializer, 'confirm-price': inputs.CenterPriceConfirmSerializer, 'contact-verify': inputs.CenterVerifySerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
         return serializer(*args, **kwargs)
 
     def cookie_name(self):
@@ -98,11 +103,41 @@ class CenterPortalView(ResourceView):
         import center_portal
         if action != 'dashboard':
             raise NotFound()
-        return Response(center_portal.dashboard(database(), request.COOKIES.get(self.cookie_name(), '')))
+        token = request.COOKIES.get(self.cookie_name(), '')
+        return self.audited(request, action, token, {}, lambda: Response(center_portal.dashboard(database(), token)))
+
+    def audited(self, request, action, token, data, run):
+        """Record who did what, from where, and whether it worked. Secrets are never recorded."""
+        import audit
+        import center_portal
+        audit.bind(request, 'center', data.get('email', '') if action == 'code' else center_portal.actor_email(database(), token))
+        what = {'price': lambda: '; '.join(f"{p['exam']} \u0024{p['amount']} ({p['contrast']})" for p in data.get('prices', [])),
+                'profile': lambda: f"{data.get('field')}: {data.get('value')}",
+                'contact': lambda: f"{data.get('field')}: {data.get('value')}",
+                'request': lambda: f"{data.get('status') or ''} {data.get('appointment') or ''}".strip()}
+        scope = str(data.get('id', '')) if action in ('price', 'profile', 'confirm-price', 'contact') else ''
+        new = what.get(action, lambda: '')()
+        try:
+            response = run()
+        except Exception as exc:
+            audit.log('center.' + action, scope=scope, target_id=str(data.get('id', '')), new=new, result='denied',
+                      detail={'error': str(exc)[:200]})
+            audit.unbind()
+            raise
+        if action in ('verify',):
+            audit.set_actor('center', center_portal.actor_email(database(), response.cookies.get(self.cookie_name()).value if response.cookies.get(self.cookie_name()) else ''))
+        audit.log('center.' + action, scope=scope, target_id=str(data.get('id', '')), new=new)
+        audit.unbind()
+        return response
 
     def post(self, request, action):
         import center_portal
         data = self.validated(request)
+        token = request.COOKIES.get(self.cookie_name(), '')
+        return self.audited(request, action, token, data, lambda: self.handle(request, action, data))
+
+    def handle(self, request, action, data):
+        import center_portal
         token = request.COOKIES.get(self.cookie_name(), '')
         csrf = request.headers.get('X-Center-CSRF', '')
         if action == 'code':
@@ -114,7 +149,25 @@ class CenterPortalView(ResourceView):
                                 httponly=True, samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
             return response
         if action == 'request':
-            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status')))
+            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment')))
+        if action == 'price':
+            return Response(center_portal.submit_prices(database(), token, csrf, str(data['id']), data['prices'], data['consent']), status=201)
+        if action == 'confirm-price':
+            import center_profile
+            return Response(center_profile.confirm_price(database(), token, csrf, str(data['id'])))
+        if action == 'profile':
+            import center_profile
+            return Response(center_profile.submit(database(), token, csrf, data['id'], data['field'], data['value']), status=201)
+        if action == 'contact':
+            import center_contact
+            return Response(center_contact.start(database(), token, csrf, data['field'], data['value'], data.get('id') or None))
+        if action == 'contact-verify':
+            import center_contact
+            result = center_contact.confirm(database(), token, csrf, str(data['verification_id']), data['code'])
+            response = Response(result)
+            if result.get('login_required'):
+                response.delete_cookie(self.cookie_name(), path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
+            return response
         if action == 'logout':
             with booking.connection(database(), write=True) as db:
                 center_portal.identity(db, token, csrf)
@@ -130,11 +183,8 @@ class DirectorySummaryView(ResourceView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        data = core.directory_summary(database())
-        with core.connect(database()) as db:
-            active = core.active_batch(db)
-            ready = bool(active and db.execute('SELECT value FROM settings WHERE key=?', ('spatial-ready:' + active,)).fetchone())
-        return Response({**data, 'spatial_api_version': 1, 'spatial_ready': ready, 'account_zip_enabled': True})
+        data = core.catalog_metadata(database(), include_locations=False)
+        return Response({'listing_count': data['entry_count'], 'state_count': data['state_count'], 'spatial_api_version': 1, 'spatial_ready': data['spatial_ready'], 'account_zip_enabled': True})
 
 
 class AuthenticationView(ResourceView):
@@ -143,8 +193,8 @@ class AuthenticationView(ResourceView):
     serializer_class = inputs.LoginSerializer
 
     def post(self, request):
-        data = accounts.authenticate(database(), self.validated(request), self.action,
-                                     client_ip(request), session_token(request))
+        data = mobile_accounts.authenticate(database(), self.validated(request), self.action,
+                                     client_ip(request), session_token(request), request.auth)
         token = data.pop('token')
         return session_response(data, 201 if self.action == 'register' else 200, token)
 
@@ -152,6 +202,43 @@ class AuthenticationView(ResourceView):
 class RegistrationView(AuthenticationView):
     action = 'register'
     serializer_class = inputs.RegistrationSerializer
+
+
+class AccountSetupView(AuthenticationView):
+    action = 'setup'
+    serializer_class = inputs.RegistrationSerializer
+
+
+class RegistrationMobileView(ResourceView):
+    permission_classes = [AllowAny]
+    # Match the existing OTP policy: no application-level send/check quotas.
+    throttle_classes = []
+
+    def post(self, request, action):
+        data = self.validated(request)
+        result = (mobile_accounts.request_code(database(), data, client_ip(request)) if action == 'code'
+                  else mobile_accounts.verify_code(database(), data))
+        return Response(result)
+
+    def validated(self, request):
+        if len(request.body) > 4096 or not isinstance(request.data, dict):
+            raise ValueError('Invalid verification request.')
+        return request.data
+
+
+class MobileOTPView(ResourceView):
+    permission_classes = [AllowAny]
+    throttle_classes = []  # Preserve the existing application OTP policy.
+
+    def post(self, request, action):
+        import phone_accounts
+        if len(request.body) > 4096 or not isinstance(request.data, dict):
+            raise ValueError('Invalid mobile authentication request.')
+        if action == 'code':
+            return Response(phone_accounts.issue(database(), request.data))
+        result = phone_accounts.finish(database(), request.data, session_token(request))
+        token = result.pop('token')
+        return session_response(result, status=201 if request.data.get('intent') == 'register' else 200, token=token)
 
 
 class GuestView(ResourceView):
@@ -169,9 +256,15 @@ class GuestView(ResourceView):
 
 class PasswordView(ResourceView):
     permission_classes = [AllowAny]
+    throttle_classes = []  # Same application OTP quota policy as registration.
 
-    def post(self, request):
-        return Response({'error': 'Password recovery is not available yet.'}, status=410)
+    def post(self, request, action='reset'):
+        import password_reset
+        if len(request.body)>4096 or not isinstance(request.data,dict):
+            raise ValueError('Invalid password reset request.')
+        functions={'code':password_reset.issue,'verify':password_reset.verify,'reset':password_reset.save}
+        result=functions[action](database(),request.data)
+        return session_response(result,token='' if action=='reset' else None)
 
 
 class MeView(ResourceView):
@@ -194,10 +287,10 @@ class LogoutView(ResourceView):
 
 class CatalogView(ResourceView):
     def get(self, request):
-        data = core.catalog(database())
         if request.query_params.get('metadata') == '1':
-            return Response({'version': data['version'], 'entry_count': len(data['entries']), 'offer_count': len(data['offers']), 'entries': [], 'offers': [], 'locations': data['locations'], 'metadata_only': True})
-        return Response(data)
+            data = core.catalog_metadata(database())
+            return Response({key: data[key] for key in ('version', 'entry_count', 'offer_count', 'locations')} | {'entries': [], 'offers': [], 'metadata_only': True})
+        return Response(core.catalog(database()))
 
 
 class SearchView(ResourceView):
@@ -330,14 +423,41 @@ class BookingView(ResourceView):
         return self.serializers_by_action[self.kwargs['action']](*args, **kwargs)
 
     def post(self, request, action):
+        import audit
+        who = ('patient', booking.digest(request.auth['id'])) if request.auth else ('clinic', '')
+        audit.bind(request, *who)
+        payload = request.data if hasattr(request.data, 'get') else {}
+        scope, ident = str(payload.get('clinic_id', ''))[:200], str(payload.get('id', ''))[:80]
+        try:
+            try:
+                response = self.handle(request, action)
+            except Exception as exc:
+                code = getattr(exc, 'status', None) or getattr(exc, 'status_code', None) or 500
+                audit.log('booking.' + action, scope=scope, target_type='appointment_request', target_id=ident,
+                          result='denied' if code < 500 else 'error', detail={'error': str(exc)[:200], 'status': code})
+                raise
+            body = response.data if isinstance(response.data, dict) else {}
+            detail, new = {'status': response.status_code}, ''
+            if action == 'create':
+                # Only an ID and a hash of what the patient sent. The content stays in the booking store.
+                detail['content_sha256'] = hashlib.sha256(core.canonical(dict(payload)).encode()).hexdigest()
+                detail['offer_id'] = str(payload.get('offer_id', ''))[:200]
+                ident = str(body.get('id') or ident)[:80]
+            elif action == 'status':
+                new = str(payload.get('status', ''))[:40]
+            audit.log('booking.' + action, scope=scope, target_type='appointment_request', target_id=ident, new=new, detail=detail)
+            return response
+        finally:
+            audit.unbind()
+
+    def handle(self, request, action):
         db, data = database(), self.validated(request)
         if action == 'options':
             result = booking.options(db, data['clinic_id'], data['offer_id'])
-            result['verified_email'] = booking.saved_verified_email(db, request.auth['id'])
-        elif action == 'email-code':
-            result = booking.request_patient_code(db, request.auth['id'], data['email'])
-        elif action == 'email-verify':
-            result = booking.verify_patient_code(db, request.auth['id'], data['verification_id'], data['code'])
+            with core.connect(db) as con:
+                result['phone'] = mobile_accounts.booking_phone_for(con, request.auth['id'])
+        elif action in ('email-code', 'email-verify'):
+            return Response({'error':'Patient email verification has been retired. Use mobile verification at registration.'}, status=410)
         elif action == 'phone-code':
             import booking_phone
             result = booking_phone.request_code(db, request.auth['id'], data['phone'])
@@ -353,7 +473,7 @@ class BookingView(ResourceView):
         elif action == 'verify':
             result = booking.verify_code(db, data['id'], data['token'], data['code'])
         elif action in ('details', 'status'):
-            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'))
+            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'), data.get('appointment'))
         else:
             result = booking.lock_session(db, data['id'], data['session'])
         return Response(result, status=201 if action == 'create' else 200)
@@ -372,7 +492,7 @@ class DashboardView(ResourceView):
             return Response({'error':'Invalid request filter.'}, status=400)
         owner, now = booking.digest(request.auth['id']), time.time()
         with core.connect(database()) as con:
-            profile = con.execute('SELECT m.name,a.email,a.phone,a.created FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE m.id=?', (request.auth['id'],)).fetchone()
+            profile = con.execute('SELECT m.id,m.name,a.phone,a.created FROM members m JOIN user_accounts a ON a.member_id=m.id WHERE m.id=?', (request.auth['id'],)).fetchone()
             if not profile:
                 return Response({'error':'Account profile unavailable.'}, status=404)
             stats = {row['status']:row['n'] for row in con.execute("""SELECT CASE WHEN status IN ('requested','voicemail') AND link_expires<=? THEN 'expired' ELSE status END AS status,COUNT(*) AS n FROM booking_requests WHERE owner_hash=? GROUP BY 1""", (now,owner)).fetchall()}
@@ -390,13 +510,13 @@ class DashboardView(ResourceView):
             for row in rows:
                 item = booking.receipt(row,con)
                 payload = booking.unpack(row)
-                item.update(contact_name=payload['first_name'],contact_email=payload['patient_email'],contact_phone=payload.get('phone',''),consent=payload.get('consent',False),approved_at=row['closed'] if row['status']=='scheduled' else None)
+                item.update(contact_name=payload['first_name'],contact_phone=payload.get('phone',''),consent=payload.get('consent',False),approved_at=row['closed'] if row['status']=='scheduled' else None)
                 if item['status'] in ('requested','voicemail') and row['link_expires']<=now:
                     item['status']='expired'
                 requests.append(item)
-            account = dict(profile)
+            account = mobile_accounts.profile(con, profile)
             account['zip_code'] = accounts.saved_zip(con,request.auth['id'])
-        return Response({'profile':account,'verified_email':booking.saved_verified_email(database(),request.auth['id']),
+        return Response({'profile':account,
                          'requests':requests,'stats':stats,'total':total,'page':page,'pages':pages})
 
 
