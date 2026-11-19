@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-15",
+  "source_file": "Combined_Imaging_Leads.xlsx",
+  "source_sha256": "892805bb08dcef4b03e2e8605afc08cb9e39eb21a5a0139377288b1b0c344fad",
+  "source_rows": 208,
+  "fresh_researched_rows": 37,
+  "historical_only_rows": 171,
+  "source_labeled_candidates": 35,
+  "source_labeled_existing": 173,
+  "canonical_matched_rows": 171,
+  "live_matched_rows": 51,
+  "repository_matched_rows": 171,
+  "prior_daily_matched_rows": 0,
+  "numeric_marketplace_offers": 148,
+  "centers_with_marketplace_offers": 16,
+  "fresh_inquiry_email_rows": 5,
+  "fresh_distinct_inquiry_emails": [
+    "estimatedcost@simonmed.com"
+  ],
+  "fresh_verified_appointment_inboxes": 0,
+  "verified_direct_clinic_numeric_prices": 0,
+  "new_discovery_credit": 0,
+  "canonical_rows_compared": 5404,
+  "repository_main_rows_compared": 5105,
+  "live_AZ_CA_TX_rows_compared": 868,
+  "database_review_AZ_CA_TX_rows_compared": 704,
+  "prior_daily_rows_compared": 163,
+  "imports": 0,
+  "no_outreach": true,
+  "no_canonical_changes": true,
+  "no_code_changes": true,
+  "full_fresh_review_complete": false,
+  "limits": [
+    "171 existing matched rows retain historical values with original check dates; they were not freshly website-verified in this pass.",
+    "35 candidates plus 2 unmatched existing-label rows researched. All four previously inaccessible SimonMed location pages were directly retrieved in the deeper pass; their addresses and phones are now verified.",
+    "Camelback temporarily closed; do not import as available.",
+    "All numeric offers are MDsave prepaid marketplace prices, not direct clinic rates. Not a complete tariff.",
+    "Web-index cached evidence can be older than observation date; availability and totals must be reconfirmed before purchase.",
+    "No current appointment inbox verified; SimonMed email is cost-estimate only.",
+    "URL/name/address matching may miss renamed or relocated aliases; shared phone is not treated as a duplicate. Live records often lack structured addresses.",
+    "Source workbook claims held/excluded tab but only Leads sheet exists.",
+    "GitHub data files are research artifacts, not an import or deploy. Change-record and backup approval workflow remains required."
+  ],
+  "files_sha256": {
+    "output.prices.csv": "eac8f8ea98ab7b02190208068da4ef5cdd2d4ff4d9e908fe647e38228fd41b5d",
+    "output.enriched.csv": "b5909f801b0d35a2ecf27ea0c35d9ddda7a2048abacb0decf612846121fbcaac",
+    "output.source.csv": "7093b8ceaa743979872c7379c4c54fc1573121aa89862e628a0d48b75282e3e4",
+    "output.followup-evidence.json": "d74d1c411d4767942a48ecd77a8cf6d5729227823d51a41e627144d5b0ca55d9",
+    "output.evidence.json": "0dc6780c5819991fc73d10150655da6d252555c1d5f64ffcb1e9ec9fd4735bc0",
+    "output.README.md": "dec2177253b1baf82877c6e34f98af2662c68995a84b4b66afc98d5990b7f79f"
+  }
+}

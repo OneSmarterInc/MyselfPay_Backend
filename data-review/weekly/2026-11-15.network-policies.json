@@ -1,0 +1,112 @@
+[
+  {
+    "source_url": "https://simonmed.com/patients/your-visit/faqs/",
+    "representative_id": "D-36",
+    "operator": "SimonMed Imaging",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Cash prices for uninsured patients require a call or chat quote. Estimate inquiries: estimatedcost@simonmed.com. Payment at service; 3% credit-card fee where permitted, with listed non-credit methods exempt.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.solismammo.com/node/907",
+    "representative_id": "D-396",
+    "operator": "Solis Mammography Chandler",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "All Solis centers offer self-pay; price varies. Request a quote through the published central contact. No fixed screening or diagnostic mammogram price published in this source.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://healthcare.ascension.org/price-transparency",
+    "representative_id": "N-20261102-IL-0282",
+    "operator": "Ascension Illinois - Imaging Addison",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Choose the hospital and service in the official estimator. Uninsured or not using insurance may request a Good Faith Estimate; no single network tariff is stated.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://akumin.com/faq/",
+    "representative_id": "D-501",
+    "operator": "Akumin — Fremont",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Uninsured patients can obtain an exact-exam estimate from their local clinic or contact form. Cash discounts/payment plans depend on demonstrated financial hardship. No numeric tariff found.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.radnet.com/lenox-hill-radiology/for-patients/billing-insurance",
+    "representative_id": "D-1079",
+    "operator": "Lenox Hill Radiology (RadNet) — Astoria",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Official Good Faith Estimate and online estimator pathway. 3% credit-card fee stated; cash/debit/prepaid/check exempt. No fixed network imaging tariff.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.touchstoneimaging.com/patients/billing-collections/",
+    "representative_id": "D-38",
+    "operator": "Touchstone Medical Imaging",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Cash rates for non-insured patients and payment plans offered; contact the local center for options. No numeric tariff stated.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://americanhealthimaging.com/patients/billing-collections/",
+    "representative_id": "D-35",
+    "operator": "American Health Imaging",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Cash rates for non-insured patients and CareCredit offered; contact local center for pricing. No numeric tariff stated.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.providence.org/billing-support/price-estimate",
+    "representative_id": "D-3170",
+    "operator": "Grace Clinic — Imaging Center",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Price estimate available by selected region/hospital and guest or MyChart route. Good Faith Estimate information remains available. No network-wide numeric tariff.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.allinahealth.org/customer-service/billing-and-insurance",
+    "representative_id": "E5-20261102-MN-0020",
+    "operator": "Abbott Northwestern – WestHealth — X-ray services",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "Online guest estimator or procedure-code-specific quote available. Hospital/primary clinic estimates use 612-262-4930; specialist quotes from the specific clinic. No numeric imaging tariff.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  },
+  {
+    "source_url": "https://www.adventisthealth.org/legal-notices/no-surprises/",
+    "representative_id": "N-20261102-CA-0190",
+    "operator": "Adventist Health Imaging Chester",
+    "checked_on": "2026-11-15",
+    "status": "network policy reviewed; individual branch and scan quote not verified",
+    "finding": "No Surprises page states an estimate pathway and links Good Faith Estimate, but that link resolves to homepage. Page text still describes written estimates for uninsured patients. No numeric imaging tariff.",
+    "limits": "Network policy evidence only. Does not establish current individual branch operation, modalities, contact readiness, or any exact price. No patient information entered in estimate tools.",
+    "source_retrieval_note": "Official web content retrieved November 15; initial crawl age today to last month.",
+    "branch_verification_performed": false
+  }
+]

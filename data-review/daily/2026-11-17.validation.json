@@ -1,0 +1,60 @@
+{
+  "batch_date": "2026-11-17",
+  "timezone": "America/Los_Angeles",
+  "checked_utc": "2026-11-18",
+  "automation_context_version": "7112a8bc",
+  "date_basis": "Current scheduled run Nov18 UTC occurs Nov17 PST. Reconciled existing Nov17 files; preserved prior results, corrected previous UTC+05:30 date basis.",
+  "qualified_new_rows": 1,
+  "email_complete_qualified_rows": 1,
+  "new_candidate_holds": 0,
+  "existing_hold_rows": 5,
+  "nonduplicate_unresolved_holds": 4,
+  "duplicate_audit_holds": 1,
+  "email_related_holds": 2,
+  "hold_state_counts": {
+    "IA": 4,
+    "NE": 1
+  },
+  "qualified_state_counts": {
+    "IA": 1
+  },
+  "new_candidates_researched": 4,
+  "new_research_duplicates_excluded": 3,
+  "prior_hold_duplicate_identified": "Gordon Nov17 H001 duplicates historical Nov12 row DAILY-20261108-H008; retained as reject-duplicate audit hold, never counted as new.",
+  "duplicate_research_exclusions": [
+    {
+      "name": "Washington County",
+      "source": "Canonical v59 Directory row3888"
+    },
+    {
+      "name": "Madison County Winterset",
+      "source": "data/daily-csv 2026-11-07.csv row8 DAILY-20261107-007"
+    },
+    {
+      "name": "Veterans Memorial Waukon",
+      "source": "data/daily-csv 2026-11-08.csv row3 DAILY-20261108-002"
+    }
+  ],
+  "dedup_scope": "Latest canonical v59 all 16 sheets; all 18 main/historical daily CSVs plus 17 accompanying JSON/Markdown files; fresh read-only live entries across 14 batches, 4,438 rows, plus directory_import_records. Monroe name/domain/city/address/phone queries produced no matches.",
+  "dedup_limits": "Semantic aliases and older separate review workbooks outside daily directories not exhaustively reconciled; unstructured live locations limit absolute certainty.",
+  "monroe_order_evidence": "Official Winter 2022 patient newsletter page 6 explicitly requires referral except mammograms. Source age retained; not newly issued policy. https://www.mchalbia.com/wp-content/uploads/2022/12/H11617_Monroe_Co_Hospital_final.pdf",
+  "monroe_sources": [
+    "https://www.mchalbia.com/contact/",
+    "https://www.mchalbia.com/services/radiology/",
+    "https://www.mchalbia.com/cms-price-transparency/"
+  ],
+  "published_fixed_price_new_rows": 0,
+  "target_100_met": false,
+  "source_corrections": [
+    "Grape radiology@grapehospital.com directly verified; separate professional bill warning added",
+    "Gordon hospital MRI calendar confirms 300 E 8th; 807 N Ash is separate clinic; duplicate audit status",
+    "Ringgold job-description physician-order evidence added with limited scope",
+    "Mitchell September 2026 directory separately confirms hospital 616/6000 and clinic 620/6100; exact scan site/email remain held"
+  ],
+  "schema_columns": 76,
+  "canonical_columns_preserved": 52,
+  "no_db_write": true,
+  "no_provider_contact": true,
+  "qualified_csv_is_not_db_import_approval": true,
+  "rollback": "Restore only files changed in this reconciliation from preceding blobs after checking for later edits: daily 7ec46b677cac2a84d6b69bdabcd6ca128ca60a29; holds f7ba164cc25cb794598b333635d53f9de50dbdfa; validation dba7e738c69c983f67c0bc5c0d1a7159103d6702. No canonical file edited."
+}

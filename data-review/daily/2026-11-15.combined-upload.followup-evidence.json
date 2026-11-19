@@ -1,0 +1,1414 @@
+{
+  "checked_date": "2026-11-15",
+  "rows_checked": 37,
+  "new_usable_email_ids": 0,
+  "new_direct_provider_numeric_prices": 0,
+  "research": {
+    "L0001": {
+      "id": "L0001",
+      "center": "Arizona Diagnostic Radiology Apache Junction",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/apache-junction",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0002": {
+      "id": "L0002",
+      "center": "Arizona Diagnostic Radiology Casa Grande",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/casa-grande",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0003": {
+      "id": "L0003",
+      "center": "Chandler Fairview",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/chandler-fairview",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0004": {
+      "id": "L0004",
+      "center": "Arizona Diagnostic Radiology Gilbert Baseline",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/gilbert",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0005": {
+      "id": "L0005",
+      "center": "Mercy Gilbert",
+      "checked": "2026-11-15",
+      "confirmed_changes": {
+        "phone": "(480) 256-9061",
+        "phone_verification_source": "https://www.arizonadiagnosticradiology.com/locations",
+        "phone_note": "Official directory confirms original local number. Individual branch page shows shared billing number; scheduling header remains 480-455-1850."
+      },
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/mercy-gilbert",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0006": {
+      "id": "L0006",
+      "center": "Arizona Diagnostic Radiology Paseo",
+      "checked": "2026-11-15",
+      "confirmed_changes": {
+        "phone": "(623) 226-8989",
+        "phone_verification_source": "https://www.arizonadiagnosticradiology.com/locations",
+        "phone_note": "Official directory confirms original local number. Individual branch page shows shared billing number; scheduling header remains 480-455-1850."
+      },
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/paseo",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0007": {
+      "id": "L0007",
+      "center": "Arizona Diagnostic Radiology Superstition Springs",
+      "checked": "2026-11-15",
+      "confirmed_changes": {
+        "phone": "(480) 400-7228",
+        "phone_verification_source": "https://www.arizonadiagnosticradiology.com/locations",
+        "phone_note": "Official directory confirms original local number. Individual branch page shows shared billing number; scheduling header remains 480-455-1850."
+      },
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/superstition-springs",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0008": {
+      "id": "L0008",
+      "center": "North Mesa",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/north-mesa",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0009": {
+      "id": "L0009",
+      "center": "Arizona Diagnostic Radiology Ahwatukee",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/ahwatukee",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0010": {
+      "id": "L0010",
+      "center": "Breastlink Park Central",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/breastlink-park-central",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe",
+        "https://breastlink.com/contact",
+        "https://breastlink.com/patient-provider-forms",
+        "https://breastlink.com/billing"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0012": {
+      "id": "L0012",
+      "center": "Breastlink Kierland",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/breastlink-kierland",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe",
+        "https://breastlink.com/contact",
+        "https://breastlink.com/patient-provider-forms",
+        "https://breastlink.com/billing"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0013": {
+      "id": "L0013",
+      "center": "Arizona Diagnostic Radiology Tempe Baseline",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/tempe-baseline",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0036": {
+      "id": "L0036",
+      "center": "Breastlink Chandler",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://breastlink.com/locations/breastlink-chandler",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe",
+        "https://breastlink.com/contact",
+        "https://breastlink.com/patient-provider-forms",
+        "https://breastlink.com/billing"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0037": {
+      "id": "L0037",
+      "center": "Arizona Diagnostic Radiology Westgate",
+      "checked": "2026-11-15",
+      "confirmed_changes": {},
+      "inquiry_email": null,
+      "direct_provider_prices": null,
+      "email_status": "No verified public patient inquiry, appointment or estimate email found after official-site and targeted web searches.",
+      "direct_price_status": "No direct public tariff confirmed. Official GFE estimator requires first name, last name, date of birth, procedure and site; no information submitted.",
+      "estimate_url": "https://azdrgpatientportal.com/home/gfe",
+      "excluded_email": {
+        "address": "Marketing@azdrg.com",
+        "purpose": "Referring-provider Connect portal registration, not patient scheduling or estimates",
+        "source": "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf"
+      },
+      "sources_checked": [
+        "https://www.arizonadiagnosticradiology.com/locations/westgate",
+        "https://www.arizonadiagnosticradiology.com/locations",
+        "https://www.arizonadiagnosticradiology.com/pay-my-bill",
+        "https://www.arizonadiagnosticradiology.com/provider-portal",
+        "https://azdrgconnect.com/Training_Material/Download/azdrg_sign_up_sheet/Sign-Up-Sheet-ADR-v1.pdf",
+        "https://azdrgpatientportal.com/home/gfe"
+      ],
+      "search_limits": [
+        "Read-only public sources, no clinic contact or submission.",
+        "Searched official ADR/RadNet/Breastlink pages and indexed requisition PDFs. Original advanced imaging requisition URL returned 404; indexed text shows scheduling phone/fax, no patient inquiry email.",
+        "Excluded employment, cybersecurity, physician contacts, unrelated-region contacts and third-party platform emails. Did not guess address patterns.",
+        "Expected Health advertises provider-sourced cash amounts but official source tariff was not verified; not promoted to direct-provider prices. Existing MDsave data remains separate prepaid marketplace pricing."
+      ]
+    },
+    "L0021": {
+      "id": "L0021",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/edinburg",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf",
+        "https://houstonimaging.com/files/hmi/assets/Edinburg-Physician-Referral-Form_07.11.2024_FINAL_OUTLINES.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement.",
+        "Edinburg-specific July 2024 one-page requisition inspected visually: phone/fax, no email or prices."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0022": {
+      "id": "L0022",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/campbell",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0023": {
+      "id": "L0023",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/energy-corridor",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0024": {
+      "id": "L0024",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/heights",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0025": {
+      "id": "L0025",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/jacinto-city-eastside",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0026": {
+      "id": "L0026",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/richmond",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0027": {
+      "id": "L0027",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/shepherd",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0028": {
+      "id": "L0028",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/steeplechase",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0030": {
+      "id": "L0030",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/katy-womens-breast-center",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0031": {
+      "id": "L0031",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/pearland",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0032": {
+      "id": "L0032",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/global-imaging",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0033": {
+      "id": "L0033",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/brooks-lake",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0034": {
+      "id": "L0034",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/sugar-land-fort-bend",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0035": {
+      "id": "L0035",
+      "verified_date": "2026-11-15",
+      "confirmed_changes": {},
+      "email": null,
+      "current_direct_cash_prices": null,
+      "email_status": "No public general inquiry, appointment, or estimate email verified after deeper search",
+      "price_status": "No additional current direct-provider cash price confirmed",
+      "sources_checked": [
+        "https://houstonimaging.com/locations/tomball",
+        "https://houstonimaging.com/",
+        "https://houstonimaging.com/about",
+        "https://houstonimaging.com/provider-portal",
+        "https://houstonimaging.com/patient-portal/pay-my-bill",
+        "https://houstonimaging.com/files/hmi/assets/standard-referral-form.pdf"
+      ],
+      "search_limits": [
+        "Searched official houstonimaging.com and legacy hmixray.com for email, scheduling, contact, pricing and cash-price PDFs, plus grouped individual branch name queries.",
+        "Read January 12 2026 referral form: phone/fax and portals, no general email or cash tariff.",
+        "No external contact, form submission, sign-in, personal-data entry or personalized estimate requested.",
+        "Direct HTML extraction of provider pages was unavailable (HTTP 403); indexed official web content and PDF text were reviewed instead.",
+        "No guessed email formats or staff-directory addresses included. Medical records, research and third-party listing-maintainer contacts excluded.",
+        "Current exact price for an unspecified exam cannot be inferred from a historical tariff, social promotion or network-wide statement."
+      ],
+      "excluded_findings": [
+        {
+          "item": "Legacy cash price list VERSION 03.22",
+          "source": "https://hmixray.com/wp-content/uploads/2022/03/hmi_cash_price_list.pdf",
+          "reason": "March 2022 version indexed; current live file previously 404. Not a current direct quote."
+        },
+        {
+          "item": "Clear Lake Chamber Send Email link",
+          "source": "https://members.clearlakearea.com/directory/Contact/pQj18anP?listingTypeId=aPd59eL8",
+          "reason": "Third-party relay form, no visible HMI email address or scheduling purpose."
+        }
+      ],
+      "verified_alternative": {
+        "phone": "(713) 797-1919",
+        "quote_request_url": "https://texaspatientportal.com/home/gfe",
+        "note": "Existing verified routes, not newly found emails. Estimator requires personal information and exam/site selection."
+      }
+    },
+    "L0011": {
+      "id": "L0011",
+      "checked_date": "2026-11-15",
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://simonmed.com/patients/contact/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://simonmed.com/locations/az/camelback/"
+      ],
+      "confirmed_changes": {},
+      "limits": [
+        "estimatedcost@simonmed.com is a public network-wide cost-estimate inquiry mailbox. No branch scheduling email verified.",
+        "No patient details submitted, emails sent or calls placed.",
+        "General longevity-package pricing was not assigned to branches without evidence that the branch offers that package.",
+        "Camelback remains temporarily closed for construction on official location page. Network contact is not evidence this branch can currently schedule an exam."
+      ],
+      "excluded_emails": [
+        {
+          "email": "MedRecReq@simonmed.com",
+          "reason": "Medical records only; not scheduling or new price quotes."
+        },
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Billing/claim status/itemized statements only."
+        },
+        {
+          "email": "WCbilling@simonmed.com",
+          "reason": "Workers compensation billing only."
+        },
+        {
+          "email": "attorney@simonmed.com",
+          "reason": "Personal injury billing only."
+        }
+      ],
+      "scheduling_phone": "1-866-614-8555"
+    },
+    "L0014": {
+      "id": "L0014",
+      "checked_date": "2026-11-15",
+      "email": null,
+      "email_type": null,
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://www.radnet.com/san-diego/content/contact-us",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.radnet.com/san-diego/frequently-asked-radiology-questions",
+        "https://www.radnet.com/patients/billing",
+        "https://www.radnet.com/san-diego/valley-rad",
+        "https://www.valleyrad.com/feeschedule"
+      ],
+      "confirmed_changes": {
+        "contact_page_verified": "Current official regional contact page provides phone/portal channels, not a published patient inquiry email.",
+        "quote_path": "Official billing page links to online Good Faith Estimate tool; no personal data submitted and no patient-specific quote obtained."
+      },
+      "limits": [
+        "Direct fetch confirms Valley Radiology is now part of RadNet San Diego; portal cutoff November 1, 2026.",
+        "The old Valley Radiology fee URL redirects to the transition page. Indexed old fee amounts and info@valleyrad.com are not current verified tariffs/contact details."
+      ],
+      "scheduling_phone": "760-280-0945",
+      "billing_phone": "844-866-2718",
+      "quote_url": "https://myradiologyconnectportal.com/home/gfe",
+      "email_status": "No public inquiry/appointment email verified in current official contact page or targeted official-document searches.",
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Only legacy indexed content; current applicability after transition unverified."
+        }
+      ]
+    },
+    "L0015": {
+      "id": "L0015",
+      "checked_date": "2026-11-15",
+      "email": null,
+      "email_type": null,
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://www.radnet.com/san-diego/content/contact-us",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.radnet.com/san-diego/frequently-asked-radiology-questions",
+        "https://www.radnet.com/patients/billing",
+        "https://www.radnet.com/san-diego/valley-rad",
+        "https://www.valleyrad.com/feeschedule"
+      ],
+      "confirmed_changes": {
+        "contact_page_verified": "Current official regional contact page provides phone/portal channels, not a published patient inquiry email.",
+        "quote_path": "Official billing page links to online Good Faith Estimate tool; no personal data submitted and no patient-specific quote obtained."
+      },
+      "limits": [
+        "Direct fetch confirms Valley Radiology is now part of RadNet San Diego; portal cutoff November 1, 2026.",
+        "The old Valley Radiology fee URL redirects to the transition page. Indexed old fee amounts and info@valleyrad.com are not current verified tariffs/contact details."
+      ],
+      "scheduling_phone": "760-280-0945",
+      "billing_phone": "844-866-2718",
+      "quote_url": "https://myradiologyconnectportal.com/home/gfe",
+      "email_status": "No public inquiry/appointment email verified in current official contact page or targeted official-document searches.",
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Only legacy indexed content; current applicability after transition unverified."
+        }
+      ]
+    },
+    "L0016": {
+      "id": "L0016",
+      "checked_date": "2026-11-15",
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://simonmed.com/patients/contact/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://simonmed.com/locations/ca/madera/"
+      ],
+      "confirmed_changes": {
+        "location_verification": "Official current location page successfully fetched directly (HTTP 200); supersedes prior web-tool accessibility limitation.",
+        "address": "360 E Almond Ave., Madera, CA 93637",
+        "phone": "559-206-9901",
+        "operating_status": "Official location page lists appointments and opening hours; not phone-confirmed",
+        "hours": "Monday 8:00 AM - 4:30 PM Tuesday 8:00 AM - 4:30 PM Wednesday 8:00 AM - 4:30 PM Thursday 8:00 AM - 4:30 PM Friday 8:00 AM - 4:30 PM X-ray walk in hours: Monday-Friday 8:00AM - 4:30PM. ",
+        "services_as_published": "3D Mammography CT/CAT Scan MRI 1.5T Ultrasound (US) X-ray"
+      },
+      "limits": [
+        "estimatedcost@simonmed.com is a public network-wide cost-estimate inquiry mailbox. No branch scheduling email verified.",
+        "No patient details submitted, emails sent or calls placed.",
+        "General longevity-package pricing was not assigned to branches without evidence that the branch offers that package."
+      ],
+      "excluded_emails": [
+        {
+          "email": "MedRecReq@simonmed.com",
+          "reason": "Medical records only; not scheduling or new price quotes."
+        },
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Billing/claim status/itemized statements only."
+        },
+        {
+          "email": "WCbilling@simonmed.com",
+          "reason": "Workers compensation billing only."
+        },
+        {
+          "email": "attorney@simonmed.com",
+          "reason": "Personal injury billing only."
+        }
+      ],
+      "scheduling_phone": "1-866-614-8555",
+      "supersedes_prior_limits": [
+        "Remove prior caveat that official location/phone verification could not be completed.",
+        "Official phone takes precedence over conflicting secondary directory contact."
+      ]
+    },
+    "L0017": {
+      "id": "L0017",
+      "checked_date": "2026-11-15",
+      "email": null,
+      "email_type": null,
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://www.radnet.com/san-gabriel-valley/content/contact-us",
+        "https://www.radnet.com/san-gabriel-valley/for-patients/billing-insurance",
+        "https://www.radnet.com/san-gabriel-valley/frequently-asked-radiology-questions",
+        "https://www.radnet.com/patients/billing"
+      ],
+      "confirmed_changes": {
+        "contact_page_verified": "Current official regional contact page provides phone/portal channels, not a published patient inquiry email.",
+        "quote_path": "Official billing page links to online Good Faith Estimate tool; no personal data submitted and no patient-specific quote obtained."
+      },
+      "limits": [
+        "No official branch cash fee schedule located. Existing MDsave prices are third-party prepaid offers, not official direct-provider prices.",
+        "A third-party Expected Health page claims provider cash rates, but no matching current official tariff was established."
+      ],
+      "scheduling_phone": "626-445-4850",
+      "billing_phone": "844-866-2718",
+      "quote_url": "https://myradiologyconnectportal.com/home/gfe",
+      "email_status": "No public inquiry/appointment email verified in current official contact page or targeted official-document searches.",
+      "excluded_emails": [
+        {
+          "email": "ava.gamble@radnet.com",
+          "reason": "Old insurer-directory named staff address, no current official patient-inquiry confirmation."
+        },
+        {
+          "email": "info@expectedhealthcare.com",
+          "reason": "Third-party booking service, not the imaging center."
+        }
+      ]
+    },
+    "L0018": {
+      "id": "L0018",
+      "checked_date": "2026-11-15",
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://simonmed.com/patients/contact/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://simonmed.com/locations/ca/porterville/"
+      ],
+      "confirmed_changes": {
+        "location_verification": "Official current location page successfully fetched directly (HTTP 200); supersedes prior web-tool accessibility limitation.",
+        "address": "99 W Putnam Ave., Porterville, CA 93257",
+        "phone": "559-713-6050",
+        "operating_status": "Official location page lists appointments and opening hours; not phone-confirmed",
+        "hours": "Tuesday 8:00 AM - 4:30 PM Wednesday 8:00 AM - 4:30 PM X-ray walk-in hours: Tuesday and Wednesday 8:00AM - 4:30PM. ",
+        "services_as_published": "3D Mammography CT/CAT Scan MRI 1.5T Ultrasound (US) X-ray"
+      },
+      "limits": [
+        "estimatedcost@simonmed.com is a public network-wide cost-estimate inquiry mailbox. No branch scheduling email verified.",
+        "No patient details submitted, emails sent or calls placed.",
+        "General longevity-package pricing was not assigned to branches without evidence that the branch offers that package."
+      ],
+      "excluded_emails": [
+        {
+          "email": "MedRecReq@simonmed.com",
+          "reason": "Medical records only; not scheduling or new price quotes."
+        },
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Billing/claim status/itemized statements only."
+        },
+        {
+          "email": "WCbilling@simonmed.com",
+          "reason": "Workers compensation billing only."
+        },
+        {
+          "email": "attorney@simonmed.com",
+          "reason": "Personal injury billing only."
+        }
+      ],
+      "scheduling_phone": "1-866-614-8555",
+      "supersedes_prior_limits": [
+        "Remove prior caveat that official location/phone verification could not be completed.",
+        "Official phone takes precedence over conflicting secondary directory contact."
+      ]
+    },
+    "L0019": {
+      "id": "L0019",
+      "checked_date": "2026-11-15",
+      "email": null,
+      "email_type": null,
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://www.radnet.com/san-diego/content/contact-us",
+        "https://www.radnet.com/san-diego/for-patients/billing-insurance",
+        "https://www.radnet.com/san-diego/frequently-asked-radiology-questions",
+        "https://www.radnet.com/patients/billing",
+        "https://www.radnet.com/san-diego/valley-rad",
+        "https://www.valleyrad.com/feeschedule"
+      ],
+      "confirmed_changes": {
+        "contact_page_verified": "Current official regional contact page provides phone/portal channels, not a published patient inquiry email.",
+        "quote_path": "Official billing page links to online Good Faith Estimate tool; no personal data submitted and no patient-specific quote obtained."
+      },
+      "limits": [
+        "Direct fetch confirms Valley Radiology is now part of RadNet San Diego; portal cutoff November 1, 2026.",
+        "The old Valley Radiology fee URL redirects to the transition page. Indexed old fee amounts and info@valleyrad.com are not current verified tariffs/contact details."
+      ],
+      "scheduling_phone": "760-280-0945",
+      "billing_phone": "844-866-2718",
+      "quote_url": "https://myradiologyconnectportal.com/home/gfe",
+      "email_status": "No public inquiry/appointment email verified in current official contact page or targeted official-document searches.",
+      "excluded_emails": [
+        {
+          "email": "info@valleyrad.com",
+          "reason": "Only legacy indexed content; current applicability after transition unverified."
+        }
+      ]
+    },
+    "L0020": {
+      "id": "L0020",
+      "checked_date": "2026-11-15",
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://simonmed.com/patients/contact/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://simonmed.com/locations/ca/visalia/"
+      ],
+      "confirmed_changes": {
+        "location_verification": "Official current location page successfully fetched directly (HTTP 200); supersedes prior web-tool accessibility limitation.",
+        "address": "3610 W Packwood Ave., Visalia, CA 93277",
+        "phone": "559-713-6050",
+        "operating_status": "Official location page lists appointments and opening hours; not phone-confirmed",
+        "hours": "Monday 8:00 AM - 5:00 PM Tuesday 8:00 AM - 5:00 PM Wednesday 8:00 AM - 5:00 PM Thursday 8:00 AM - 5:00 PM Friday 8:00 AM - 5:00 PM X-ray walk in hours: Monday-Friday 8:00AM - 4:30PM. ",
+        "services_as_published": "3D Mammography Bone Density / DEXA CT/CAT Scan MRI 1.5T Ultrasound (US) X-ray"
+      },
+      "limits": [
+        "estimatedcost@simonmed.com is a public network-wide cost-estimate inquiry mailbox. No branch scheduling email verified.",
+        "No patient details submitted, emails sent or calls placed.",
+        "General longevity-package pricing was not assigned to branches without evidence that the branch offers that package."
+      ],
+      "excluded_emails": [
+        {
+          "email": "MedRecReq@simonmed.com",
+          "reason": "Medical records only; not scheduling or new price quotes."
+        },
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Billing/claim status/itemized statements only."
+        },
+        {
+          "email": "WCbilling@simonmed.com",
+          "reason": "Workers compensation billing only."
+        },
+        {
+          "email": "attorney@simonmed.com",
+          "reason": "Personal injury billing only."
+        }
+      ],
+      "scheduling_phone": "1-866-614-8555",
+      "supersedes_prior_limits": [
+        "Remove prior caveat that official location/phone verification could not be completed.",
+        "Official phone takes precedence over conflicting secondary directory contact."
+      ]
+    },
+    "L0029": {
+      "id": "L0029",
+      "checked_date": "2026-11-15",
+      "email": "estimatedcost@simonmed.com",
+      "email_type": "Network-wide cost-estimate inquiries; not branch scheduling",
+      "direct_provider_cash_prices": null,
+      "direct_price_status": "No current exact branch-specific direct-provider cash tariff verified; quote required. Previously found MDsave offers remain separate marketplace prices.",
+      "sources": [
+        "https://simonmed.com/patients/contact/",
+        "https://simonmed.com/patients/your-visit/faqs/",
+        "https://simonmed.com/locations/tx/willowbrook/"
+      ],
+      "confirmed_changes": {
+        "location_verification": "Official current location page successfully fetched directly (HTTP 200); supersedes prior web-tool accessibility limitation.",
+        "address": "7927 Cypress Creek Parkway STE 100, Houston, TX 77070",
+        "phone": "713-335-8820",
+        "operating_status": "Official location page lists appointments and opening hours; not phone-confirmed",
+        "hours": "Monday 8:30 AM - 5:00 PM Tuesday 8:30 AM - 5:00 PM Wednesday 8:30 AM - 5:00 PM Thursday 8:30 AM - 5:00 PM Friday 8:30 AM - 5:00 PM X-rays are not offered at this location. ",
+        "services_as_published": "CT/CAT Scan MRI 1.5T Ultrasound (US)"
+      },
+      "limits": [
+        "estimatedcost@simonmed.com is a public network-wide cost-estimate inquiry mailbox. No branch scheduling email verified.",
+        "No patient details submitted, emails sent or calls placed.",
+        "General longevity-package pricing was not assigned to branches without evidence that the branch offers that package."
+      ],
+      "excluded_emails": [
+        {
+          "email": "MedRecReq@simonmed.com",
+          "reason": "Medical records only; not scheduling or new price quotes."
+        },
+        {
+          "email": "billing@simonmed.com",
+          "reason": "Billing/claim status/itemized statements only."
+        },
+        {
+          "email": "WCbilling@simonmed.com",
+          "reason": "Workers compensation billing only."
+        },
+        {
+          "email": "attorney@simonmed.com",
+          "reason": "Personal injury billing only."
+        }
+      ],
+      "scheduling_phone": "1-866-614-8555",
+      "supersedes_prior_limits": [
+        "Remove prior caveat that official location/phone verification could not be completed.",
+        "Official phone takes precedence over conflicting secondary directory contact."
+      ]
+    }
+  },
+  "no_outreach": true,
+  "no_personal_details_submitted": true
+}
