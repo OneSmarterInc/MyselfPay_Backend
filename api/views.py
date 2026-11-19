@@ -149,7 +149,9 @@ class CenterPortalView(ResourceView):
                                 httponly=True, samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
             return response
         if action == 'request':
-            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment'), data.get('reason', '')))
+            done = data.get('exam_completed')
+            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment'), data.get('reason', ''),
+                                                      note=data.get('note'), order_received=data.get('order_received'), exam_completed=done.isoformat() if done else None))
         if action == 'price':
             return Response(center_portal.submit_prices(database(), token, csrf, str(data['id']), data['prices'], data['consent']), status=201)
         if action == 'confirm-price':
