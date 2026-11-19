@@ -149,7 +149,7 @@ class CenterPortalView(ResourceView):
                                 httponly=True, samesite=settings.SELFPAY_COOKIE_SAMESITE, path='/')
             return response
         if action == 'request':
-            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment')))
+            return Response(center_portal.open_request(database(), token, csrf, str(data.get('id', '')), data.get('status'), data.get('appointment'), data.get('reason', '')))
         if action == 'price':
             return Response(center_portal.submit_prices(database(), token, csrf, str(data['id']), data['prices'], data['consent']), status=201)
         if action == 'confirm-price':
@@ -404,11 +404,12 @@ class BookingView(ResourceView):
         'verify': inputs.ClinicCodeSerializer,
         'details': inputs.ClinicSessionSerializer,
         'status': inputs.ClinicStatusSerializer,
+        'cancel': inputs.BookingCancelSerializer,
         'lock': inputs.ClinicSessionSerializer,
     }
 
     def get_permissions(self):
-        authenticated_actions = ('options', 'email-code', 'email-verify', 'phone-code', 'phone-verify', 'create')
+        authenticated_actions = ('options', 'email-code', 'email-verify', 'phone-code', 'phone-verify', 'create', 'cancel')
         return [BookingAccountOnly() if self.kwargs['action'] in authenticated_actions else AllowAny()]
 
     def get_throttles(self):
@@ -473,10 +474,26 @@ class BookingView(ResourceView):
         elif action == 'verify':
             result = booking.verify_code(db, data['id'], data['token'], data['code'])
         elif action in ('details', 'status'):
-            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'), data.get('appointment'))
+            result = booking.clinic_details(db, data['id'], data['session'], data.get('status'), data.get('appointment'), data.get('reason', ''))
+        elif action == 'cancel':
+            result = booking.cancel(db, request.auth['id'], data['id'])
         else:
             result = booking.lock_session(db, data['id'], data['session'])
         return Response(result, status=201 if action == 'create' else 200)
+
+
+class ForgetMeView(ResourceView):
+    """Delete the signed-in member's account after a texted code. Without a code, the code is sent."""
+    permission_classes = [AccountMemberOnly]
+    throttle_classes = []
+
+    def post(self, request):
+        import account_forget
+        data = request.data if isinstance(request.data, dict) else {}
+        if not data.get('code'):
+            return Response(account_forget.issue(database(), request.auth['id']))
+        result = account_forget.forget(database(), request.auth['id'], str(data.get('verification_id', ''))[:100], str(data.get('code', '')))
+        return session_response(result, token='')
 
 
 class DashboardView(ResourceView):

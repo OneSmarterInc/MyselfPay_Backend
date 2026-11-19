@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS booking_requests (
     payload TEXT NOT NULL,
     patient_hash TEXT NOT NULL,
     clinic_hash TEXT NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('requested','voicemail','scheduled','unable','expired')),
+    status TEXT NOT NULL CHECK (status IN ('requested','voicemail','scheduled','unable','expired','cancelled')),
     delivery TEXT NOT NULL CHECK (delivery IN ('suppressed')),
     created DOUBLE PRECISION NOT NULL,
     link_expires DOUBLE PRECISION NOT NULL,

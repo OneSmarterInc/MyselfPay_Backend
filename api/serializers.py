@@ -26,6 +26,7 @@ class CenterRequestSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
     appointment = serializers.JSONField(required=False)
+    reason = serializers.ChoiceField(choices=('no_openings', 'not_offered', 'other'), required=False)
 
 
 class CenterContactSerializer(serializers.Serializer):
@@ -181,6 +182,15 @@ class BookingCapabilitySerializer(serializers.Serializer):
     token = serializers.CharField(max_length=200, write_only=True)
 
 
+class BookingCancelSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+
+
+class ForgetSerializer(serializers.Serializer):
+    verification_id = serializers.CharField(max_length=100, required=False)
+    code = serializers.RegexField(r'^\d{6}$', write_only=True, required=False)
+
+
 class ClinicCodeSerializer(BookingCapabilitySerializer):
     code = serializers.RegexField(r'^\d{6}$', write_only=True)
 
@@ -193,3 +203,4 @@ class ClinicSessionSerializer(serializers.Serializer):
 class ClinicStatusSerializer(ClinicSessionSerializer):
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'))
     appointment = serializers.JSONField(required=False)
+    reason = serializers.ChoiceField(choices=('no_openings', 'not_offered', 'other'), required=False)

@@ -28,6 +28,9 @@ import core
 import booking_mail
 import booking_delivery
 import booking_chat
+import contextvars
+
+CLOSED_QUEUE: contextvars.ContextVar = contextvars.ContextVar('closed_queue', default=None)
 
 ZONES = {
     'America/New_York': 'Eastern', 'America/Chicago': 'Central',
@@ -36,7 +39,11 @@ ZONES = {
     'Pacific/Honolulu': 'Hawaii',
 }
 PERIODS = {'morning': 'Morning (8 am–12 pm)', 'afternoon': 'Afternoon (12–5 pm)'}
-TERMINAL = {'scheduled', 'unable', 'expired'}
+TERMINAL = {'scheduled', 'unable', 'expired', 'cancelled'}
+OPEN_STATUSES = ('requested', 'voicemail')
+REQUEST_LIFETIME = 7 * 86400
+MAX_OPEN_REQUESTS = 3
+UNABLE_REASONS = ('no_openings', 'not_offered', 'other')
 EMAIL = re.compile(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+\Z")
 
 
@@ -429,6 +436,14 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         if not booking_chat.enabled() and booking_delivery.mode(recipient) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
+        open_rows = con.execute("SELECT payload FROM booking_requests WHERE owner_hash=? AND status IN ('requested','voicemail') AND link_expires>?",
+                                (owner_hash, now)).fetchall()
+        for open_row in open_rows:
+            earlier = unpack(open_row)
+            if earlier.get('clinic_id') == center_key and same_exam(earlier, validated):
+                raise BookingError(f"You already asked {center['name']} for this exam. Open your request in My requests.", 409)
+        if len(open_rows) >= MAX_OPEN_REQUESTS:
+            raise BookingError(f'You have {MAX_OPEN_REQUESTS} open requests. Cancel one to add another.', 409)
         if con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE owner_hash=? AND created>?',
                        (owner_hash, now - 3600)).fetchone()['n'] >= 5:
             raise BookingError('Request limit reached. Please try again in an hour.', 429)
@@ -452,7 +467,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
              status,delivery,created,link_expires) VALUES(?,?,?,?,?,?,?,'requested','suppressed',?,?)
             ON CONFLICT(owner_hash,idempotency_hash) DO NOTHING''',
             (ident, owner_hash, key_hash, input_hash, pack(payload), digest(patient_token),
-             digest(clinic_token), now, now + 72 * 3600))
+             digest(clinic_token), now, now + REQUEST_LIFETIME))
         row = con.execute('SELECT * FROM booking_requests WHERE owner_hash=? AND idempotency_hash=?',
                           (owner_hash, key_hash)).fetchone()
         if row['input_hash'] != input_hash:
@@ -470,6 +485,71 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         return receipt(get_row(con, row['id']), con)
 
 
+def same_exam(a: dict, b: dict) -> bool:
+    """One open request per facility and exam: same service and exam text."""
+    return (a.get('service') == b.get('service')
+            and str(a.get('exam', '')).strip().casefold() == str(b.get('exam', '')).strip().casefold())
+
+
+def close_cancelled(con: Any, row: Any, reason: str) -> None:
+    """Close a request without a facility outcome and keep the reason with it."""
+    payload = unpack(row)
+    payload['closed_reason'] = reason
+    con.execute("UPDATE booking_requests SET status='cancelled',closed=?,payload=? WHERE id=?",
+                (time.time(), pack(payload), row['id']))
+
+
+def close_other_requests(con: Any, row: Any) -> list:
+    """When one facility confirms, the patient's other open requests for the same exam close."""
+    confirmed = unpack(row)
+    closed = []
+    for other in con.execute("SELECT * FROM booking_requests WHERE owner_hash=? AND id<>? AND status IN ('requested','voicemail') AND link_expires>?",
+                             (row['owner_hash'], row['id'], time.time())).fetchall():
+        earlier = unpack(other)
+        if same_exam(earlier, confirmed):
+            close_cancelled(con, other, 'scheduled_elsewhere')
+            closed.append(other['id'])
+    return closed
+
+
+def cancel(path: Any, owner: str, ident: str) -> dict:
+    """The patient withdraws a request. A confirmed one can be withdrawn too."""
+    with connection(path, write=True) as con:
+        row = get_row(con, ident, lock=True)
+        if not hmac.compare_digest(digest(owner), row['owner_hash']):
+            raise BookingError('This request is unavailable or has expired.', 404)
+        if row['status'] == 'cancelled':
+            return receipt(row, con)
+        if row['status'] in ('unable', 'expired') or (row['status'] in OPEN_STATUSES and row['link_expires'] <= time.time()):
+            raise BookingError('This request is already closed.', 409)
+        close_cancelled(con, row, 'patient_cancelled')
+        result = receipt(get_row(con, ident), con)
+    notify_center_closed(path, ident, 'patient_cancelled')
+    return result
+
+
+def notify_center_closed(path: Any, ident: str, reason: str) -> None:
+    """Tell the facility's scheduling inbox to stop calling. No patient details are sent."""
+    try:
+        with connection(path) as con:
+            row = get_row(con, ident)
+            payload = unpack(row)
+        recipient = payload.get('recipient', '')
+        if payload.get('delivery_route') != 'center_email' or booking_delivery.mode(recipient) != 'enabled':
+            return
+        wording = {'patient_cancelled': 'The patient cancelled this request.',
+                   'scheduled_elsewhere': 'The patient scheduled this exam at another facility.'}.get(reason, 'This request is closed.')
+        message = EmailMessage()
+        message['From'] = Address('MySelfPay', addr_spec=os.environ.get('SMTP_FROM', 'info@kormic.ai'))
+        message['To'] = recipient
+        message['Subject'] = f'Request closed: {ident}'
+        message.set_content(f'{wording} Please stop calling about reference {ident}.\n\nMySelfPay')
+        booking_mail.send_message(message, recipient)
+    except Exception:
+        # The facility still sees the closed status in its portal. Mail trouble never blocks the patient.
+        return
+
+
 def receipt(row: Any, con: Any = None) -> dict:
     p = unpack(row)
     delivery = booking_delivery.status(con, row['id'], row['delivery']) if con is not None else row['delivery']
@@ -482,6 +562,7 @@ def receipt(row: Any, con: Any = None) -> dict:
             'is_test_center': bool(p.get('is_test_center')),
             'notification_target': p.get('notification_target', 'center'),
             'approved_slot': p.get('approved_slot'),
+            'closed_reason': p.get('closed_reason', ''),
             'clinic_name': p['clinic_name'], 'location': p['location'], 'clinic_phone':p.get('phone_clinic',''),
             'price_text': p['price_text'],
             'service': p['service'], 'exam': p['exam'], 'contrast': p['contrast'],
@@ -578,7 +659,22 @@ def verify_code(path: Any, ident: str, token: str, code: str) -> dict:
     return {'session': session, 'expires_at': now + 900}
 
 
-def clinic_details(path: Any, ident: str, session: str, status: str | None = None, appointment=None) -> dict:
+def flush_closed(path: Any, queue: list) -> None:
+    """After the commit, email each facility whose request closed because the patient booked elsewhere."""
+    for ident, reason in queue:
+        notify_center_closed(path, ident, reason)
+
+
+def clinic_details(path: Any, ident: str, session: str, status: str | None = None, appointment=None, reason: str = '') -> dict:
+    queue: list = []
+    token = CLOSED_QUEUE.set(queue)
+    try:
+        return _clinic_details(path, ident, session, status, appointment, reason, queue)
+    finally:
+        CLOSED_QUEUE.reset(token)
+
+
+def _clinic_details(path, ident, session, status, appointment, reason, queue) -> dict:
     with connection(path, write=status is not None) as con:
         row = get_row(con, ident, lock=status is not None)
         authorize(row, session, 'clinic_session_hash')
@@ -588,7 +684,7 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
             raise BookingError('This request link has expired.', 410)
         if status is not None:
             import appointment_slots
-            row = appointment_slots.update(con, row, status, appointment)
+            row = appointment_slots.update(con, row, status, appointment, reason)
             booking_chat.enqueue(con, row)
         p = unpack(row)
         result = receipt(row, con)
@@ -598,7 +694,8 @@ def clinic_details(path: Any, ident: str, session: str, status: str | None = Non
             result.update(first_name=p['first_name'], phone=p['phone'])
         else:
             result['contact_hidden'] = True
-        return result
+    flush_closed(path, queue)
+    return result
 
 
 def cleanup(path: Any) -> int:

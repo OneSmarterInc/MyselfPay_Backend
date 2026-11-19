@@ -180,14 +180,14 @@ class BookingTests(unittest.TestCase):
         with patch('booking.time.time', return_value=time.time() + 601):
             with self.assertRaises(booking.BookingError):
                 booking.verify_code(self.db, r['id'], token, issued['preview_code'])
-        with patch('booking.time.time', return_value=time.time() + 73 * 3600):
+        with patch('booking.time.time', return_value=time.time() + 8 * 86400):
             with self.assertRaises(booking.BookingError):
                 booking.issue_code(self.db, r['id'], token, preview=True)
 
     def test_capabilities_cannot_access_other_requests(self):
         a = self.create()
         proof = self.verify_email('guest-owner', 'patient2@example.test')
-        b = self.create({**self.data, **proof, **self.verify_phone('guest-owner', '+16145550143'), 'phone': '+16145550143', 'idempotency_key': 'second'})
+        b = self.create({**self.data, **proof, **self.verify_phone('guest-owner', '+16145550143'), 'phone': '+16145550143', 'idempotency_key': 'second', 'exam': 'Hip'})
         with self.assertRaises(booking.BookingError):
             booking.patient(self.db, b['id'], a['tracking_token'])
         with self.assertRaises(booking.BookingError):
@@ -202,7 +202,7 @@ class BookingTests(unittest.TestCase):
 
     def test_retention_cleanup(self):
         r = self.create()
-        with patch('booking.time.time', return_value=time.time() + 34 * 86400):
+        with patch('booking.time.time', return_value=time.time() + 38 * 86400):
             self.assertEqual(booking.cleanup(self.db), 1)
             with self.assertRaises(booking.BookingError):
                 booking.patient(self.db, r['id'], r['tracking_token'])
@@ -218,7 +218,7 @@ class BookingTests(unittest.TestCase):
         with self.assertRaises(booking.BookingError):
             booking.create(self.db, 'other-owner', data, 'http://127.0.0.1:8765')
         first = self.create(data)
-        second = self.create({**data, 'idempotency_key':'new-key'})
+        second = self.create({**data, 'idempotency_key':'new-key', 'exam': 'Hip'})
         self.assertNotEqual(first['id'], second['id'])
         with booking.connection(self.db) as db:
             self.assertEqual(booking.unpack(booking.get_row(db, first['id']))['phone'], '+16145550142')

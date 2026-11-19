@@ -59,7 +59,8 @@ def issue(path, address):
         raise booking.BookingError('Enter a valid center email address.')
     with booking.connection(path, write=True) as db:
         if not centers(db, email):
-            raise booking.BookingError('Your email is not listed in our center directory. Please contact support.', 404)
+            # The answer is the same for every email, so nobody can learn who is listed.
+            return {'verification_id': secrets.token_urlsafe(32), 'expires_in': 600}
         ident, code = secrets.token_urlsafe(32), f'{secrets.randbelow(1000000):06d}'
         db.execute('DELETE FROM center_login_checks WHERE expires<?', (time.time(),))
         db.execute('INSERT INTO center_login_checks(id,email_hash,email_cipher,code_hash,expires) VALUES(?,?,?,?,?)',
@@ -159,7 +160,16 @@ def dashboard(path, token):
                 'activity': audit.for_center(keys, owned)}
 
 
-def open_request(path, token, csrf, ident, status=None, appointment=None):
+def open_request(path, token, csrf, ident, status=None, appointment=None, reason=''):
+    queue = []
+    marker = booking.CLOSED_QUEUE.set(queue)
+    try:
+        return _open_request(path, token, csrf, ident, status, appointment, reason, queue)
+    finally:
+        booking.CLOSED_QUEUE.reset(marker)
+
+
+def _open_request(path, token, csrf, ident, status, appointment, reason, queue):
     with booking.connection(path, write=True) as db:
         email, listings, _ = identity(db, token, csrf)
         row = booking.get_row(db, ident, lock=True)
@@ -170,7 +180,7 @@ def open_request(path, token, csrf, ident, status=None, appointment=None):
             if row['link_expires'] <= time.time():
                 raise booking.BookingError('This request has expired.', 410)
             import appointment_slots
-            row = appointment_slots.update(db, row, status, appointment)
+            row = appointment_slots.update(db, row, status, appointment, reason)
             booking_chat.enqueue(db, row)
         result = booking.receipt(row, db)
         result.pop('tracking_token', None)
@@ -180,7 +190,8 @@ def open_request(path, token, csrf, ident, status=None, appointment=None):
             result['contact_hidden'] = True
             if row['status'] not in booking.TERMINAL:
                 result['status'] = 'expired'
-        return result
+    booking.flush_closed(path, queue)
+    return result
 
 
 def submit_prices(path, token, csrf, entry_key, prices, consent):

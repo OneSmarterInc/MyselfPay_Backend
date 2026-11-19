@@ -27,6 +27,7 @@ urlpatterns = [
     re_path(r'^api/password/(?P<action>code|verify|reset)$', views.PasswordView.as_view()),
     path('api/password', views.PasswordView.as_view(), name='password'),
     path('api/dashboard', views.DashboardView.as_view(), name='dashboard'),
+    path('api/account/forget', views.ForgetMeView.as_view(), name='forget-me'),
     path('api/me', views.MeView.as_view(), name='me'),
     path('api/catalog', views.CatalogView.as_view(), name='catalog'),
     path('api/search', views.SearchView.as_view(), name='search'),
@@ -36,6 +37,6 @@ urlpatterns = [
     path('api/conversations/<str:ident>', views.ConversationDetailView.as_view(), name='conversation-detail'),
     path('api/preferences', views.PreferencesView.as_view(), name='preferences'),
     path('api/corrections', views.CorrectionsView.as_view(), name='corrections'),
-    re_path(r'^api/booking/(?P<action>options|email-code|email-verify|phone-code|phone-verify|create|patient|code|verify|details|status|lock)$', views.BookingView.as_view(), name='booking-action'),
+    re_path(r'^api/booking/(?P<action>options|email-code|email-verify|phone-code|phone-verify|create|patient|code|verify|details|status|cancel|lock)$', views.BookingView.as_view(), name='booking-action'),
     re_path(r'^api/.*$', views.NotFoundView.as_view(), name='api-not-found'),
 ]
