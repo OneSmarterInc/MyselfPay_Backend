@@ -3,6 +3,10 @@ import hashlib
 from django.db import connection, transaction
 
 
+BOOKING_TABLES = ('booking_requests', 'booking_email_checks', 'booking_phone_checks', 'booking_verified_emails')
+MEMBER_TABLES = ('password_reset_requests', 'guest_usage', 'sessions', 'conversations', 'preferences', 'corrections', 'account_zip_codes', 'mobile_accounts', 'user_accounts')
+
+
 def delete_registered_user(member_id):
     owner = hashlib.sha256(member_id.encode()).hexdigest()
     with transaction.atomic(), connection.cursor() as cursor:
@@ -13,7 +17,7 @@ def delete_registered_user(member_id):
         tables = set(connection.introspection.table_names(cursor))
         # All known booking children have ON DELETE CASCADE. Their capabilities
         # and queued notifications disappear in the same transaction.
-        for table in ('booking_requests', 'booking_email_checks', 'booking_phone_checks', 'booking_verified_emails'):
+        for table in BOOKING_TABLES:
             if table in tables:
                 cursor.execute(f'DELETE FROM {table} WHERE owner_hash=%s', [owner])
         if 'mobile_accounts' in tables and 'booking_phone_checks' in tables:
@@ -21,7 +25,7 @@ def delete_registered_user(member_id):
             row = cursor.fetchone()
             if row:
                 cursor.execute('DELETE FROM booking_phone_checks WHERE phone_hash=%s', [hashlib.sha256(row[0].encode()).hexdigest()])
-        for table in ('password_reset_requests', 'guest_usage', 'sessions', 'conversations', 'preferences', 'corrections', 'account_zip_codes', 'mobile_accounts', 'user_accounts'):
+        for table in MEMBER_TABLES:
             if table in tables:
                 cursor.execute(f'DELETE FROM {table} WHERE member_id=%s', [member_id])
         for key in ('account-disabled:' + member_id, 'booking-phone-owner:' + owner, 'booking-email-owner:' + owner):

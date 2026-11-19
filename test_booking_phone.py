@@ -49,8 +49,10 @@ class MobileOTPTests(unittest.TestCase):
         data['email']='patient@example.test'
         self.assertTrue(self.fixture.create(data)['id'])
         data['idempotency_key']='second-saved-email-request'
+        data['exam']='Hip'
         self.assertTrue(self.fixture.create(data)['id'])
         data['idempotency_key']='changed-email-request'
+        data['exam']='Elbow'
         data['email']='unverified@example.test'
         result = self.fixture.create(data)
         with booking.connection(self.path) as db:
@@ -88,7 +90,7 @@ class MobileOTPTests(unittest.TestCase):
             with self.assertRaises(booking.BookingError):booking_phone.verify_code(self.path,self.owner,issued['verification_id'],'123456')
         first=self.fixture.create()
         self.assertEqual(self.fixture.create()['id'],first['id'])
-        data={**self.fixture.data,**self.fixture.verify_email('guest-owner','other@example.test'),'idempotency_key':'new-booking'}
+        data={**self.fixture.data,**self.fixture.verify_email('guest-owner','other@example.test'),'idempotency_key':'new-booking','exam':'Hip'}
         self.assertTrue(self.fixture.create(data)['id'])
 
     def test_transport_uses_verify_service_and_does_not_return_secret(self):

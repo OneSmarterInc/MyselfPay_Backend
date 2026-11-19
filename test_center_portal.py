@@ -26,9 +26,11 @@ class CenterPortalTests(unittest.TestCase):
 
     def test_unknown_email_never_sends(self):
         with patch('booking_mail.send_message') as send:
-            with self.assertRaisesRegex(booking.BookingError, 'contact support'):
-                center_portal.issue(self.db, 'absent@example.test')
+            result = center_portal.issue(self.db, 'absent@example.test')
             send.assert_not_called()
+        self.assertEqual(set(result), {'verification_id', 'expires_in'})
+        with self.assertRaises(booking.BookingError):
+            center_portal.verify(self.db, result['verification_id'], '000000')
 
     def test_otp_is_single_use_and_attempts_persist(self):
         with patch('booking_mail.send_message') as send:
@@ -202,9 +204,11 @@ class CenterContactTests(unittest.TestCase):
         self.assertTrue(result['login_required'])
         with self.assertRaises(booking.BookingError):
             center_portal.dashboard(self.db, token)
-        with patch('booking_mail.send_message'):
-            with self.assertRaisesRegex(booking.BookingError, 'contact support'):
-                center_portal.issue(self.db, 'appointments@example.test')
+        with patch('booking_mail.send_message') as send:
+            result = center_portal.issue(self.db, 'appointments@example.test')
+            send.assert_not_called()  # the old email no longer matches a listing, and nobody can tell
+        with self.assertRaises(booking.BookingError):
+            center_portal.verify(self.db, result['verification_id'], '123456')
         token2, csrf2 = self.login('new.owner@example.test')
         board = center_portal.dashboard(self.db, token2)
         self.assertEqual(board['centers'][0]['email'], 'new.owner@example.test')

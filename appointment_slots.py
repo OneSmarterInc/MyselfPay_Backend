@@ -39,7 +39,7 @@ def selected(payload, choice, check_future=True):
     return result
 
 
-def update(con, row, status, choice=None):
+def update(con, row, status, choice=None, reason=''):
     if status not in ('scheduled', 'voicemail', 'unable'):
         raise booking.BookingError('Choose a valid outcome.')
     payload = booking.unpack(row)
@@ -51,10 +51,20 @@ def update(con, row, status, choice=None):
         return row
     if status == 'scheduled':
         payload['approved_slot'] = selected(payload, choice)
+    if status == 'unable' and reason:
+        if reason not in booking.UNABLE_REASONS:
+            raise booking.BookingError('Choose a valid reason.')
+        payload['closed_reason'] = reason
     import time
     closed = time.time() if status in booking.TERMINAL else None
     con.execute('UPDATE booking_requests SET status=?,closed=?,payload=? WHERE id=?',
                 (status, closed, booking.pack(payload), row['id']))
+    if status == 'scheduled':
+        # The patient is booked here, so their other open requests for this exam close.
+        queue = booking.CLOSED_QUEUE.get()
+        for ident in booking.close_other_requests(con, row):
+            if queue is not None:
+                queue.append((ident, 'scheduled_elsewhere'))
     return booking.get_row(con, row['id'])
 
 
