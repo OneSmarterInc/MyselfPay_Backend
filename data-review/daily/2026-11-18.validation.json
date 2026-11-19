@@ -36,7 +36,8 @@
   "duplicate_exclusions": [
     {
       "name": "Manning Regional Healthcare Center Radiology",
-      "evidence": "data/daily-csv branch data-review/daily/2026-11-11.csv row 2; matching location and general email"
+      "evidence": "data/daily-csv branch data-review/daily/2026-11-11.csv row 2; matching location and general email",
+      "stable_id": "DAILY-20261111-001"
     }
   ],
   "screening_not_formal_rows": "Clarke complaint contact only; Guthrie, Pocahontas, Loring and Crawford contact forms; Horn HR-only evidence. No suitable publicly published general/appointment email confirmed in bounded screening. Not claimed exhausted or newly unique.",
@@ -46,8 +47,10 @@
     "price_route": "https://apps.para-hcfs.com/PTT/FinalLinks/Manning_V2.aspx",
     "limits": "Published $100 body composition price is not diagnostic MRI/CT. Provider referral explicit only for mobile nuclear medicine. MRI/CT exact order policy unresolved. Official linked estimator timeout/502; no numeric MRI/CT price verified."
   },
-  "dedup_scope": "Fresh canonical v59 all 16 sheets; 18 CSV and 17 JSON/Markdown prior daily files across main and data/daily-csv, including Nov17 Monroe. Fresh read-only Neon entries count 4,438 across 14 batches; candidate identity queries checked.",
+  "dedup_scope": "Fresh canonical v59 all 16 sheets; 18 CSV and 17 JSON/Markdown prior daily files across main and data/daily-csv, including Nov17 Monroe. Fresh read-only Neon entries count 4,438 across 14 batches; candidate identity queries checked. Import records checked: 3,195.",
   "dedup_limits": "Neon review database is not asserted to be AWS production. Older separate review workbooks and unrecognized aliases not exhaustively reconciled. Manning excluded on affirmative prior daily match regardless.",
   "preserved_baseline": "Nov17 qualified Monroe CSV blob b96826bb30c4b9c3c22bfff9ffdd47d6a093b3c3 unchanged.",
-  "rollback": "Only Nov18 files introduced; restore by removing those only after checking no later edits. No prior-date CSV or canonical workbook modified."
+  "rollback": "Only Nov18 files introduced; restore by removing those only after checking no later edits. No prior-date CSV or canonical workbook modified.",
+  "preliminary_screened_hold_leads": 5,
+  "preliminary_leads_file": "2026-11-18.screened-holds.md"
 }
