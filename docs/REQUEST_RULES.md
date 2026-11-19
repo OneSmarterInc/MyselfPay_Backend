@@ -28,3 +28,9 @@
 ## Not in this change
 
 Reminder email after 2 business days and the support list after 4, response-time and exam-completed records, hours, orders, the accept-requests switch and the appointment inbox field. These need new tables and a scheduler and come next.
+
+## Request inbox
+
+A center can choose where new patient requests are emailed. It enters an address, MySelfPay sends a test message with a 6-digit code to that address, and the center enters the code. Only then does the inbox take effect. The login email still owns every request, so the dashboard, history and audit trail do not change. The inbox applies to requests created after it is verified and only for facilities that already receive requests at their own listing email. Removing it sends new requests back to the listing email. Limits: 5 test messages per session per hour, 5 wrong codes per test, 10-minute code life. Endpoints: `POST /api/center/inbox`, `inbox-verify`, `inbox-remove`; the dashboard returns `request_inbox`.
+
+Manual step: `ops/center-inboxes.sql` adds two tables (`center_inboxes`, `center_inbox_checks`). It only creates tables, so no rows change. Apply it before deploying this code. Change record: verified backup first, Vikram's approval, run once, verify with `SELECT to_regclass('center_inboxes')`.

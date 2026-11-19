@@ -38,6 +38,12 @@ class CenterContactSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100, required=False, allow_blank=True)
 
 
+class CenterInboxSerializer(serializers.Serializer):
+    address = serializers.CharField(max_length=254, required=False, allow_blank=True)
+    verification_id = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    code = serializers.CharField(max_length=10, required=False, allow_blank=True)
+
+
 class CenterPriceConfirmSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
 

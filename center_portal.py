@@ -186,7 +186,7 @@ def dashboard(path, token):
         contact_history = [{'field': r['field'], 'old_value': r['old_value'], 'new_value': r['new_value'], 'changed': r['changed'], 'entry_keys': json.loads(r['entry_keys'])}
                            for r in db.execute('SELECT field,old_value,new_value,entry_keys,changed FROM center_contact_changes ORDER BY changed DESC LIMIT 500').fetchall()
                            if keys & set(json.loads(r['entry_keys']))][:100]
-        return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
+        return {'email': email, 'request_inbox': booking.verified_inbox(db, email), 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
                 'median_response_seconds': median_response(requests),
                 'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history,
                 'profile_edits': center_profile.listing(db, hashes),
