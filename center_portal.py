@@ -127,6 +127,35 @@ def actor_email(path, token):
     return ''
 
 
+def center_extras(p):
+    """Fields only the center sees. They are never part of the patient's receipt."""
+    return {'note': p.get('center_note', ''), 'order_received': bool(p.get('order_received')),
+            'exam_completed': p.get('exam_completed', ''), 'responded': p.get('responded')}
+
+
+def median_response(requests):
+    """Median seconds from a request arriving to the center's first outcome."""
+    gaps = sorted(r['responded'] - r['created'] for r in requests if r.get('responded') and r.get('created'))
+    if not gaps:
+        return None
+    mid = len(gaps) // 2
+    return gaps[mid] if len(gaps) % 2 else (gaps[mid - 1] + gaps[mid]) / 2
+
+
+def annotate(db, row, note, order_received, exam_completed):
+    payload = booking.unpack(row)
+    if note is not None:
+        payload['center_note'] = note.strip()[:500]
+    if order_received is not None:
+        payload['order_received'] = bool(order_received)
+    if exam_completed:
+        if row['status'] != 'scheduled':
+            raise booking.BookingError('Record the exam after you confirm a time.')
+        payload['exam_completed'] = exam_completed
+    db.execute('UPDATE booking_requests SET payload=? WHERE id=?', (booking.pack(payload), row['id']))
+    return booking.get_row(db, row['id'])
+
+
 def dashboard(path, token):
     import audit
     import center_profile
@@ -145,8 +174,11 @@ def dashboard(path, token):
                 continue
             item = booking.receipt(row, db)
             item.pop('tracking_token', None)
+            item.update(center_extras(p))
             if row['status'] not in booking.TERMINAL and row['link_expires'] <= time.time():
                 item['status'] = 'expired'
+            elif row['status'] not in booking.TERMINAL:
+                item.update(first_name=p['first_name'], phone=p['phone'])
             requests.append(item)
         prices = [dict(r) for r in db.execute(
             'SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status,decided FROM center_price_submissions '
@@ -155,21 +187,22 @@ def dashboard(path, token):
                            for r in db.execute('SELECT field,old_value,new_value,entry_keys,changed FROM center_contact_changes ORDER BY changed DESC LIMIT 500').fetchall()
                            if keys & set(json.loads(r['entry_keys']))][:100]
         return {'email': email, 'centers': listings, 'requests': requests, 'center_csrf': csrf, 'price_submissions': prices,
+                'median_response_seconds': median_response(requests),
                 'live_prices': live_prices(db, sorted(keys)), 'contact_history': contact_history,
                 'profile_edits': center_profile.listing(db, hashes),
                 'activity': audit.for_center(keys, owned)}
 
 
-def open_request(path, token, csrf, ident, status=None, appointment=None, reason=''):
+def open_request(path, token, csrf, ident, status=None, appointment=None, reason='', note=None, order_received=None, exam_completed=None):
     queue = []
     marker = booking.CLOSED_QUEUE.set(queue)
     try:
-        return _open_request(path, token, csrf, ident, status, appointment, reason, queue)
+        return _open_request(path, token, csrf, ident, status, appointment, reason, queue, (note, order_received, exam_completed))
     finally:
         booking.CLOSED_QUEUE.reset(marker)
 
 
-def _open_request(path, token, csrf, ident, status, appointment, reason, queue):
+def _open_request(path, token, csrf, ident, status, appointment, reason, queue, notes=(None, None, None)):
     with booking.connection(path, write=True) as db:
         email, listings, _ = identity(db, token, csrf)
         row = booking.get_row(db, ident, lock=True)
@@ -182,8 +215,12 @@ def _open_request(path, token, csrf, ident, status, appointment, reason, queue):
             import appointment_slots
             row = appointment_slots.update(db, row, status, appointment, reason)
             booking_chat.enqueue(db, row)
+        if any(value is not None for value in notes):
+            row = annotate(db, row, *notes)
+        p = booking.unpack(row)
         result = booking.receipt(row, db)
         result.pop('tracking_token', None)
+        result.update(center_extras(p))
         if row['status'] not in booking.TERMINAL and row['link_expires'] > time.time():
             result.update(first_name=p['first_name'], phone=p['phone'])
         else:

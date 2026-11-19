@@ -56,6 +56,7 @@ def update(con, row, status, choice=None, reason=''):
             raise booking.BookingError('Choose a valid reason.')
         payload['closed_reason'] = reason
     import time
+    payload.setdefault('responded', time.time())
     closed = time.time() if status in booking.TERMINAL else None
     con.execute('UPDATE booking_requests SET status=?,closed=?,payload=? WHERE id=?',
                 (status, closed, booking.pack(payload), row['id']))

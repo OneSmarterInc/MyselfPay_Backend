@@ -27,6 +27,9 @@ class CenterRequestSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=('scheduled', 'voicemail', 'unable'), required=False)
     appointment = serializers.JSONField(required=False)
     reason = serializers.ChoiceField(choices=('no_openings', 'not_offered', 'other'), required=False)
+    note = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    order_received = serializers.BooleanField(required=False)
+    exam_completed = serializers.DateField(required=False)
 
 
 class CenterContactSerializer(serializers.Serializer):
