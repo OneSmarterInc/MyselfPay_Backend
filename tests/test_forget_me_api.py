@@ -3,15 +3,15 @@ import unittest
 from unittest.mock import patch
 import core
 from tests import test_api as fixtures
-from tests.test_us_request_auth import USRequestTests
+from tests import test_us_request_auth as us_auth
 
 
 class ForgetMeAPITests(unittest.TestCase):
     setUp = fixtures.APITests.setUp
     tearDown = fixtures.APITests.tearDown
     post = fixtures.APITests.post
-    issue = USRequestTests.issue
-    finish = USRequestTests.finish
+    issue = us_auth.USRequestTests.issue
+    finish = us_auth.USRequestTests.finish
 
     def test_forget_me_needs_a_texted_code_then_removes_the_account(self):
         ident = self.finish(self.issue()).json()['member']['id']
