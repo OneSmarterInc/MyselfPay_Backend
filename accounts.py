@@ -103,4 +103,29 @@ def saved_zip(db, ident):
     row = db.execute('SELECT zip_code FROM account_zip_codes WHERE member_id=?', (ident,)).fetchone()
     return row['zip_code'][:5] if row else ''
 
+def update_profile(path, ident, data):
+    """Change a member's name and Home ZIP. The mobile number is not changed here."""
+    out = {}
+    if 'name' in data:
+        name = data['name']
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 100 or any(ord(c) < 32 for c in name):
+            raise AccountError('Enter your name (1–100 characters).')
+        out['name'] = name.strip()
+    if 'zip_code' in data:
+        zip_code = data['zip_code']
+        if not isinstance(zip_code, str) or (zip_code.strip() and not re.fullmatch(r'[0-9]{5}', zip_code.strip())):
+            raise AccountError('Enter a five-digit ZIP code, or leave it blank.')
+        out['zip_code'] = zip_code.strip()
+    if not out:
+        raise AccountError('Nothing to change.')
+    with core.connect(path) as db:
+        if 'name' in out:
+            db.execute('UPDATE members SET name=? WHERE id=?', (out['name'], ident))
+        if 'zip_code' in out:
+            if out['zip_code']:
+                db.execute('INSERT INTO account_zip_codes(member_id,zip_code) VALUES(?,?) ON CONFLICT(member_id) DO UPDATE SET zip_code=excluded.zip_code', (ident, out['zip_code']))
+            else:
+                db.execute('DELETE FROM account_zip_codes WHERE member_id=?', (ident,))
+        row = db.execute('SELECT name FROM members WHERE id=?', (ident,)).fetchone()
+        return {'name': row['name'] if row else '', 'zip_code': saved_zip(db, ident)}
 
