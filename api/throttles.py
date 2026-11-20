@@ -51,3 +51,8 @@ class BookingCreateThrottle(DatabaseWindowThrottle):
 class AdminLoginThrottle(DatabaseWindowThrottle):
     scope = 'admin-login'
     limit = 10
+
+
+class CenterFindThrottle(DatabaseWindowThrottle):
+    scope = 'center-find'
+    limit = 12

@@ -17,6 +17,14 @@ class CenterEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=254)
 
 
+class CenterFindSerializer(serializers.Serializer):
+    query = serializers.CharField(max_length=80)
+
+
+class CenterListingSerializer(serializers.Serializer):
+    listing = serializers.CharField(max_length=200)
+
+
 class CenterVerifySerializer(serializers.Serializer):
     verification_id = serializers.CharField(max_length=100)
     code = serializers.RegexField(r'^[0-9]{6}$', max_length=6)
