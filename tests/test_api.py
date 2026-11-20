@@ -83,6 +83,49 @@ class APITests(unittest.TestCase):
         self.assertEqual(self.post('logout').status_code, 200)
         self.assertEqual(self.client.get('/api/me').status_code, 401)
 
+    def seed_listings(self):
+        with core.connect(self.db) as db:
+            db.execute("INSERT INTO batches VALUES('find-batch','find-hash','test',0,'published','{}') ON CONFLICT(id) DO NOTHING")
+            db.execute("INSERT INTO settings(key,value) VALUES('active_batch','find-batch') ON CONFLICT(key) DO UPDATE SET value='find-batch'")
+            for key, item in (('with-email', {'name': 'Riverside Imaging', 'area': 'Dayton', 'states': 'OH', 'phone': '(937) 555-0142', 'email': 'desk@example.test'}),
+                              ('no-email', {'name': 'Hilltop Radiology', 'area': 'Akron', 'states': 'OH', 'phone': '(330) 555-0188'})):
+                db.execute('INSERT INTO entries VALUES(?,?,?,?) ON CONFLICT(batch_id,entry_key) DO UPDATE SET payload=excluded.payload',
+                           ('find-batch', key, 'find-hash', json.dumps(item)))
+
+    def test_center_find_listing_by_name_or_phone_without_exposing_emails(self):
+        self.seed_listings()
+        by_name = self.post('center/find', {'query': 'riverside'})
+        self.assertEqual(by_name.status_code, 200, by_name.content)
+        self.assertEqual([m['id'] for m in by_name.json()['matches']], ['with-email'])
+        by_phone = self.post('center/find', {'query': '937-555-0142'})
+        self.assertEqual([m['id'] for m in by_phone.json()['matches']], ['with-email'])
+        self.assertNotIn('example.test', by_name.content.decode() + by_phone.content.decode())
+        self.assertEqual(self.post('center/find', {'query': 'ab'}).status_code, 400)
+        self.assertEqual(self.post('center/find', {'query': 'zzzz nothing'}).json()['matches'], [])
+
+    def test_center_listing_code_goes_to_the_email_on_file_and_is_paced(self):
+        self.seed_listings()
+        with patch('booking_mail.send_message') as send:
+            issued = self.post('center/listing-code', {'listing': 'with-email'})
+        self.assertEqual(issued.status_code, 200, issued.content)
+        self.assertEqual(send.call_args.args[1], 'desk@example.test')
+        self.assertEqual(issued.json()['sent_to'], 'd***@example.test')
+        self.assertNotIn('desk@example.test', issued.content.decode())
+        with patch('booking_mail.send_message') as again:
+            repeat = self.post('center/listing-code', {'listing': 'with-email'})
+        self.assertEqual(repeat.status_code, 429)
+        again.assert_not_called()
+        with patch('booking_mail.send_message') as none:
+            missing = self.post('center/listing-code', {'listing': 'no-email'})
+        self.assertEqual(missing.json(), {'no_email': True, 'support_email': 'partners@onesmarter.com'})
+        none.assert_not_called()
+        self.assertEqual(self.post('center/listing-code', {'listing': 'unknown'}).status_code, 404)
+
+    def test_center_inbox_routes_are_reachable(self):
+        for action in ('inbox', 'inbox-verify', 'inbox-remove'):
+            status = self.post('center/' + action, {'email': 'x@example.test', 'verification_id': 'x', 'code': '123456'}).status_code
+            self.assertNotEqual(status, 404, action)
+
     def test_center_cookie_login_csrf_and_logout(self):
         with core.connect(self.db) as db:
             db.execute("INSERT INTO batches VALUES('center-batch','center-hash','test',0,'published','{}') ON CONFLICT(id) DO NOTHING")

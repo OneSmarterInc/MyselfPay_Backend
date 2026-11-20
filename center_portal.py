@@ -1,6 +1,7 @@
 """Email-owned center access, separate from patient and admin sessions."""
 import hmac
 import json
+import re
 import secrets
 import time
 from decimal import Decimal
@@ -72,6 +73,63 @@ def issue(path, address):
             db.execute('DELETE FROM center_login_checks WHERE id=?', (ident,))
         raise booking.BookingError(str(exc), 503) from None
     return {'verification_id': ident, 'expires_in': 600}
+
+
+SUPPORT_EMAIL = 'partners@onesmarter.com'
+
+
+def _digits(value):
+    return re.sub(r'\D', '', str(value or ''))
+
+
+def find(path, query):
+    """Listings that match a facility name or phone. Emails never leave the server."""
+    text = ' '.join(str(query or '').split())[:80]
+    digits = _digits(text)
+    by_phone = len(digits) >= 7 and len(digits) >= len(re.sub(r'[\s().+-]', '', text)) - 1
+    words = [w for w in re.split(r'[\s,]+', text.lower()) if w]
+    if not by_phone and (len(text) < 3 or not words):
+        raise booking.BookingError('Enter at least 3 letters of the facility name, or its phone number.')
+    found = []
+    predicate, values = visible_sql()
+    with booking.connection(path) as db:
+        for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate, (core.active_batch(db), *values)).fetchall():
+            item = json.loads(row['payload'])
+            if by_phone:
+                ok = digits[-10:] in _digits(item.get('phone', ''))
+            else:
+                hay = ' '.join(str(item.get(k, '')) for k in ('name', 'area', 'states')).lower()
+                ok = all(w in hay for w in words)
+            if ok:
+                found.append({'id': row['entry_key'], 'name': item.get('name', ''), 'area': item.get('area', ''), 'states': item.get('states', '')})
+            if len(found) >= 6:
+                break
+    return {'matches': found[:5], 'more': len(found) > 5}
+
+
+def issue_for_listing(path, entry_key):
+    """Send the login code to the email on file for one listing, without showing that email."""
+    key = str(entry_key or '')
+    with booking.connection(path) as db:
+        predicate, values = visible_sql()
+        row = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=? AND '+predicate, (core.active_batch(db), key, *values)).fetchone()
+    if not row:
+        raise booking.BookingError('We could not find that listing. Search again.', 404)
+    address = str(json.loads(row['payload']).get('email', '')).strip().lower()
+    if not address or not booking.EMAIL.fullmatch(address):
+        return {'no_email': True, 'support_email': SUPPORT_EMAIL}
+    with booking.connection(path, write=True) as db:
+        # A code sent in the last minute is still valid: ask the center to wait instead of sending another.
+        if db.execute('SELECT 1 FROM center_login_checks WHERE email_hash=? AND expires>?', (booking.digest(address), time.time() + 540)).fetchone():
+            raise booking.BookingError('A code was just sent. Wait a minute before asking for another.', 429)
+    result = issue(path, address)
+    result['sent_to'] = mask_email(address)
+    return result
+
+
+def mask_email(address):
+    name, _, domain = str(address).partition('@')
+    return (name[:1] + '***@' + domain) if name and domain else ''
 
 
 def verify(path, ident, code):

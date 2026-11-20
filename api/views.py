@@ -4,13 +4,13 @@ import secrets
 import time
 from django.conf import settings
 from django.core.exceptions import RequestDataTooBig
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, Throttled
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.authentication import AccountMemberOnly
 from api import serializers as inputs
-from api.throttles import GuestThrottle, BookingThrottle, BookingEmailThrottle, BookingCreateThrottle
+from api.throttles import CenterFindThrottle, GuestThrottle, BookingThrottle, BookingEmailThrottle, BookingCreateThrottle
 import accounts
 import mobile_accounts
 import booking
@@ -91,7 +91,7 @@ class CenterPortalView(ResourceView):
     permission_classes = [AllowAny]
 
     def get_serializer(self, *args, **kwargs):
-        serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
+        serializer = {'code': inputs.CenterEmailSerializer, 'find': inputs.CenterFindSerializer, 'listing-code': inputs.CenterListingSerializer, 'verify': inputs.CenterVerifySerializer,
                       'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer,
                       'contact': inputs.CenterContactSerializer, 'profile': inputs.CenterProfileSerializer, 'confirm-price': inputs.CenterPriceConfirmSerializer, 'contact-verify': inputs.CenterVerifySerializer, 'inbox': inputs.CenterInboxSerializer, 'inbox-verify': inputs.CenterInboxSerializer, 'inbox-remove': inputs.CenterInboxSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
         return serializer(*args, **kwargs)
@@ -142,6 +142,12 @@ class CenterPortalView(ResourceView):
         csrf = request.headers.get('X-Center-CSRF', '')
         if action == 'code':
             return Response(center_portal.issue(database(), data.get('email', '')))
+        if action in ('find', 'listing-code'):
+            if not CenterFindThrottle().allow_request(request, self):
+                raise Throttled(wait=CenterFindThrottle().wait())
+            if action == 'find':
+                return Response(center_portal.find(database(), data['query']))
+            return Response(center_portal.issue_for_listing(database(), data['listing']))
         if action == 'verify':
             token, csrf = center_portal.verify(database(), str(data.get('verification_id', '')), data.get('code', ''))
             response = Response({'verified': True})
