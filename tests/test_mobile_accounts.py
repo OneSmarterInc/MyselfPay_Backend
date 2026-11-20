@@ -105,6 +105,16 @@ class MobileAccountTests(unittest.TestCase):
         self.assertEqual(dashboard.json()['total'],1)
         self.assertEqual(dashboard.json()['requests'][0]['id'],'MSP-LEGACY')
         self.assertNotIn('historical@example.com',str(dashboard.json()))
+        # A closed request shows under Closed, and an open one does not.
+        self.assertEqual(self.client.get('/api/dashboard?filter=closed').json()['total'],0)
+        with core.connect(self.db) as db:
+            db.execute("UPDATE booking_requests SET status='cancelled',closed=? WHERE id='MSP-LEGACY'",(time.time(),))
+        closed = self.client.get('/api/dashboard?filter=closed')
+        self.assertEqual(closed.status_code,200)
+        self.assertEqual([r['id'] for r in closed.json()['requests']],['MSP-LEGACY'])
+        self.assertEqual(self.client.get('/api/dashboard?filter=open').json()['total'],0)
+        with core.connect(self.db) as db:
+            db.execute("UPDATE booking_requests SET status='requested',closed=NULL WHERE id='MSP-LEGACY'")
         with core.connect(self.db) as db:
             self.assertEqual(db.execute('SELECT email FROM user_accounts WHERE member_id=?',(ident,)).fetchone()['email'],'mobile:'+ident)
         # Setup preserves the member ID that owns all existing booking hashes.

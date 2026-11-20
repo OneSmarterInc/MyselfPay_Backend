@@ -485,7 +485,7 @@ class BookingView(ResourceView):
         elif action == 'create':
             result = booking.create(db, request.auth['id'], data, settings.FRONTEND_ORIGIN)
         elif action == 'patient':
-            result = booking.patient(db, data['id'], data['token'])
+            result = booking.patient(db, data['id'], data['token'], owner=booking.digest(request.auth['id']) if request.auth else '')
         elif action == 'code':
             result = booking.issue_code(db, data['id'], data['token'])
         elif action == 'verify':
@@ -522,7 +522,7 @@ class DashboardView(ResourceView):
         except ValueError:
             return Response({'error':'Invalid page.'}, status=400)
         mode = request.query_params.get('filter', 'all')
-        if mode not in ('all', 'open', 'approved'):
+        if mode not in ('all', 'open', 'approved', 'closed'):
             return Response({'error':'Invalid request filter.'}, status=400)
         owner, now = booking.digest(request.auth['id']), time.time()
         with core.connect(database()) as con:
@@ -536,6 +536,9 @@ class DashboardView(ResourceView):
                 params.append(now)
             elif mode == 'approved':
                 where += " AND status='scheduled'"
+            elif mode == 'closed':
+                where += " AND (status IN ('unable','cancelled','expired') OR (status IN ('requested','voicemail') AND link_expires<=?))"
+                params.append(now)
             total = con.execute('SELECT COUNT(*) AS n FROM booking_requests WHERE '+where, tuple(params)).fetchone()['n']
             pages = max(1, (total+9)//10)
             page = min(page,pages)

@@ -96,6 +96,34 @@ class BookingTests(unittest.TestCase):
         with self.assertRaises(booking.BookingError):
             booking.clinic_details(self.db, request['id'], session, 'unable')
 
+    def test_patient_page_carries_the_number_only_for_the_signed_in_owner(self):
+        request = self.create()
+        link_only = booking.patient(self.db, request['id'], request['tracking_token'])
+        self.assertNotIn('contact_phone', link_only)
+        stranger = booking.patient(self.db, request['id'], request['tracking_token'], owner=booking.digest('someone-else'))
+        self.assertNotIn('contact_phone', stranger)
+        owner = booking.patient(self.db, request['id'], request['tracking_token'], owner=booking.digest('guest-owner'))
+        self.assertEqual(owner['contact_phone'], '+16145550142')
+
+    def test_price_line_reads_as_one_clean_sentence(self):
+        def offer(kind, cents, included, mod='MRI', max_cents=None):
+            payload = {'id': 'o1', 'mod': mod, 'type': kind, 'included': included}
+            with booking.connection(self.db) as con:
+                con.execute('DELETE FROM offers')
+                con.execute('INSERT INTO offers(batch_id,id,entry_key,amount_cents,max_cents,price_type,payload) VALUES(?,?,?,?,?,?,?)',
+                            ('batch', 'o1', 'clinic-1', cents, max_cents, kind, json.dumps(payload)))
+                return booking.price_snapshot(con, 'clinic-1', 'o1', 'MRI')
+        self.assertEqual(offer('fixed', 40000, 'Radiologist reading included.'),
+                         '$400 · Radiologist reading included. The facility confirms the final price when it calls.')
+        self.assertEqual(offer('fixed', 40050, ''), '$400.50. The facility confirms the final price when it calls.')
+        self.assertEqual(offer('range', 30000, 'Reading included', max_cents=45000),
+                         '$300–$450 · Reading included. The facility confirms the final price when it calls.')
+        self.assertEqual(offer('quote', None, 'Confirm inclusions with clinic'),
+                         'Quote required. The facility confirms the final price when it calls.')
+        text = offer('fixed', 40000, 'Radiologist reading included.')
+        for banned in ('..', 'fixed', 'clinic', '.00'):
+            self.assertNotIn(banned, text)
+
     def test_mail_never_connects_and_notification_has_verified_request_link(self):
         with patch('smtplib.SMTP') as smtp, patch('smtplib.SMTP_SSL') as ssl:
             result = self.create()
