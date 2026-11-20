@@ -38,7 +38,7 @@ def deliver(path, ident):
         payload = booking.unpack(row)
         if booking_chat.enabled() and payload.get('delivery_route') != 'center_email':
             return False  # Preserve delivery of historical Secure Mail requests.
-        if mode(payload['recipient']) != 'enabled' or row['link_expires'] <= now or row['status'] in booking.TERMINAL:
+        if mode(booking.delivery_address(payload)) != 'enabled' or row['link_expires'] <= now or row['status'] in booking.TERMINAL:
             return False
         # A process can die after SMTP accepted DATA. Do not automatically replay
         # a stale sending record and risk duplicate center notifications.
@@ -47,7 +47,7 @@ def deliver(path, ident):
         if not claimed:
             return False
     try:
-        booking_mail.send_message(booking.notification(payload, ident), payload['recipient'])
+        booking_mail.send_message(booking.notification(payload, ident), booking.delivery_address(payload))
         outcome = 'sent'
     except booking_mail.MailDeliveryUncertain:
         outcome = 'uncertain'

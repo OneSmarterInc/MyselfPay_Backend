@@ -99,6 +99,7 @@ def initialize_local(path: Any) -> None:
         con.executescript((core.ROOT / 'ops/center-portal.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-prices.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-contact.sql').read_text())
+        con.executescript((core.ROOT / 'ops/center-inboxes.sql').read_text())
         con.executescript((core.ROOT / 'ops/center-profile.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-chat.sql').read_text())
         con.executescript((core.ROOT / 'ops/booking-chat-events.sql').read_text())
@@ -116,9 +117,24 @@ def appointment_email(center: dict) -> str:
     return address if len(address) <= 254 and EMAIL.fullmatch(address) else ''
 
 
+def center_email_is_listing(center: dict, recipient: str) -> bool:
+    """A request inbox applies only to the facility's own listing email, never to the support mailbox."""
+    return bool(appointment_email(center)) and recipient == appointment_email(center)
+
+
 def request_recipient(center: dict) -> str:
     """Use a scheduling contact or the operator-approved support mailbox."""
     return appointment_email(center) or 'patientcare@onesmarterhealthweb.com'
+
+
+def delivery_address(payload: dict) -> str:
+    """Where mail for this request goes: the center's verified request inbox, else the listing email."""
+    return payload.get('inbox') or payload.get('recipient', '')
+
+
+def verified_inbox(con: Any, recipient: str) -> str:
+    row = con.execute('SELECT inbox_cipher FROM center_inboxes WHERE email_hash=?', (digest(recipient.strip().lower()),)).fetchone()
+    return cipher().decrypt(row['inbox_cipher'].encode()).decode() if row else ''
 
 
 def resolve_center(con: Any, key: str) -> dict:
@@ -268,8 +284,8 @@ def notification(payload: dict, ident: str) -> EmailMessage:
     """Center summary with an email-verified request link; no patient contacts."""
     message = EmailMessage()
     message['From'] = Address('MySelfPay', addr_spec=os.environ.get('SMTP_FROM', 'info@kormic.ai'))
-    if payload['recipient']:
-        message['To'] = payload['recipient']
+    if delivery_address(payload):
+        message['To'] = delivery_address(payload)
     message['Subject'] = f'New self-pay request — {payload["clinic_name"]} — {ident}'
     message['Message-ID'] = f'<selfpay-{ident}@{os.environ.get("SMTP_FROM", "no-reply@example.invalid").rsplit("@", 1)[-1]}>'
     zone = ZONES[payload['timezone']] + ' time'
@@ -433,7 +449,8 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
         validated['phone'] = mobile_accounts.booking_phone_for(con, owner)
         center = resolve_center(con, center_key)
         recipient = request_recipient(center)
-        if not booking_chat.enabled() and booking_delivery.mode(recipient) == 'unavailable':
+        inbox = verified_inbox(con, recipient) if center_email_is_listing(center, recipient) else ''
+        if not booking_chat.enabled() and booking_delivery.mode(inbox or recipient) == 'unavailable':
             raise BookingError('Online booking email is not enabled for this center. Please contact the facility directly.', 503)
         price_text = price_snapshot(con, center_key, offer_id, validated['service'])
         open_rows = con.execute("SELECT payload FROM booking_requests WHERE owner_hash=? AND status IN ('requested','voicemail') AND link_expires>?",
@@ -453,7 +470,7 @@ def create(path: Any, owner: str, data: dict, base_url: str, *, account_contact:
                    'delivery_route': 'center_secure_mail' if booking_chat.enabled() else 'center_email',
                    'reply_phone': validated['phone'],
                    'price_text': price_text,
-                   'location': center.get('area', ''), 'recipient': recipient,
+                   'location': center.get('area', ''), 'recipient': recipient, 'inbox': inbox,
                    'notification_target': 'center' if appointment_email(center) else 'support',
                    'phone_clinic': center.get('phone', ''),
                    'is_test_center': bool(center.get('is_test_center')),
@@ -534,7 +551,7 @@ def notify_center_closed(path: Any, ident: str, reason: str) -> None:
         with connection(path) as con:
             row = get_row(con, ident)
             payload = unpack(row)
-        recipient = payload.get('recipient', '')
+        recipient = delivery_address(payload)
         if payload.get('delivery_route') != 'center_email' or booking_delivery.mode(recipient) != 'enabled':
             return
         wording = {'patient_cancelled': 'The patient cancelled this request.',
@@ -611,7 +628,7 @@ def issue_code(path: Any, ident: str, token: str, *, preview: bool = False) -> d
     with connection(path, write=True) as con:
         row = get_row(con, ident, lock=True)
         clinic_link(row, token)
-        recipient = unpack(row)['recipient']
+        recipient = delivery_address(unpack(row))
         if not preview and booking_delivery.mode(recipient) != 'enabled':
             raise BookingError('Clinic verification email delivery is not enabled for this request.', 503)
         if row['otp_sent'] and row['otp_sent'] > now - 60:

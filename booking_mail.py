@@ -160,6 +160,17 @@ def send_center_contact_code(recipient: str, code: str, old_email: str) -> None:
     send_message(message, recipient)
 
 
+def send_center_inbox_test(recipient: str, code: str, login_email: str) -> None:
+    message = EmailMessage()
+    message['Subject'] = 'Test message from MySelfPay: confirm your request inbox'
+    message.set_content(f'This is a test message. {login_email} asked to receive MySelfPay patient requests at this address.\n\nYour confirmation code is: {code}\n\nExpires in 10 minutes. Enter it on MySelfPay to start receiving requests here. Do not share this code.\nIf you did not expect this message, ignore it. Nothing changes without the code.\n\nMySelfPay by One Smarter, Inc.\nPlease do not reply to this automated email.')
+    message.add_alternative(otp_html(code, label='REQUEST INBOX',
+        title='Confirm your request inbox.',
+        instructions=f'This is a test message. {login_email} asked to receive MySelfPay patient requests at this address. Enter this code on MySelfPay to confirm.',
+        note='If you did not expect this message, ignore it. Nothing changes without the code.'), subtype='html')
+    send_message(message, recipient)
+
+
 def send_center_contact_notice(old_email: str, new_email: str) -> None:
     message = EmailMessage()
     message['Subject'] = 'Your MySelfPay center login email changed'

@@ -93,7 +93,7 @@ class CenterPortalView(ResourceView):
     def get_serializer(self, *args, **kwargs):
         serializer = {'code': inputs.CenterEmailSerializer, 'verify': inputs.CenterVerifySerializer,
                       'request': inputs.CenterRequestSerializer, 'price': inputs.CenterPriceSerializer,
-                      'contact': inputs.CenterContactSerializer, 'profile': inputs.CenterProfileSerializer, 'confirm-price': inputs.CenterPriceConfirmSerializer, 'contact-verify': inputs.CenterVerifySerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
+                      'contact': inputs.CenterContactSerializer, 'profile': inputs.CenterProfileSerializer, 'confirm-price': inputs.CenterPriceConfirmSerializer, 'contact-verify': inputs.CenterVerifySerializer, 'inbox': inputs.CenterInboxSerializer, 'inbox-verify': inputs.CenterInboxSerializer, 'inbox-remove': inputs.CenterInboxSerializer}.get(self.kwargs['action'], inputs.ObjectSerializer)
         return serializer(*args, **kwargs)
 
     def cookie_name(self):
@@ -170,6 +170,15 @@ class CenterPortalView(ResourceView):
             if result.get('login_required'):
                 response.delete_cookie(self.cookie_name(), path='/', samesite=settings.SELFPAY_COOKIE_SAMESITE)
             return response
+        if action == 'inbox':
+            import center_inbox
+            return Response(center_inbox.start(database(), token, csrf, data.get('address', '')))
+        if action == 'inbox-verify':
+            import center_inbox
+            return Response(center_inbox.confirm(database(), token, csrf, str(data.get('verification_id', '')), str(data.get('code', ''))))
+        if action == 'inbox-remove':
+            import center_inbox
+            return Response(center_inbox.remove(database(), token, csrf))
         if action == 'logout':
             with booking.connection(database(), write=True) as db:
                 center_portal.identity(db, token, csrf)

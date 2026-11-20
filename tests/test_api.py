@@ -37,6 +37,7 @@ class APITests(unittest.TestCase):
             con.executescript((Path(core.__file__).parent / 'ops/center-portal.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-prices.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-contact.sql').read_text())
+            con.executescript((Path(core.__file__).parent / 'ops/center-inboxes.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/center-profile.sql').read_text())
             con.executescript((Path(core.__file__).parent / 'ops/booking-chat.sql').read_text())
             # CI database is disposable and must never point at production.
