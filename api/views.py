@@ -513,6 +513,19 @@ class ForgetMeView(ResourceView):
         return session_response(result, token='')
 
 
+class ProfileView(ResourceView):
+    """Change the signed-in member's name and Home ZIP."""
+    permission_classes = [AccountMemberOnly]
+    throttle_classes = []
+
+    def post(self, request):
+        data = request.data if isinstance(request.data, dict) else {}
+        try:
+            return Response(accounts.update_profile(database(), request.auth['id'], data))
+        except accounts.AccountError as error:
+            return Response({'error': str(error)}, status=error.status)
+
+
 class DashboardView(ResourceView):
     permission_classes = [AccountMemberOnly]
 

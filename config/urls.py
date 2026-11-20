@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/password', views.PasswordView.as_view(), name='password'),
     path('api/dashboard', views.DashboardView.as_view(), name='dashboard'),
     path('api/account/forget', views.ForgetMeView.as_view(), name='forget-me'),
+    path('api/account/profile', views.ProfileView.as_view(), name='account-profile'),
     path('api/me', views.MeView.as_view(), name='me'),
     path('api/catalog', views.CatalogView.as_view(), name='catalog'),
     path('api/search', views.SearchView.as_view(), name='search'),
