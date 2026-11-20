@@ -117,7 +117,7 @@ class APITests(unittest.TestCase):
         again.assert_not_called()
         with patch('booking_mail.send_message') as none:
             missing = self.post('center/listing-code', {'listing': 'no-email'})
-        self.assertEqual(missing.json(), {'no_email': True, 'support_email': 'care@onesmarter.com'})
+        self.assertEqual(missing.json(), {'no_email': True, 'support_email': 'partners@onesmarter.com'})
         none.assert_not_called()
         self.assertEqual(self.post('center/listing-code', {'listing': 'unknown'}).status_code, 404)
 

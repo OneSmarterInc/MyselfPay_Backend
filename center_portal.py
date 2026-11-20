@@ -75,7 +75,7 @@ def issue(path, address):
     return {'verification_id': ident, 'expires_in': 600}
 
 
-SUPPORT_EMAIL = 'care@onesmarter.com'
+SUPPORT_EMAIL = 'partners@onesmarter.com'
 
 
 def _digits(value):
