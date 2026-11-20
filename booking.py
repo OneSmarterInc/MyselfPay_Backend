@@ -148,9 +148,17 @@ def resolve_center(con: Any, key: str) -> dict:
     return json.loads(row['payload'])
 
 
+CONFIRM_LINE = 'The facility confirms the final price when it calls.'
+
+
+def dollars(cents: int) -> str:
+    amount = cents / 100
+    return f"${amount:,.0f}" if amount == int(amount) else f"${amount:,.2f}"
+
+
 def price_snapshot(con: Any, key: str, offer_id: str, service: str = '') -> str:
     if not offer_id:
-        return 'Clinic will confirm the exact total.'
+        return 'The facility confirms the exact total when it calls.'
     row = con.execute('SELECT payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND entry_key=? AND id=?',
                       (core.active_batch(con), key, offer_id)).fetchone()
     from directory_policy import blocked
@@ -158,21 +166,24 @@ def price_snapshot(con: Any, key: str, offer_id: str, service: str = '') -> str:
         raise BookingError('This price offer changed. Refresh the listing.', 409)
     offer = json.loads(row['payload'])
     if service and offer.get('mod') != service:
-        return 'Clinic will confirm the exact total for the selected service.'
+        return 'The facility confirms the exact total for the selected service when it calls.'
     amount = row['amount_cents']
-    label = f"${amount / 100:,.2f}" if amount is not None else 'Price on request'
+    label = dollars(amount) if amount is not None else 'Quote required'
     kind = offer.get('type', 'quote')
     if kind in ('quote', 'conflict'):
-        label = 'Price requires confirmation'
+        label = 'Quote required'
     elif kind == 'range' and row['max_cents'] is not None:
-        label += f"–${row['max_cents'] / 100:,.2f}"
+        label += f"–{dollars(row['max_cents'])}"
     elif kind == 'starting':
         label = 'From ' + label
     elif kind == 'maximum':
         label = 'Up to ' + label
     elif kind == 'average':
         label = 'Published average ' + label
-    return f"{label} · {offer.get('type', 'quote')} · {offer.get('included', 'Confirm inclusions with clinic')}. Final price requires clinic confirmation."
+    included = str(offer.get('included') or '').strip().rstrip('.')
+    if not included or included.lower().startswith('confirm'):
+        return f"{label}. {CONFIRM_LINE}"
+    return f"{label} · {included}. {CONFIRM_LINE}"
 
 
 def default_timezone(center: dict) -> str:
@@ -603,11 +614,14 @@ def authorize(row: Any, value: Any, field: str) -> None:
         raise BookingError('This request is unavailable or access has expired.', 404)
 
 
-def patient(path: Any, ident: str, token: str, *, preview: bool = False) -> dict:
+def patient(path: Any, ident: str, token: str, *, preview: bool = False, owner: str = '') -> dict:
     with connection(path) as con:
         row = get_row(con, ident)
         authorize(row, token, 'patient_hash')
         result = receipt(row, con)
+        # The signed-in owner sees the number the facility will call. A shared link does not carry it.
+        if owner and hmac.compare_digest(owner, row['owner_hash'] or ''):
+            result['contact_phone'] = unpack(row).get('phone', '')
         if row['status'] not in TERMINAL and row['link_expires'] <= time.time():
             result['status'] = 'expired'
         if preview:
