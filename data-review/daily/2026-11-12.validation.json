@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-12",
+  "timezone": "UTC-05:00",
+  "checked_utc": "2026-11-13T01:54:26.500082+00:00",
+  "new_qualified": 0,
+  "recovered_prior_holds": 1,
+  "qualified_total": 1,
+  "recommended_states": {
+    "NE": 1
+  },
+  "held": 4,
+  "email_related_holds": 2,
+  "new_held": 1,
+  "known_held_rechecked": 3,
+  "held_states": {
+    "AR": 1,
+    "LA": 1,
+    "NE": 1,
+    "OK": 1
+  },
+  "known_excluded": 25,
+  "approved": 0,
+  "imported": 0,
+  "target": 100,
+  "target_met": false,
+  "columns": 76,
+  "canonical_version": 59,
+  "live_rows": 2900,
+  "live_digest": "7242b1eab166c3285618cb6209d80bca",
+  "duplicate_check_scope": "Canonical v59 full parsed text; nine recent review workbooks (Nov5\u201311); Nov6\u201311 daily CSVs; fresh 2,900-row active live directory. Names, domains, addresses and phone strings considered. Earlier review universe and full repository source not exhaustively checked. Legacy aliases and 2,755 unstructured live locations limit certainty.",
+  "same_day_reconciliation": "Target dated file absent at initial read; prior stable hold ID retained, no previous daily rows overwritten.",
+  "csv_sha256": "715f018b149a35357daf9c7808628f07f9659e3462b75dd467db359601200d6a",
+  "limits": "No net-new qualified discovery. One prior email hold now has current department general mailbox. No numeric MRI/CT cash rate verified. Emails not delivery-tested. Repository source and older review universe not exhaustively checked. No canonical/DB writes, outreach or deployment. CSV is review-only, not backend import input.",
+  "csv_commit": "434bf8934ddc373c7ca2611785537597c6af06c9",
+  "readback_exact_match": true
+}

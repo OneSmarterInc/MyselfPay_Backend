@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-06",
+  "batch_id": "DAILY-20261106",
+  "records": 5,
+  "columns": 67,
+  "states": {
+    "ND": 4,
+    "WY": 1
+  },
+  "discovered_today": 5,
+  "previous_proposals_republished": 0,
+  "held": 4,
+  "approved": 0,
+  "imported": 0,
+  "verified_numeric_cash_prices": 0,
+  "checked_utc": "2026-11-06T10:52:01.140Z",
+  "sha256": "8308a63a0f7830c2315045eb39f901e76c8a8bd33a9468938855a2b3b9c63c97",
+  "git_blob_sha": "02ddea9ad6df5a949066c9002a276c85f2a49213",
+  "canonical_version": 59,
+  "canonical_main": 5021,
+  "canonical_total": 5404,
+  "repository_baseline_rows": 5390,
+  "repository_baseline_blob_sha": "3099c8a1cb164f1f1c1dce820c626895f793d83d",
+  "live_rows": 2900,
+  "live_hash": "7242b1eab166c3285618cb6209d80bca",
+  "csv_parser_supported": false,
+  "duplicate_identity_matches": 0,
+  "limitations": [
+    "No scan-specific numeric cash prices verified.",
+    "Live entries often lack structured addresses; final address reconciliation remains required.",
+    "CSV is a review artifact; current backend importer accepts JSON/XLSX only.",
+    "5 qualified records, not the daily 100+ target."
+  ],
+  "records_summary": [
+    {
+      "id": "DAILY-20261106-001",
+      "name": "First Care Health Center — Radiology",
+      "city": "Park River",
+      "state": "ND",
+      "source": "https://www.firstcarehc.com/resources/"
+    },
+    {
+      "id": "DAILY-20261106-002",
+      "name": "South Lincoln Medical Center — Radiology",
+      "city": "Kemmerer",
+      "state": "WY",
+      "source": "https://apps.para-hcfs.com/PTT/FinalLinks/South_Lincoln_V3.aspx"
+    },
+    {
+      "id": "DAILY-20261106-003",
+      "name": "Langdon Prairie Health — Diagnostic Imaging",
+      "city": "Langdon",
+      "state": "ND",
+      "source": "https://lph.hospital/pricing-transparency/"
+    },
+    {
+      "id": "DAILY-20261106-004",
+      "name": "Sakakawea Medical Center — Radiology",
+      "city": "Hazen",
+      "state": "ND",
+      "source": "https://www.smcnd.org/financial-services"
+    },
+    {
+      "id": "DAILY-20261106-005",
+      "name": "Heart of America Medical Center — Radiology",
+      "city": "Rugby",
+      "state": "ND",
+      "source": "https://www.hamc.com/price-transparency"
+    }
+  ]
+}
