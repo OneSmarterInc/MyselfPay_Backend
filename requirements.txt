@@ -12,5 +12,6 @@ tzdata>=2025.2
 h3>=4.5,<5
 phonenumberslite>=9.0.43,<10
 
+lxml>=6.1.1,<7
 PyOTP==2.9.0
 qrcode==8.2
