@@ -106,3 +106,18 @@ class AdminTOTPTests(TestCase):
         response=self.client.post(reverse('admin:totp'),{'code':'123456'})
         self.assertContains(response,'Enrollment is unavailable')
         self.assertNotIn('admin_totp_verified',self.client.session)
+
+    def test_permission_query_reused_only_within_same_request(self):
+        self.device.enabled=True
+        self.device.save()
+        request=RequestFactory().get('/admin/')
+        request.user=self.user
+        request.session={'admin_totp_verified':str(self.device.generation)}
+        with self.assertNumQueries(1):
+            self.assertTrue(admin_totp.verified(request))
+            self.assertTrue(admin_totp.verified(request))
+        self.device.delete()
+        another=RequestFactory().get('/admin/')
+        another.user=self.user
+        another.session=request.session
+        self.assertFalse(admin_totp.verified(another))

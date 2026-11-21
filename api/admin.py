@@ -9,6 +9,9 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.db import connection
+from django.db.models import OuterRef, Subquery, Exists, Value
+from django.db.models.functions import Concat
+from django.db.models.expressions import RawSQL
 from django.urls import reverse, path
 from django.template.response import TemplateResponse
 from django.http import Http404
@@ -210,6 +213,15 @@ class PortalAccountAdmin(admin.ModelAdmin):
     readonly_fields = ('registered_at', 'member_id', 'username')
     actions = ('suspend_accounts', 'restore_accounts')
 
+    def get_queryset(self, request):
+        # Resolve display columns in one SQL request, not three queries per row.
+        disabled_key = Concat(Value('account-disabled:'), OuterRef('member_id'))
+        return super().get_queryset(request).annotate(
+            _admin_username=RawSQL('(SELECT username FROM mobile_accounts WHERE member_id=user_accounts.member_id LIMIT 1)', ()),
+            _admin_name=Subquery(PortalMember.objects.filter(pk=OuterRef('member_id')).values('name')[:1]),
+            _admin_disabled=Exists(PortalSetting.objects.filter(key=disabled_key, value='1')),
+        )
+
     def has_add_permission(self, request): return False
     def has_delete_permission(self, request, obj=None):
         return bool(request.user.is_active and request.user.is_superuser)
@@ -230,13 +242,11 @@ class PortalAccountAdmin(admin.ModelAdmin):
 
     @admin.display(description='Username')
     def username(self, obj):
-        with core.connect(settings.DOMAIN_DATABASE) as db:
-            row = db.execute('SELECT username FROM mobile_accounts WHERE member_id=?', (obj.pk,)).fetchone()
-        return row['username'] if row else 'Setup required'
+        return obj._admin_username or 'Setup required'
 
     @admin.display(description='Name')
     def user_name(self, obj):
-        return PortalMember.objects.get(pk=obj.member_id).name
+        return obj._admin_name or 'Portal user'
 
     @admin.display(description='Registered', ordering='created')
     def registered_at(self, obj):
@@ -244,7 +254,7 @@ class PortalAccountAdmin(admin.ModelAdmin):
 
     @admin.display(description='Status')
     def account_status(self, obj):
-        return 'Suspended' if PortalSetting.objects.filter(key='account-disabled:' + obj.pk, value='1').exists() else 'Active'
+        return 'Suspended' if obj._admin_disabled else 'Active'
 
     def revoke_sessions(self, member_id):
         with connection.cursor() as cursor:

@@ -1,5 +1,7 @@
 """Tell administrators when a center sends a change that waits for approval."""
 import logging
+import hashlib
+from django.core.cache import cache
 from email.message import EmailMessage
 import booking
 import booking_mail
@@ -22,10 +24,15 @@ def when(stamp):
 
 def pending_counts(path):
     """Waiting price submissions and profile edits, for the Admin menu."""
+    key = 'admin:pending:' + hashlib.sha256(str(path).encode()).hexdigest()
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
     try:
         with booking.connection(path) as db:
             prices = db.execute("SELECT COUNT(*) AS n FROM center_price_submissions WHERE status='pending'").fetchone()['n']
             profiles = db.execute("SELECT COUNT(*) AS n FROM center_profile_edits WHERE status='pending'").fetchone()['n']
+        cache.set(key, (prices, profiles), timeout=15)
         return prices, profiles
     except Exception:
         return 0, 0

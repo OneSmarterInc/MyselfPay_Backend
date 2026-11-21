@@ -30,8 +30,16 @@ from api.models import AdminTOTP
 def verified(request):
     if not (request.user.is_authenticated and request.user.is_active and request.user.is_superuser):
         return False
-    credential = AdminTOTP.objects.filter(user=request.user, enabled=True).first()
-    return bool(credential and constant_time_compare(str(credential.generation), request.session.get('admin_totp_verified', '')))
+    proof = request.session.get('admin_totp_verified', '')
+    identity = (request.user.pk, proof)
+    cached = getattr(request, '_admin_totp_permission', None)
+    if cached is not None and cached[0] == identity:
+        return cached[1]
+    generation = AdminTOTP.objects.filter(user=request.user, enabled=True).values_list('generation', flat=True).first()
+    result = bool(generation and constant_time_compare(str(generation), proof))
+    # Never cache across requests: credential resets take effect on the next load.
+    request._admin_totp_permission = (identity, result)
+    return result
 
 
 def safe_next(request, value):

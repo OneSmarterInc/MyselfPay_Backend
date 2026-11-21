@@ -100,7 +100,7 @@ def mailer_view(site, request):
             for n, contact in enumerate(page)]
     return TemplateResponse(request, 'admin/mailer.html', {**site.each_context(request), 'title': 'Mailer',
         'compose': compose, 'mailbox_form': mailbox_form, 'mailbox': mailbox, 'rows': rows, 'page': page,
-        'total': contacts.count(), 'email_search': email_search, 'audience': audience, 'suppression_count':MailerSuppression.objects.count(), 'all_matching': (request.POST.get('select_all_filtered') in ('1','on','true') if request.method == 'POST' else request.GET.get('all_matching') == '1'), 'templates': MailerTemplate.objects.order_by('name'),
+        'total': page.paginator.count, 'email_search': email_search, 'audience': audience, 'suppression_count':MailerSuppression.objects.count(), 'all_matching': (request.POST.get('select_all_filtered') in ('1','on','true') if request.method == 'POST' else request.GET.get('all_matching') == '1'), 'templates': MailerTemplate.objects.order_by('name'),
         'campaigns': MailerCampaign.objects.annotate(recipient_count=Count('messages')).order_by('-created_at')[:10]})
 
 
