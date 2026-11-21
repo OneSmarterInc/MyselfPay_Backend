@@ -10,6 +10,8 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from lxml.etree import ParserError
 
+from .dynamic import fetch_public, review_page
+from http.client import HTTPException
 from .providers import BRANCHES, extract
 
 
@@ -74,21 +76,26 @@ def run_csv(stream, previous, fetch_page=fetch):
     if not urls:
         raise ValueError("CSV has no pricing URLs")
 
-    centers, offers, issues = [], [], []
+    centers, offers, issues, candidates = [], [], [], []
     for url in urls:
-        if url not in BRANCHES:
-            issues.append({"source_url": url, "status": "unsupported_source"})
-            continue
         try:
-            content = fetch_page(url)
             checked_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            if url not in BRANCHES:
+                content, final_url = fetch_public(url, MAX_PAGE_BYTES)
+                rows = review_page(content, final_url, checked_at)
+                candidates.extend(rows)
+                if not rows:
+                    issues.append({"source_url": final_url, "status": "needs_review",
+                                   "detail": "No exam and price found together in readable HTML"})
+                continue
+            content = fetch_page(url)
             center, found = extract(url, content, checked_at)
-        except (OSError, ValueError, ParserError) as exc:
+        except (OSError, ValueError, ParserError, HTTPException, UnicodeError) as exc:
             issues.append({"source_url": url, "status": "source_issue", "detail": str(exc)})
             continue
         centers.append(center)
         offers.extend(found)
-    return {"centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
+    return {"review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
 
 
 def main():

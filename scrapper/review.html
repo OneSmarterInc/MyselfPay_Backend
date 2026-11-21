@@ -33,7 +33,7 @@
 <header>MySelfPay</header>
 <main>
   <h1>Price Scraper</h1>
-  <p class="muted">Check OnCall Imaging and Pineywoods Imaging pricing pages and review their MRI and CT offers.</p>
+  <p class="muted">Upload provider pricing pages to check MRI and CT offers.</p>
   <form id="form">
     <div class="inputs">
       <label>Pricing URLs CSV <input id="csv" type="file" accept=".csv,text/csv" required></label>
@@ -46,6 +46,7 @@
     </div>
   </form>
   <div id="results" hidden>
+    <section id="candidate-section" hidden><h2>New provider rows to review</h2><ul id="candidates"></ul></section>
     <section id="issues-section" hidden>
       <h2>Source issues</h2>
       <ul id="issues"></ul>
@@ -105,6 +106,20 @@
       link.textContent = 'Provider page';
       evidence.append(link);
     }
+    const list = get('candidates');
+    list.replaceChildren();
+    for (const candidate of data.review_candidates || []) {
+      const item = document.createElement('li');
+      item.textContent = candidate.evidence + ' ';
+      const link = document.createElement('a');
+      link.href = candidate.source_url;
+      link.textContent = 'Provider source';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      item.append(link);
+      list.append(item);
+    }
+    get('candidate-section').hidden = list.children.length === 0;
     for (const issue of data.issues) {
       const item = document.createElement('li');
       const message = issue.status === 'unsupported_source' ? 'Parser not available' : issue.detail;

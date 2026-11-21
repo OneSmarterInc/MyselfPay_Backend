@@ -70,9 +70,19 @@ class ScrapperTests(TestCase):
 
         with TemporaryDirectory() as directory:
             path = Path(directory) / "sources.csv"
-            path.write_text(f"pricing_url\n{ONCALL}\n{ONCALL}\nhttps://example.com/\n")
+            path.write_text(f"pricing_url\n{ONCALL}\n{ONCALL}\nhttp://example.com/\n")
             report = run(path, baseline, fetch)
         self.assertEqual(fetched, [ONCALL])
         self.assertEqual(report["findings"], [])
         self.assertEqual(report["offers"], [])
-        self.assertEqual([i["status"] for i in report["issues"]], ["source_issue", "unsupported_source"])
+        self.assertEqual([i["status"] for i in report["issues"]], ["source_issue", "source_issue"])
+
+    def test_unseen_table_and_inline_prices(self):
+        from scrapper.dynamic import review_page
+        page = b"""<table><tr><th>Exam</th><th>Insurance</th><th>Cash price</th></tr>
+        <tr><td>MRI knee</td><td>$900</td><td>$375</td></tr>
+        <tr><td>CT neck</td><td>$600</td><td>From $200</td></tr></table>
+        <p>CT spine $350 plus $40 reading fee</p>"""
+        rows = review_page(page, "https://example.org/prices", "now")
+        self.assertEqual([r["amount_cents"] for r in rows], [37500, None, None])
+        self.assertTrue(all(r["status"] == "needs_review" for r in rows))

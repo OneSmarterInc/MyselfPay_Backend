@@ -41,12 +41,14 @@ option. A price, price type or payment-terms change is recorded beside the appro
 offer. Evidence and timestamps are retained for review. Source failures do not create
 price-change findings.
 
-The pilot uses exact configured HTTPS URLs and rejects redirects. Each parser targets
-the provider's routine MRI and CT cash prices. The Pineywoods parser also handles
-abdomen/pelvis CT. General price rows do not assert a specific body part.
-`both` means the combined without-and-with contrast protocol. Facility and reading fee
-inclusions need separate evidence. Other providers, PDFs, hospital transparency
-files, screening prices and add-ons are outside the pilot.
+The two pilot providers have dedicated parsers. Other public HTTPS HTML pricing
+URLs use a generic table, list, paragraph and heading-based parser. The report
+includes these rows in `review_candidates` with evidence, source, observation
+time, and page-level contact details where available. An isolated numeric cash
+column in a simple table can supply a candidate amount. Review the exact
+branch, fee inclusions and protocol before using a candidate. PDF schedules,
+JavaScript-only pages and unrecognized layouts require review. Current baseline
+comparison operates on structured offers from the dedicated parsers.
 
 The command writes review output to stdout. PostgreSQL, the admin interface,
 scheduled checks and publication are subsequent integration work. Resolve each
