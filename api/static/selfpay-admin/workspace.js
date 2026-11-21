@@ -14,3 +14,17 @@ document.addEventListener('DOMContentLoaded', () => {
   nav.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
   matchMedia('(min-width: 961px)').addEventListener('change', close);
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const notifications = document.querySelector('.sp-notifications');
+  if (!notifications) return;
+  document.addEventListener('click', event => {
+    if (!notifications.contains(event.target)) notifications.open = false;
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && notifications.open) {
+      notifications.open = false;
+      notifications.querySelector('summary').focus();
+    }
+  });
+});

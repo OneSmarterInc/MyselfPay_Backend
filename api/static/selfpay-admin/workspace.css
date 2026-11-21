@@ -31,3 +31,16 @@ input[type=text],input[type=password],input[type=email],input[type=url],input[ty
 .sp-review-actions .sp-review-button:focus-visible{outline:3px solid #a71930;outline-offset:3px}
 .sp-review-actions .sp-review-button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:600px){.sp-review-actions{min-width:100px;flex-direction:column;align-items:stretch}.sp-review-actions .sp-review-button{width:100%}}
+
+.sp-notifications{position:relative;color:#273548;flex-shrink:0}
+.sp-notifications>summary{list-style:none;position:relative;display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:44px;height:44px;border:1px solid #dce0e7;border-radius:8px;background:#fff;cursor:pointer}
+.sp-notifications>summary::-webkit-details-marker{display:none}
+.sp-notifications>summary:hover,.sp-notifications[open]>summary{background:#faedf0;border-color:#a71930;color:#a71930}
+.sp-notification-badge{position:absolute;top:-6px;right:-7px;min-width:20px;height:20px;box-sizing:border-box;padding:2px 5px;border-radius:12px;background:#a71930;color:white;font-size:10px;font-weight:700;line-height:16px;text-align:center}
+.sp-notification-panel{position:absolute;top:calc(100% + 12px);right:0;width:320px;max-width:calc(100vw - 32px);box-sizing:border-box;background:#fff;border:1px solid #dce0e7;border-radius:12px;box-shadow:0 12px 32px #1d293b24;z-index:1100;overflow:hidden;text-align:left}
+.sp-notification-panel h2{font-size:16px;font-weight:700;color:#273548;margin:0;padding:18px 20px;background:#fff;border-bottom:1px solid #e9ecf1}
+.sp-user-tools .sp-notification-panel a{display:flex!important;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;color:#273548;text-decoration:none;min-height:44px;box-sizing:border-box;white-space:normal}
+.sp-notification-panel a:hover{background:#f8f9fb}
+.sp-notification-panel strong,.sp-notification-panel small{display:block}.sp-notification-panel strong{font-size:13px;line-height:1.5}.sp-notification-panel small{margin-top:4px;color:#536174;font-size:12px;line-height:1.5}
+.sp-notification-panel b{background:#faedf0;color:#a71930;border-radius:12px;padding:3px 8px;font-size:12px}.sp-notification-panel p{margin:0;padding:20px;color:#536174;font-size:13px;line-height:1.6}
+@media(max-width:600px){.sp-notification-panel{position:fixed;top:80px;left:16px;right:16px;width:auto;max-width:none;max-height:calc(100dvh - 100px);overflow-y:auto}}

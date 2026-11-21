@@ -63,3 +63,15 @@ def notify(kind, center_name, detail):
                 log.warning('Admin update notice was not sent to one recipient.')
     except Exception:
         log.warning('Admin update notice failed.')
+
+
+def reply_count():
+    """Imported mail replies only; no IMAP calls while rendering admin pages."""
+    key = 'admin:received-replies'
+    cached = cache.get(key)
+    if cached is not None:
+        return cached
+    from api.models import MailerReply
+    count = MailerReply.objects.count()
+    cache.set(key, count, timeout=15)
+    return count

@@ -63,6 +63,8 @@ class SelfPayAdminSite(AdminSite):
             ok, why = audit.healthy()
             context['audit_alert'] = '' if ok else why
             context['pending_prices'], context['pending_profiles'] = admin_alerts.pending_counts(settings.DOMAIN_DATABASE)
+            context['received_replies'] = admin_alerts.reply_count()
+            context['notification_count'] = context['pending_prices'] + context['received_replies']
         return context
 
     def get_urls(self):

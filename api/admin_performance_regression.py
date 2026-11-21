@@ -63,3 +63,26 @@ class SidebarQueryTests(SimpleTestCase):
             self.assertEqual(admin_alerts.pending_counts('failed-db'),(0,0))
             self.assertEqual(admin_alerts.pending_counts('failed-db'),(0,0))
             self.assertEqual(connect.call_count,2)
+
+    def test_reply_count_has_short_cache_without_mailbox_network(self):
+        cache.clear()
+        with patch('api.models.MailerReply.objects.count',return_value=7) as count:
+            self.assertEqual(admin_alerts.reply_count(),7)
+            self.assertEqual(admin_alerts.reply_count(),7)
+            self.assertEqual(count.call_count,1)
+        cache.clear()
+
+    def test_notification_markup_and_sidebar(self):
+        from django.template.loader import render_to_string
+        html=render_to_string('admin/base_site.html',{'has_permission':True,'pending_prices':5,
+            'received_replies':2,'notification_count':7,'user':MagicMock(),'request':RequestFactory().get('/admin/')})
+        self.assertIn('Prices awaiting approval',html)
+        self.assertIn('Replies received',html)
+        self.assertIn('?audience=replied',html)
+        self.assertIn('Notifications: 7',html)
+        nav=html.split('<nav id="sp-admin-navigation"')[1].split('</nav>')[0]
+        self.assertNotIn('Updates waiting for approval',nav)
+        self.assertNotIn('sp-nav-count',nav)
+        self.assertIn('Center prices',nav)
+        Path=__import__('pathlib').Path
+        Path('data/notification-preview.html').write_text(html,encoding='utf-8')
