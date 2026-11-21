@@ -53,3 +53,25 @@ comparison operates on structured offers from the dedicated parsers.
 The command writes review output to stdout. PostgreSQL, the admin interface,
 scheduled checks and publication are subsequent integration work. Resolve each
 pilot location against the existing directory before writing to `entries` or `offers`.
+
+## Database staging
+
+Use a development or staging backend with the active directory loaded. Run Django
+migrations there, then run `python manage.py stage_scraper_report scrapper-report.json`.
+Each structured offer and candidate becomes a row in `scraper_observations`.
+Prices use integer cents. An empty amount means the evidence still needs interpretation.
+The original source row, URL and observation time stay with the normalized row.
+
+Automatic assignment requires the exact directory source URL and normalized full
+address of a unique single-location entry. Unmatched observations keep an empty
+entry key. Inspect them with:
+
+```sql
+SELECT observation_id, source_url, exam, amount_cents, evidence
+FROM scraper_observations WHERE entry_key IS NULL;
+```
+
+After checking the branch and offer scope, supply a JSON object mapping each reviewed
+observation ID to its verified directory entry key using `--bindings bindings.json`.
+Reimporting the same report reuses the same observations. Linking identifies a
+center; publishing its price requires a separate approval and publication step.
