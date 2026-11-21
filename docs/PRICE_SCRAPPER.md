@@ -1,5 +1,21 @@
 # MySelfPay price scraper pilot
 
+## Local review page
+
+Start the page from the repository root.
+
+```powershell
+.\.venv\Scripts\python.exe -m scrapper.ui
+```
+
+On Linux or macOS, use `python -m scrapper.ui` in the active virtual environment.
+Open the URL printed in the terminal (usually `http://127.0.0.1:8765/`). Upload
+the same CSV shown below. An approved baseline JSON is optional. The page shows
+prices, changes, evidence and source issues, and can download the report.
+The terminal must stay open while the page is in use.
+
+## Command line
+
 Run the pilot from the backend checkout after installing the repository dependencies.
 Create a CSV containing these inputs.
 

@@ -62,10 +62,14 @@ def compare(offers, previous):
 
 def run(csv_path, previous, fetch_page=fetch):
     with csv_path.open(encoding="utf-8-sig", newline="") as stream:
-        rows = csv.DictReader(stream)
-        if not rows.fieldnames or "pricing_url" not in rows.fieldnames:
-            raise ValueError("CSV needs a pricing_url column")
-        urls = list(dict.fromkeys((row.get("pricing_url") or "").strip() for row in rows))
+        return run_csv(stream, previous, fetch_page)
+
+
+def run_csv(stream, previous, fetch_page=fetch):
+    rows = csv.DictReader(stream)
+    if not rows.fieldnames or "pricing_url" not in rows.fieldnames:
+        raise ValueError("CSV needs a pricing_url column")
+    urls = list(dict.fromkeys((row.get("pricing_url") or "").strip() for row in rows))
     urls = [url for url in urls if url]
     if not urls:
         raise ValueError("CSV has no pricing URLs")

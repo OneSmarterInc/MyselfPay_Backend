@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MySelfPay | Price Scraper</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; color: #132b3c; background: #f4f7fa; font: 15px/1.5 system-ui, sans-serif; }
+  header { background: #123347; color: white; padding: 15px max(24px, calc((100% - 1120px) / 2)); font-weight: 700; }
+  main { max-width: 1168px; margin: auto; padding: 32px 24px; }
+  h1 { margin: 0 0 8px; font-size: 30px; }
+  h2 { margin: 0 0 10px; font-size: 19px; }
+  form, section { background: white; border: 1px solid #dbe5ee; padding: 20px; border-radius: 12px; margin: 16px 0; }
+  .inputs { display: flex; flex-wrap: wrap; gap: 18px; }
+  label { display: grid; gap: 6px; font-weight: 600; }
+  button { padding: 9px 15px; border: 1px solid #16655d; border-radius: 7px; background: #16655d; color: white; cursor: pointer; font: inherit; font-weight: 600; }
+  button:disabled { opacity: .65; cursor: default; }
+  #download { background: white; color: #16655d; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 18px; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; min-width: 640px; border-collapse: collapse; text-align: left; }
+  th, td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid #e3ebf0; }
+  th { background: #edf4f7; white-space: nowrap; }
+  a { color: #16655d; overflow-wrap: anywhere; }
+  .muted { color: #456171; }
+  #status { margin: 0; }
+  #status[data-error] { color: #a02626; }
+  [hidden] { display: none; }
+</style>
+</head>
+<body>
+<header>MySelfPay</header>
+<main>
+  <h1>Price Scraper</h1>
+  <p class="muted">Check OnCall Imaging and Pineywoods Imaging pricing pages and review their MRI and CT offers.</p>
+  <form id="form">
+    <div class="inputs">
+      <label>Pricing URLs CSV <input id="csv" type="file" accept=".csv,text/csv" required></label>
+      <label>Approved baseline JSON (optional) <input id="baseline" type="file" accept=".json,application/json"></label>
+    </div>
+    <div class="actions">
+      <button id="run" type="submit">Run scraper</button>
+      <button id="download" type="button" hidden>Download report</button>
+      <p id="status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+  <div id="results" hidden>
+    <section id="issues-section" hidden>
+      <h2>Source issues</h2>
+      <ul id="issues"></ul>
+    </section>
+    <section>
+      <h2>Offers</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Center / location</th><th>Exam</th><th>Contrast</th><th>Observed price</th><th>Comparison</th><th>Source evidence</th></tr></thead>
+        <tbody id="offers"></tbody>
+      </table></div>
+      <p id="empty" hidden>No offers were extracted.</p>
+    </section>
+  </div>
+</main>
+<script>
+  const get = (id) => document.getElementById(id);
+  const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+  const contrastNames = { without: 'Without contrast', with: 'With contrast', both: 'Without and with contrast' };
+  let report;
+
+  function offerKey(offer) {
+    return JSON.stringify([offer.location_id, offer.mod, offer.body, offer.contrast, offer.payment_option]);
+  }
+
+  function cell(row, value) {
+    const column = row.insertCell();
+    column.textContent = value;
+    return column;
+  }
+
+  function render(data, hasBaseline) {
+    const centers = new Map(data.centers.map((center) => [center.location_id, center]));
+    const findings = new Map(data.findings.map((finding) => [offerKey(finding.observed), finding]));
+    for (const offer of data.offers) {
+      const center = centers.get(offer.location_id);
+      const row = get('offers').insertRow();
+      cell(row, [center?.name || offer.location_id, center?.address].filter(Boolean).join(' · '));
+      cell(row, [offer.mod, offer.body].join(' · '));
+      cell(row, contrastNames[offer.contrast] || offer.contrast);
+      const amount = usd.format(offer.amount_cents / 100);
+      cell(row, amount);
+      const finding = findings.get(offerKey(offer));
+      let comparison = 'No baseline';
+      if (hasBaseline) {
+        if (!finding) comparison = 'Unchanged';
+        else if (!finding.previous) comparison = 'New in this check';
+        else if (finding.changed_fields.includes('amount_cents')) {
+          comparison = usd.format(finding.previous.amount_cents / 100) + ' → ' + amount;
+        } else comparison = 'Offer details changed';
+      }
+      cell(row, comparison);
+      const evidence = cell(row, offer.evidence + ' ');
+      const link = document.createElement('a');
+      link.href = offer.source_url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'Provider page';
+      evidence.append(link);
+    }
+    for (const issue of data.issues) {
+      const item = document.createElement('li');
+      const message = issue.status === 'unsupported_source' ? 'Parser not available' : issue.detail;
+      item.textContent = issue.source_url + ' — ' + message;
+      get('issues').append(item);
+    }
+    get('issues-section').hidden = data.issues.length === 0;
+    get('empty').hidden = data.offers.length > 0;
+    get('results').hidden = false;
+    get('download').hidden = false;
+    const counts = [data.centers.length + ' centers', data.offers.length + ' offers', data.issues.length + ' issues'];
+    if (hasBaseline) counts.splice(2, 0, data.findings.length + ' findings');
+    get('status').textContent = counts.join(' · ');
+  }
+
+  get('form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    report = null;
+    get('run').disabled = true;
+    get('results').hidden = true;
+    get('download').hidden = true;
+    get('offers').replaceChildren();
+    get('issues').replaceChildren();
+    get('status').removeAttribute('data-error');
+    get('status').textContent = 'Checking provider pages…';
+    try {
+      const csv = get('csv').files[0];
+      const baseline = get('baseline').files[0];
+      if (csv.size + (baseline?.size || 0) > 1500000) throw new Error('Combined files must be under 1.5 MB.');
+      const payload = { csv: await csv.text() };
+      if (baseline) {
+        const previous = JSON.parse(await baseline.text());
+        if (!Array.isArray(previous?.offers)) throw new Error('Baseline JSON needs an offers array.');
+        payload.offers = previous.offers;
+      }
+      const response = await fetch('/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Scraper could not run.');
+      render(data, Boolean(baseline));
+      report = data;
+    } catch (error) {
+      get('status').setAttribute('data-error', '');
+      get('status').textContent = error.message;
+    } finally {
+      get('run').disabled = false;
+    }
+  });
+
+  get('download').addEventListener('click', () => {
+    if (!report) return;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'scrapper-report.json';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+</script>
+</body>
+</html>
