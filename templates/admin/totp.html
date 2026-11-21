@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}{% load static %}
+{% block bodyclass %}sp-login{% endblock %}
+{% block nav-global %}{% endblock %}{% block nav-breadcrumbs %}{% endblock %}{% block content_title %}{% endblock %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'selfpay-admin/totp.css' %}">{% endblock %}
+{% block content %}<section class="sp-login-card totp-card">
+<h1>{{ title }}</h1>
+{% if recovery_codes %}
+<p>Your authenticator is enabled. Save these one-time recovery codes somewhere private. They will not be shown again.</p>
+<div class="totp-recovery">{% for code in recovery_codes %}<code>{{ code }}</code>{% endfor %}</div>
+<a class="sp-primary totp-continue" href="{{ continue_url }}">Continue to admin dashboard</a>
+{% else %}
+{% if enrolling %}<p>Scan this QR code with Google Authenticator, Microsoft Authenticator, or another TOTP app.</p>
+<div class="totp-qr">{{ qr }}</div>
+<details><summary>Enter a setup key instead</summary><p>Account: {{ user.get_username }}<br>Type: time based · 6 digits · 30 seconds</p><code class="totp-secret">{{ setup_key }}</code></details>
+<p>Enter the six-digit code from your authenticator to finish setup.</p>
+{% else %}<p>Enter the six-digit code from your authenticator app, or one unused recovery code.</p>{% endif %}
+{% if error %}<p role="alert" class="errornote">{{ error }}</p>{% endif %}
+<form method="post">{% csrf_token %}<label for="totp-code">{% if enrolling %}Authenticator code{% else %}Authenticator or recovery code{% endif %}</label><input id="totp-code" name="code" type="text" inputmode="{% if enrolling %}numeric{% else %}text{% endif %}" autocomplete="one-time-code" maxlength="20" autocapitalize="none" spellcheck="false" required autofocus><button class="sp-primary" type="submit">{% if enrolling %}Enable authenticator{% else %}Verify and sign in{% endif %}</button></form>
+{% endif %}
+<form method="post" action="{% url 'admin:logout' %}" class="totp-signout">{% csrf_token %}<button type="submit">Cancel and sign out</button></form>
+</section>{% endblock %}

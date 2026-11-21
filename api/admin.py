@@ -34,7 +34,15 @@ class SelfPayAdminSite(AdminSite):
     enable_nav_sidebar = False
 
     def has_permission(self, request):
-        return bool(request.user.is_active and request.user.is_superuser)
+        import admin_totp
+        return admin_totp.verified(request)
+
+    def login(self, request, extra_context=None):
+        import admin_totp
+        from django.shortcuts import redirect
+        if request.user.is_authenticated and request.user.is_active and request.user.is_superuser and not admin_totp.verified(request):
+            return redirect('admin:totp')
+        return admin_totp.password_complete(request, super().login(request, extra_context))
 
     def admin_view(self, view, cacheable=False):
         import admin_audit
@@ -56,7 +64,8 @@ class SelfPayAdminSite(AdminSite):
 
     def get_urls(self):
         import admin_mailer
-        return [path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
+        return [path('totp/', lambda request: __import__('admin_totp').challenge(request), name='totp'),
+                path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
                 path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
                 path('mailer/message/<int:ident>/', self.admin_view(lambda request, ident: admin_mailer.message_view(self, request, ident)), name='mailer_message'),

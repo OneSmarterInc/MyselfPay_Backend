@@ -1,5 +1,17 @@
 import uuid
 from django.db import models
+from django.conf import settings
+
+
+class AdminTOTP(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    secret_encrypted = models.TextField(editable=False)
+    enabled = models.BooleanField(default=False)
+    last_counter = models.BigIntegerField(default=-1)
+    failed_attempts = models.PositiveIntegerField(default=0)
+    locked_until = models.DateTimeField(null=True, blank=True)
+    recovery_hashes = models.JSONField(default=list, editable=False)
+    generation = models.UUIDField(default=uuid.uuid4, editable=False)
 
 
 class SpatialLocation(models.Model):

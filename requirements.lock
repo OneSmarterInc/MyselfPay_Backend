@@ -17,3 +17,6 @@ typing_extensions==4.16.0
 tzdata==2026.6
 h3==4.5.0
 phonenumberslite==9.0.43
+
+PyOTP==2.9.0
+qrcode==8.2
