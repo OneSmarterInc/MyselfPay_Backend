@@ -28,3 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.body.classList.contains('sp-login')) return;
+  const header = document.getElementById('header');
+  if (!header) return;
+  const updateHeaderHeight = () => document.documentElement.style.setProperty('--sp-header-height', `${Math.ceil(header.getBoundingClientRect().height)}px`);
+  updateHeaderHeight();
+  if ('ResizeObserver' in window) new ResizeObserver(updateHeaderHeight).observe(header);
+  else window.addEventListener('resize', updateHeaderHeight);
+});

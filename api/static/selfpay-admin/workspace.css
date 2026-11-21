@@ -44,3 +44,10 @@ input[type=text],input[type=password],input[type=email],input[type=url],input[ty
 .sp-notification-panel strong,.sp-notification-panel small{display:block}.sp-notification-panel strong{font-size:13px;line-height:1.5}.sp-notification-panel small{margin-top:4px;color:#536174;font-size:12px;line-height:1.5}
 .sp-notification-panel b{background:#faedf0;color:#a71930;border-radius:12px;padding:3px 8px;font-size:12px}.sp-notification-panel p{margin:0;padding:20px;color:#536174;font-size:13px;line-height:1.6}
 @media(max-width:600px){.sp-notification-panel{position:fixed;top:80px;left:16px;right:16px;width:auto;max-width:none;max-height:calc(100dvh - 100px);overflow-y:auto}}
+
+/* Fixed header: sticky positioning was defeated by ancestor overflow rules. */
+body:not(.sp-login) #container{padding-top:var(--sp-header-height,80px)}
+body:not(.sp-login) #header{position:fixed;inset:0 0 auto 0;width:100%;box-sizing:border-box;z-index:1200;overflow:visible}
+body:not(.sp-login) #header .sp-navigation{top:var(--sp-header-height,80px);max-height:calc(100dvh - var(--sp-header-height,80px))}
+@media(max-width:960px){body:not(.sp-login) #header .sp-navigation{position:static;top:auto;max-height:60dvh}}
+@media(max-width:600px){.sp-notification-panel{top:calc(var(--sp-header-height,80px) + 12px);max-height:calc(100dvh - var(--sp-header-height,80px) - 28px)}}

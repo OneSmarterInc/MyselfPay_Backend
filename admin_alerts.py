@@ -67,11 +67,13 @@ def notify(kind, center_name, detail):
 
 def reply_count():
     """Imported mail replies only; no IMAP calls while rendering admin pages."""
-    key = 'admin:received-replies'
+    key = 'admin:centers-with-replies:v2'
     cached = cache.get(key)
     if cached is not None:
         return cached
-    from api.models import MailerReply
-    count = MailerReply.objects.count()
+    from admin_mailer import mailer_contacts
+    # Match the destination list: active, non-suppressed center rows with replies.
+    # Several messages from one center count as one center, not several alerts.
+    count = mailer_contacts(audience='replied').count()
     cache.set(key, count, timeout=15)
     return count

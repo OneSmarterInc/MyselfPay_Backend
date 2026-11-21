@@ -66,7 +66,8 @@ class SidebarQueryTests(SimpleTestCase):
 
     def test_reply_count_has_short_cache_without_mailbox_network(self):
         cache.clear()
-        with patch('api.models.MailerReply.objects.count',return_value=7) as count:
+        with patch('admin_mailer.mailer_contacts') as count:
+            count.return_value.count.return_value=7
             self.assertEqual(admin_alerts.reply_count(),7)
             self.assertEqual(admin_alerts.reply_count(),7)
             self.assertEqual(count.call_count,1)
@@ -86,3 +87,23 @@ class SidebarQueryTests(SimpleTestCase):
         self.assertIn('Center prices',nav)
         Path=__import__('pathlib').Path
         Path('data/notification-preview.html').write_text(html,encoding='utf-8')
+
+
+class ReplyNotificationConsistencyTests(__import__('django.test',fromlist=['TestCase']).TestCase):
+    def test_multiple_replies_and_hidden_contacts_match_visible_center_list(self):
+        from api.models import MailerContact, MailerCampaign, MailerMessage, MailerReply, MailerSuppression
+        from django.utils import timezone
+        from admin_mailer import mailer_contacts
+        now=timezone.now()
+        campaign=MailerCampaign.objects.create(subject='Synthetic',body='Test',selection='1-3',reply_to='admin@example.test',created_by='admin')
+        for n in range(3):
+            contact=MailerContact.objects.create(center_key=str(n),email=f'center{n}@example.test',imported_at=now,active=n!=2)
+            message=MailerMessage.objects.create(campaign=campaign,contact=contact,email=contact.email,center_names='Test',position=n+1,message_id=f'synthetic-{n}')
+            for index in range(3):
+                MailerReply.objects.create(message=message,identity=f'{n}-{index}',sender=contact.email,subject='Test',body_encrypted='synthetic',received_at=now)
+        MailerSuppression.objects.create(email='center1@example.test')
+        cache.clear()
+        self.assertEqual(MailerReply.objects.count(),9)
+        self.assertEqual(mailer_contacts(audience='replied').count(),1)
+        self.assertEqual(admin_alerts.reply_count(),1)
+        cache.clear()
