@@ -130,7 +130,8 @@
     get('empty').hidden = data.offers.length > 0;
     get('results').hidden = false;
     get('download').hidden = false;
-    const counts = [data.centers.length + ' centers', data.offers.length + ' offers', data.issues.length + ' issues'];
+    const counts = [data.source_count + ' URLs checked', data.offers.length + ' structured offers',
+      data.review_candidates.length + ' rows to review', data.issues.length + ' source issues'];
     if (hasBaseline) counts.splice(2, 0, data.findings.length + ' findings');
     get('status').textContent = counts.join(' · ');
   }

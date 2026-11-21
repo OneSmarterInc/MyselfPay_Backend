@@ -86,3 +86,12 @@ class ScrapperTests(TestCase):
         rows = review_page(page, "https://example.org/prices", "now")
         self.assertEqual([r["amount_cents"] for r in rows], [37500, None, None])
         self.assertTrue(all(r["status"] == "needs_review" for r in rows))
+
+    def test_cash_deposit_is_not_a_scan_price(self):
+        from scrapper.dynamic import review_page
+        for header in ("Cash deposit", "Self-pay discount", "Cash price excluding reading"):
+            page = f"<table><tr><th>Exam</th><th>{header}</th></tr><tr><td>MRI knee</td><td>$75</td></tr></table>"
+            rows = review_page(page, "https://example.org/menu", "now")
+            self.assertEqual(len(rows), 1)
+            self.assertIsNone(rows[0]["amount_cents"])
+            self.assertIn(header, rows[0]["evidence"])

@@ -53,7 +53,10 @@ def fetch_public(url, limit):
     raise ValueError("Too many redirects")
 
 
-CASH = re.compile(r"\b(?:self[- ]pay|cash(?:[- ]pay)?|prompt[- ]pay)\b", re.I)
+CASH = re.compile(
+    r"(?:self[- ]pay|cash(?:[- ]pay)?|prompt[- ]pay)(?: (?:price|rate|amount))?(?: \(USD\))?",
+    re.I,
+)
 EXAM = re.compile(r"\b(?:MRI|CT)\b", re.I)
 
 
@@ -99,7 +102,7 @@ def review_page(content, url, checked):
             evidence = " | ".join(values)
             if not EXAM.search(evidence) or "$" not in evidence:
                 continue
-            cash = [i for i, heading in enumerate(headers) if CASH.search(heading)]
+            cash = [i for i, heading in enumerate(headers) if CASH.fullmatch(heading)]
             amount = None
             if len(values) == len(headers) and len(cash) == 1 and not table.xpath(".//*[@rowspan or @colspan]"):
                 value = values[cash[0]]

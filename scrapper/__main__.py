@@ -95,7 +95,7 @@ def run_csv(stream, previous, fetch_page=fetch):
             continue
         centers.append(center)
         offers.extend(found)
-    return {"review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
+    return {"source_count": len(urls), "review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
 
 
 def main():
