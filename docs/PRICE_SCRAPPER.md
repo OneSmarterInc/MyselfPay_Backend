@@ -62,8 +62,7 @@ URLs use a generic table, list, paragraph and heading-based parser. The report
 includes these rows in `review_candidates` with evidence, source, observation
 time, and page-level contact details where available. An isolated numeric cash
 column in a simple table can supply a candidate amount. Review the exact
-branch, fee inclusions and protocol before using a candidate. PDF schedules,
-JavaScript-only pages and unrecognized layouts require review. Current baseline
+branch, fee inclusions and protocol before using a candidate. The supported interactive and document layouts are described below. Current baseline
 comparison operates on structured offers from the dedicated parsers.
 
 The command writes review output to stdout. PostgreSQL, the admin interface,
@@ -91,3 +90,47 @@ After checking the branch and offer scope, supply a JSON object mapping each rev
 observation ID to its verified directory entry key using `--bindings bindings.json`.
 Reimporting the same report reuses the same observations. Linking identifies a
 center; publishing its price requires a separate approval and publication step.
+
+## Published price tables and service menus
+
+For the standalone Windows review tool, install the scraper dependencies in its
+own environment and start the local UI from the repository root.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r scrapper/requirements.txt
+.\.venv\Scripts\python.exe -m playwright install chromium
+.\.venv\Scripts\python.exe -m scrapper.ui
+```
+
+The reader matches a provider's comparison-table column, follows service
+options to their associated panels or same-site URLs, and reads explicit cash
+columns from supported PDF and HTML schedules. The displayed exam total supplies
+the amount. Separate contrast notes stay with the evidence. Provider estimates
+use the price type `estimate`. If the server supplies an incomplete interactive
+menu, Chromium can select visible services and read independently labelled results
+in the same self-pay section. Browser requests are limited to same-origin GETs.
+Forms requiring patient information, third-party widgets and additional types
+of price layouts may need another adapter.
+
+For linked image schedules with a ruled three-column grid, install Tesseract OCR
+with English language data on the machine running the UI. The scraper checks
+PATH and the standard Windows Tesseract-OCR installation directory. It compares
+two OCR passes and retains matching exam/amount cells with their image URL and row.
+If OCR is unavailable, the report identifies the linked schedule.
+
+**Results by source** shows the input URL, numeric count and pages tried. A moved
+link triggers a check of the provider homepage for replacement pricing links.
+If a page opens in the admin's browser, **Use a saved provider page** accepts a
+saved HTML file alongside its matching CSV URL. These observations carry
+`evidence_origin=uploaded_html`. The timestamp records the review run. Verify
+the snapshot date separately.
+
+Public fetches check TLS and public addresses for each redirect. On an OS DNS
+error for a supported public domain, the fetcher also tries Google DNS over HTTPS.
+In a managed network with an HTTPS proxy, the operator may set
+`MYSELFPAY_PROXY_HOSTS` to exact, trusted public provider hostnames separated by
+commas. This delegates address resolution for those hosts to that proxy.
+
+Run regression coverage with
+`python -m unittest tests.test_scrapper tests.test_scrapper_menus -v`.
+Set `MYSELFPAY_TEST_BROWSER=1` to include the Chromium interaction test.

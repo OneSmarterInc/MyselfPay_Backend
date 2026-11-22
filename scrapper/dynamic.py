@@ -1,57 +1,14 @@
 """Collect source-backed candidates from previously unseen public pricing pages."""
-import http.client
-import ipaddress
 import re
-import socket
-import ssl
 from urllib.parse import unquote, urljoin, urlsplit
 
 from lxml import html
 
 from .body_parts import CONTRAST as CONTRAST_PHRASE, split_exclusions
 from .providers import PRICE, node_text
+from .menus import provider_comparison, read_branch_grids, read_card_grids, read_selectors, read_single_service
+from .pdf_prices import read_schedule
 from .prices import EXAM, NON_OFFER, PAIR, parse_value
-
-
-def fetch_public(url, limit):
-    for _ in range(5):
-        parts = urlsplit(url)
-        host = parts.hostname
-        if parts.scheme != "https" or not host or parts.username is not None or parts.port not in (443, None):
-            raise ValueError("Use a public HTTPS pricing page")
-        addresses = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
-        for family, _, _, _, address in addresses:
-            ip = ipaddress.ip_address(address[0])
-            if not ip.is_global or ip.is_multicast or (ip.version == 6 and ip.ipv4_mapped):
-                raise ValueError("Source must have a public address")
-        conn = http.client.HTTPSConnection(host, timeout=12)
-        try:
-            # Pin the validated address while retaining hostname verification and SNI.
-            raw = socket.create_connection((addresses[0][4][0], 443), timeout=12)
-            try:
-                conn.sock = ssl.create_default_context().wrap_socket(raw, server_hostname=host)
-            except BaseException:
-                raw.close()
-                raise
-            target = parts.path or "/"
-            if parts.query:
-                target += "?" + parts.query
-            conn.request("GET", target, headers={"User-Agent": "MySelfPayPriceReview/0.2"})
-            response = conn.getresponse()
-            if response.status in (301, 302, 303, 307, 308) and response.getheader("Location"):
-                url = urljoin(url, response.getheader("Location"))
-                continue
-            if response.status != 200:
-                raise ValueError(f"Source returned HTTP {response.status}")
-            if response.headers.get_content_type() != "text/html":
-                raise ValueError("This source needs document review")
-            content = response.read(limit + 1)
-            if len(content) > limit:
-                raise ValueError("Source exceeds size limit")
-            return content, url
-        finally:
-            conn.close()
-    raise ValueError("Too many redirects")
 
 
 CASH = re.compile(
@@ -122,9 +79,10 @@ def payment_contexts(doc):
     return contexts
 
 
-def review_page(content, url, checked):
-    doc = html.document_fromstring(content)
-    for node in doc.xpath("//script|//style|//template|//noscript|//*[@hidden]"):
+def review_page(content, url, checked, *, interactive=False, notes=None, image_fetch=None):
+    pdf = isinstance(content, bytes) and content.lstrip().startswith(b"%PDF-")
+    doc = html.document_fromstring(b"<html></html>" if pdf else content)
+    for node in doc.xpath("//script|//style|//template|//noscript"):
         node.drop_tree()
     contacts = {}
     for field, scheme in (("phones", "tel:"), ("emails", "mailto:")):
@@ -139,8 +97,10 @@ def review_page(content, url, checked):
 
     contexts = payment_contexts(doc)
 
-    def add(label, evidence, parsed=None, context=""):
-        identity = (label, evidence, context)
+    def add(label, evidence, parsed=None, context="", provider=None):
+        if re.search(r"\bCT\s*/\s*NG\b|\bchlamydia\b", label, re.I):
+            return
+        identity = (provider, label, evidence, context)
         if identity in seen:
             return
         seen.add(identity)
@@ -152,30 +112,49 @@ def review_page(content, url, checked):
             kind = "add_on" if high is None and kind == "listed" else "unconfirmed"
             if kind == "unconfirmed":
                 low = high = None
-        normalized = re.sub(r"\bw/\s*&\s*w/o\b", "with and without", positive, flags=re.I)
+        positive = re.sub(r"\bw\s+(?=(?:and|contrast)\b)", "with ", positive, flags=re.I)
+        normalized = re.sub(r"\bw/\s*(?:&|and)\s*w/o\b", "with and without", positive, flags=re.I)
         normalized = re.sub(r"\bw/o\b", "without", normalized, flags=re.I)
         normalized = re.sub(r"\bw/(?=\s)", "with", normalized, flags=re.I)
         contrast_words = re.findall(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", normalized, re.I)
         contrast = "unknown"
-        if re.search(r"\bwith(?:out)?\s+(?:or|/)\s*with(?:out)?\s+contrast", normalized, re.I):
+        if re.search(r"\bor\b", positive, re.I) and re.search("contrast", positive, re.I):
+            contrast = "unknown"
+        elif re.search(r"\bwith(?:out)?\s+(?:or|/)\s*with(?:out)?\s+contrast", normalized, re.I):
             contrast = "unknown"
         elif len(contrast_words) == 1:
             wording = contrast_words[0].lower()
             contrast = wording if wording in ("with", "without") else "both"
         elif not contrast_words and re.search(r"\bnon[- ]?contrast\b", normalized, re.I):
             contrast = "without"
-        candidates.append({"provider_page_title": title, "page_contacts": contacts,
+        candidates.append({"provider_page_title": provider or title, "page_contacts": contacts,
                            "contrast": contrast, "exam": label, "evidence": evidence, "source_url": url,
                            "checked_at": checked, "status": "needs_review",
                            "amount_cents": low, "max_amount_cents": high, "price_type": kind,
                            "payment_context": context})
 
+    if pdf:
+        read_schedule(content, add)
+        return candidates
+
+    # Inactive options are often already delivered as separate HTML panels.
+    # Read only explicitly linked self-pay panels before removing hidden/insured content.
+    handled = read_selectors(doc, add)
+    for node in doc.xpath("//*[@id or @hidden or @aria-hidden='true']"):
+        if (node.get("id") in handled or "hidden" in node.attrib or node.get("aria-hidden") == "true") and node.getparent() is not None:
+            node.drop_tree()
+    read_card_grids(doc, contexts, add)
+    read_branch_grids(doc, add)
+    read_single_service(doc, add)
+
     for table in doc.xpath("//table"):
+        if provider_comparison(table, title, add):
+            continue
         headings = table.xpath("./caption") or table.xpath("preceding-sibling::*[1][self::h2 or self::h3 or self::h4]")
         section = node_text(headings[0]) if headings else ""
         table_modality = section if re.fullmatch(r"(MRI|CT)(?: scans?| exams?)?", section, re.I) else ""
         headers = []
-        simple = not table.xpath(".//*[@rowspan or @colspan] | .//table")
+        simple = not table.xpath(".//*[@rowspan and @rowspan!='1' or @colspan and @colspan!='1'] | .//table")
         for row in table.xpath(".//tr"):
             if row.xpath("ancestor::table[1]")[0] != table:
                 continue
@@ -188,7 +167,11 @@ def review_page(content, url, checked):
             evidence = " | ".join(values)
             cash = [i for i, heading in enumerate(headers) if CASH.fullmatch(heading)]
             explicit_usd = len(cash) == 1 and "USD" in headers[cash[0]].upper()
-            if "$" not in evidence and not explicit_usd:
+            # A US provider's explicitly cash-priced table may omit currency signs.
+            bare_price = (simple and bool(contexts.get(row)) and len(headers) == len(values)
+                          and len(headers) == 2 and headers[1].lower() in ("price", "cash price", "self-pay price")
+                          and re.fullmatch(r"(?:[0-9]{1,3}(?:,[0-9]{3})+|[0-9]+)(?:\.[0-9]{2})?", values[1]))
+            if "$" not in evidence and not explicit_usd and not bare_price:
                 continue
             label = exam_table_label(headers, values) if len(headers) == len(values) else ""
             if not label:
@@ -227,6 +210,9 @@ def review_page(content, url, checked):
                 if marker and re.fullmatch(r"\s*Please note that cost may vary dependent upon [\w -]+\.?", note, re.I):
                     value = main
                 parsed = parse_value(value)
+            if bare_price:
+                parsed = parse_value("$" + values[1])
+                context = contexts[row]
             add(label, " | ".join(headers) + " / " + evidence, parsed, context)
 
     for node in doc.xpath("//p|//li[not(.//li)]|//div[not(div or p or table or ul or ol)]"):
@@ -258,24 +244,84 @@ def review_page(content, url, checked):
             label = node_text(children[0])
             tail = value.removeprefix(label).strip() if value.startswith(label) else ""
             add(label, value, parse_value(tail), contexts.get(children[0], ""))
+    if image_fetch is not None:
+        from .image_prices import image_schedule, schedule_rows
+        from http.client import HTTPException
+        image_url = image_schedule(content, url)
+        if image_url:
+            try:
+                blob, final, _ = image_fetch(image_url, 5_000_000, origin=url, formats={"image/png", "image/jpeg"})
+                read = schedule_rows(blob)
+                for number, label, rate in read:
+                    exam = re.sub(r"^MR (?=(?:joint )?arthrogram)", "MRI ", label, flags=re.I)
+                    add(exam, f"Image row {number} | {label} | {rate} | {final}", parse_value(rate), "Provider cash pricing schedule")
+                    candidates[-1].update(evidence_origin="provider_image", evidence_url=final)
+                if notes is not None:
+                    notes.append(f"Read linked image: {len(read)} matching OCR rows")
+            except (OSError, HTTPException, ValueError) as exc:
+                if notes is not None:
+                    notes.append(str(exc))
+    if interactive:
+        from .browser_prices import explore, needs_browser
+        if needs_browser(content, candidates, url):
+            known = {r["exam"].casefold() for r in candidates if r["amount_cents"] is not None and r["payment_context"]}
+            extra, detail = explore(content, url, known)
+            for label, evidence, amount, context in extra:
+                add(label, evidence, amount, context)
+            if notes is not None:
+                notes.append(detail)
     return candidates
 
 
-def price_links(content, source):
+def price_links(content, source, *, options_only=False):
     """Prioritize explicit self-pay links, then general pricing links on this host."""
+    if isinstance(content, bytes) and content.lstrip().startswith(b"%PDF-"):
+        return []
     doc = html.document_fromstring(content)
     ranked = {}
-    for link in doc.xpath("//a[@href]"):
-        url = urljoin(source, link.get("href")).split("#")[0]
+    for link in doc.xpath("//a[@href]|//select/option[@value]"):
+        target = link.get("href") or link.get("value") or ""
+        if options_only and link.tag != "option":
+            continue
+        if link.tag == "option" and not (target.startswith(("/", "https://", "?")) and EXAM.search(node_text(link))):
+            continue
+        url = urljoin(source, target).split("#")[0]
         parts = urlsplit(url)
         if parts.scheme != "https" or parts.netloc != urlsplit(source).netloc or url == source:
             continue
         words = (node_text(link) + " " + parts.path).lower()
-        if re.search(r"self[- ]pay|cash[- ](?:price|pricing|rate)", words):
+        if link.tag == "option":
+            rank = -1
+        elif re.search(r"self[- ]pay|cash[- ](?:price|pricing|rate)", words):
             rank = 0
         elif re.search(r"\bpric(?:es|ing|e list)\b", words):
             rank = 1
+        elif re.fullmatch(r"(?:cardiac|coronary) calcium (?:scoring|scan)", node_text(link), re.I):
+            rank = 2
         else:
             continue
         ranked[url] = min(rank, ranked.get(url, rank))
-    return sorted(ranked, key=ranked.get)[:3]
+    return [u for u, rank in ranked.items() if rank == -1][:24] + [
+        u for u in sorted(ranked, key=ranked.get) if ranked[u] >= 0][:3]
+
+
+def page_hint(content, source):
+    if isinstance(content, bytes) and content.lstrip().startswith(b"%PDF-"):
+        return "PDF opened; no supported self-pay schedule identified"
+    doc = html.document_fromstring(content)
+    for node in doc.xpath("//script|//style"):
+        node.drop_tree()
+    for image in doc.xpath("//img[@src]"):
+        attr = image.get("src", "") + " " + image.get("alt", "")
+        if re.search(r"(?:cash|self[- ]pay)[- ]pric", attr, re.I):
+            target = urljoin(source, image.get("src"))
+            if urlsplit(target).scheme == "https":
+                return f"Price schedule published as an image; inspect the original: {target}"
+    body = " ".join(" ".join(doc.itertext()).split())
+    if re.search(r"personalized quote|confirm the price for your specific scan", body, re.I):
+        return "Provider requests a personalized quote; no numeric self-pay rate identified"
+    if "Service Locator" in body and "Request Appointment" in body:
+        return "Service locator lists appointments and facilities; no numeric price identified"
+    if "self-pay service" in body.lower() and "$" not in body:
+        return "Self-pay eligibility listed; no amount displayed"
+    return "Page opened; no explicit self-pay exam price identified"

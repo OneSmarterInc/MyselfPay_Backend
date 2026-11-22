@@ -19,7 +19,7 @@ OTHER = "Other exams"
 COLUMNS = (GENERAL, *PARTS, OTHER)
 PART_PATTERNS = {name: re.compile(rf"\b(?:{pattern})\b", re.I) for name, pattern in PARTS.items()}
 OVERVIEW_FIELDS = ("center", "location_id", "address", "modality", "contrast", "source_url", *COLUMNS, "cell_details")
-EXCLUSION = re.compile(r"\b(?:exclud(?:es?|ing)|except(?: for)?|other than|not including)\b", re.I)
+EXCLUSION = re.compile(r"\b(?:exclud(?:es?|ed|ing)|except(?: for)?|other than|not including)\b", re.I)
 CONTRAST = re.compile(
     r"\b(?:(?:with(?:out)?|w/o|w/)(?:\s*(?:and|&|/)\s*(?:with(?:out)?|w/o|w/))?\s+contrast|non[- ]?contrast)\b",
     re.I)
@@ -63,7 +63,7 @@ def overview(rows):
     for index, row in enumerate(rows):
         # An unresolved chain page has no established branch, even if its title
         # happens to match another page. Never group it with a resolved location.
-        site = ("branch", row["location_id"]) if row["location_id"] else ("page", row["source_url"])
+        site = ("branch", row["location_id"]) if row["location_id"] else ("page", row["source_url"], row["center"])
         key = (site, row["modality"], row["contrast"])
         identity = (key, row["exam"], row["price_type"], row["price_usd"], row["max_price_usd"],
                     row["payment_terms"], row["source_url"], row["evidence"])

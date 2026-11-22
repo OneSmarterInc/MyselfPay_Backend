@@ -46,6 +46,10 @@
       <label>Pricing URLs CSV <input id="csv" type="file" accept=".csv,text/csv" required></label>
       <label>Approved baseline JSON (optional) <input id="baseline" type="file" accept=".json,application/json"></label>
     </div>
+    <details><summary>Use a saved provider page</summary>
+      <p>If a provider page opens in your browser, you can save its HTML and upload it here with the matching CSV URL. The run will use that copy for that URL.</p>
+      <label>Saved HTML pages (optional) <input id="snapshots" type="file" accept=".html,.htm" multiple></label>
+    </details>
     <div class="actions">
       <button id="run" type="submit">Run scraper</button>
       <button id="overview-download" type="button" hidden>Download overview CSV</button>
@@ -60,18 +64,17 @@
       <div class="table-wrap"><table id="overview"><thead><tr id="overview-head"></tr></thead><tbody id="overview-rows"></tbody></table></div>
       <p id="no-overview" hidden>No numeric observations in this run.</p></section>
     <section><h2>Offer detail</h2><div class="table-wrap"><table><thead><tr><th>Center or provider page</th><th>Exam</th><th>Body part</th><th>Contrast</th><th>Price type</th><th>USD</th><th>Upper USD</th><th>Status</th><th>Source</th></tr></thead><tbody id="prices"></tbody></table></div><p id="no-prices" hidden>No numeric self-pay prices could be identified.</p></section>
-    <section id="candidate-section" hidden><h2>Additional source wording to review</h2><div class="table-wrap"><table><thead><tr><th>Provider page</th><th>Exam</th><th>Contrast</th><th>Price</th><th>Source evidence</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
-    <section id="issues-section" hidden>
-      <h2>Source issues</h2>
-      <ul id="issues"></ul>
+    <section id="candidate-section" hidden><details><summary>Additional source wording</summary><div class="table-wrap"><table><thead><tr><th>Provider page</th><th>Exam</th><th>Contrast</th><th>Price</th><th>Source evidence</th></tr></thead><tbody id="candidates"></tbody></table></div></details></section>
+    <section id="sources-section"><h2>Results by source</h2>
+      <div class="table-wrap"><table><thead><tr><th>Uploaded URL</th><th>Numeric prices</th><th>Pages and outcomes</th></tr></thead><tbody id="sources"></tbody></table></div>
     </section>
-    <section>
+    <section id="comparison-section" hidden>
       <h2>Branch offer comparisons</h2>
       <div class="table-wrap"><table>
         <thead><tr><th>Center / location</th><th>Exam</th><th>Contrast</th><th>Observed price</th><th>Comparison</th><th>Source evidence</th></tr></thead>
         <tbody id="offers"></tbody>
       </table></div>
-      <p id="empty" hidden>No offers were extracted.</p>
+
     </section>
   </div>
 </main>
@@ -95,6 +98,7 @@
     const amount = usd.format(price.price_usd);
     if (price.price_type === 'starting') return 'From ' + amount;
     if (price.price_type === 'range') return amount + ' – ' + usd.format(price.max_price_usd);
+    if (price.price_type === 'estimate') return amount + ' estimated';
     if (price.price_type === 'add_on') return amount + ' add-on';
     return amount;
   }
@@ -115,7 +119,7 @@
       const row = body.insertRow();
       const center = cell(row, group.center);
       const address = document.createElement('small');
-      address.textContent = group.address || 'Branch unconfirmed · ' + group.source_url;
+      address.textContent = group.address || 'Provider page · ' + group.source_url;
       center.append(address);
       cell(row, group.modality);
       cell(row, contrastNames[group.contrast] || 'Unspecified');
@@ -134,10 +138,10 @@
           const evidence = document.createElement('small');
           evidence.textContent = [price.payment_terms, price.evidence].filter(Boolean).join(' · ');
           const source = document.createElement('a');
-          source.href = price.source_url;
+          source.href = price.evidence_url || price.source_url;
           source.target = '_blank';
           source.rel = 'noopener noreferrer';
-          source.textContent = 'Provider page';
+          source.textContent = price.evidence_origin === 'provider_image' ? 'Provider image' : 'Provider page';
           p.append(evidence, source);
           details.append(p);
         }
@@ -167,10 +171,11 @@
       cell(row, price.price_type.replace('_', ' '));
       cell(row, price.price_usd.toFixed(2));
       cell(row, price.max_price_usd?.toFixed(2) ?? '');
-      cell(row, price.status === 'needs_review' ? 'Needs review' : 'Observed');
+      cell(row, price.evidence_origin === 'uploaded_html' ? 'Saved page · verify date and location' :
+        price.status === 'needs_review' ? 'Published · verify location' : 'Observed');
       const link = document.createElement('a');
-      link.href = price.source_url;
-      link.textContent = 'Provider page';
+      link.href = price.evidence_url || price.source_url;
+      link.textContent = price.evidence_origin === 'provider_image' ? 'Provider image' : 'Provider page';
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       cell(row, '').append(link);
@@ -213,7 +218,8 @@
       cell(row, candidate.provider_page_title || new URL(candidate.source_url).hostname);
       cell(row, candidate.exam);
       cell(row, contrastNames[candidate.contrast] || 'Unspecified');
-      cell(row, 'Unconfirmed');
+      cell(row, candidate.amount_cents == null ? 'See source wording' :
+        usd.format(candidate.amount_cents / 100) + ' · verify payment terms');
       const item = cell(row, candidate.evidence + ' ');
       const link = document.createElement('a');
       link.href = candidate.source_url;
@@ -224,18 +230,24 @@
 
     }
     get('candidate-section').hidden = list.children.length === 0;
-    for (const issue of data.issues) {
-      const item = document.createElement('li');
-      const message = issue.status === 'unsupported_source' ? 'Parser not available' : issue.detail;
-      item.textContent = issue.source_url + ' — ' + message;
-      get('issues').append(item);
+    const sources = get('sources');
+    sources.replaceChildren();
+    for (const result of data.source_results) {
+      const row = sources.insertRow();
+      cell(row, result.source_url);
+      cell(row, String(result.numeric_count));
+      const td = cell(row, '');
+      for (const attempt of result.attempts) {
+        const p = document.createElement('p');
+        p.textContent = (attempt.url === result.source_url ? '' : attempt.url + ' — ') + attempt.detail;
+        td.append(p);
+      }
     }
-    get('issues-section').hidden = data.issues.length === 0;
-    get('empty').hidden = data.offers.length > 0;
+    get('comparison-section').hidden = !hasBaseline || data.offers.length === 0;
     get('results').hidden = false;
     get('download').hidden = false;
-    const counts = [data.source_count + ' URLs checked', data.offers.length + ' structured offers',
-      data.review_candidates.length + ' rows to review', data.issues.length + ' source issues'];
+    const counts = [data.source_count + ' URLs checked', data.pricing_rows.length + ' numeric prices',
+      data.source_results.filter(s => s.numeric_count === 0).length + ' URLs without a numeric result'];
     if (hasBaseline) counts.splice(2, 0, data.findings.length + ' findings');
     get('status').textContent = counts.join(' · ');
   }
@@ -249,14 +261,17 @@
     get('price-download').hidden = true;
     get('overview-download').hidden = true;
     get('offers').replaceChildren();
-    get('issues').replaceChildren();
     get('status').removeAttribute('data-error');
     get('status').textContent = 'Checking provider pages…';
     try {
       const csv = get('csv').files[0];
       const baseline = get('baseline').files[0];
-      if (csv.size + (baseline?.size || 0) > 1500000) throw new Error('Combined files must be under 1.5 MB.');
+      const snapshots = Array.from(get('snapshots').files);
+      if (snapshots.length > 8) throw new Error('Upload up to eight saved HTML pages.');
+      if (csv.size + (baseline?.size || 0) + snapshots.reduce((n, f) => n + f.size, 0) > 6500000)
+        throw new Error('Combined files must be under 6.5 MB.');
       const payload = { csv: await csv.text() };
+      if (snapshots.length) payload.snapshots = await Promise.all(snapshots.map(f => f.text()));
       if (baseline) {
         const previous = JSON.parse(await baseline.text());
         if (!Array.isArray(previous?.offers)) throw new Error('Baseline JSON needs an offers array.');

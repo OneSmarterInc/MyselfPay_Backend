@@ -10,7 +10,7 @@ from .body_parts import exam_scope
 FIELDS = ("center", "location_id", "address", "modality", "exam", "contrast",
           "price_type", "price_usd", "max_price_usd", "payment_terms",
           "status", "source_url", "evidence", "checked_at",
-          "body_part", "exam_variant", "exclusions", "body_part_column")
+          "body_part", "exam_variant", "exclusions", "body_part_column", "evidence_origin", "evidence_url")
 EXAM = re.compile(r"\b(PET\s*/\s*CT|MRI|CT)\b", re.I)
 NON_OFFER = re.compile(
     r"\b(?:deposit|copay|co-pay|discount|insurance|insured|average|savings?|"
@@ -60,6 +60,8 @@ def price_rows(report):
             "max_price_usd": high / 100 if high is not None else None,
             "payment_terms": terms, "status": status, "source_url": row["source_url"],
             "evidence": row["evidence"], "checked_at": row["checked_at"],
+            "evidence_url": row.get("evidence_url") or row["source_url"],
+            "evidence_origin": row.get("evidence_origin", "provider_page"),
         }
 
 

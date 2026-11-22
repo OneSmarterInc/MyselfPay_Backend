@@ -6,12 +6,12 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.parse import urlsplit, urlunsplit
 
 from lxml.etree import ParserError
 
-from .dynamic import fetch_public, price_links, review_page
+from .dynamic import price_links, review_page
+from .public_fetch import fetch_public
 from http.client import HTTPException
 from .body_parts import OVERVIEW_FIELDS, overview, overview_records
 from .prices import FIELDS, price_rows, write_csv
@@ -23,22 +23,12 @@ KEY_FIELDS = ("location_id", "mod", "body", "contrast", "payment_option")
 COMPARE_FIELDS = ("amount_cents", "price_type", "payment_terms")
 
 
-class NoRedirect(HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
-
-
 def fetch(url):
     if url not in BRANCHES:
         raise ValueError("URL does not have a configured provider parser")
-    opener = build_opener(NoRedirect())
-    request = Request(url, headers={"User-Agent": "MySelfPayPriceReview/0.1", "Accept": "text/html"})
-    with opener.open(request, timeout=12) as response:
-        if response.headers.get_content_type() != "text/html":
-            raise ValueError("Source did not return HTML")
-        content = response.read(MAX_PAGE_BYTES + 1)
-    if len(content) > MAX_PAGE_BYTES:
-        raise ValueError("Source page exceeds the size limit")
+    content, final = fetch_public(url, MAX_PAGE_BYTES)
+    if urlsplit(final).netloc != urlsplit(url).netloc:
+        raise ValueError("Pilot page redirected to a different provider")
     return content
 
 
@@ -70,7 +60,61 @@ def run(csv_path, previous, fetch_page=fetch):
         return run_csv(stream, previous, fetch_page)
 
 
-def run_csv(stream, previous, fetch_page=fetch):
+SOURCE_ERRORS = (OSError, ValueError, ParserError, HTTPException, UnicodeError)
+
+
+def is_numeric(row):
+    return row["amount_cents"] is not None and bool(row["payment_context"])
+
+
+def read_source(url, checked, attempts, candidates):
+    from .dynamic import page_hint
+    try:
+        content, final = fetch_public(url, MAX_PAGE_BYTES)
+    except SOURCE_ERRORS as exc:
+        parts = urlsplit(url)
+        if str(exc) != "Source returned HTTP 404" or parts.path in ("", "/"):
+            raise
+        # A provider can move a price list without updating a directory link.
+        attempts.append({"url": url, "detail": str(exc)})
+        home = urlunsplit((parts.scheme, parts.netloc, "/", "", ""))
+        content, final = fetch_public(home, MAX_PAGE_BYTES)
+        if urlsplit(final).netloc != parts.netloc:
+            raise ValueError("Directory URL expired and provider homepage moved to another host")
+
+    def inspect(body, origin):
+        notes = []
+        rows = review_page(body, origin, checked, interactive=True, notes=notes, image_fetch=fetch_public)
+        for row in rows:
+            row["starting_url"] = url
+        count = sum(map(is_numeric, rows))
+        priced = sum(row["amount_cents"] is not None and not row["payment_context"] for row in rows)
+        notes.insert(0, f"{count} numeric prices" if count else page_hint(body, origin))
+        if priced:
+            notes.append(f"{priced} amounts with payment terms to verify")
+        attempts.append({"url": origin, "detail": " · ".join(notes)})
+        candidates.extend(rows)
+        return count
+
+    count = inspect(content, final)
+    visited = {url, final}
+    for linked in price_links(content, final, options_only=bool(count)):
+        if linked in visited:
+            continue
+        visited.add(linked)
+        try:
+            page, origin = fetch_public(linked, MAX_PAGE_BYTES)
+            if urlsplit(origin).netloc != urlsplit(final).netloc:
+                raise ValueError("Pricing link redirected outside the provider website")
+            if origin != linked and origin in visited:
+                continue
+            visited.add(origin)
+            inspect(page, origin)
+        except SOURCE_ERRORS as exc:
+            attempts.append({"url": linked, "detail": str(exc)})
+
+
+def run_csv(stream, previous, fetch_page=fetch, *, snapshots=()):
     rows = csv.DictReader(stream)
     if not rows.fieldnames or "pricing_url" not in rows.fieldnames:
         raise ValueError("CSV needs a pricing_url column")
@@ -79,37 +123,47 @@ def run_csv(stream, previous, fetch_page=fetch):
     if not urls:
         raise ValueError("CSV has no pricing URLs")
 
-    centers, offers, issues, candidates = [], [], [], []
+    from .snapshots import match_snapshots
+    saved = match_snapshots(snapshots, urls)
+    centers, offers, issues, candidates, sources = [], [], [], [], []
     for url in urls:
+        checked_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        attempts = []
+        start = len(candidates)
+        found = []
+        status, detail = "read", ""
         try:
-            checked_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
-            if url not in BRANCHES:
-                content, final_url = fetch_public(url, MAX_PAGE_BYTES)
-                rows = review_page(content, final_url, checked_at)
-                if not any(row["amount_cents"] is not None and row["payment_context"] for row in rows):
-                    for linked in price_links(content, final_url):
-                        try:
-                            page, origin = fetch_public(linked, MAX_PAGE_BYTES)
-                            if urlsplit(origin).netloc != urlsplit(final_url).netloc:
-                                raise ValueError("Pricing link redirected outside the provider website")
-                            for candidate in review_page(page, origin, checked_at):
-                                candidate["starting_url"] = url
-                                rows.append(candidate)
-                        except (OSError, ValueError, ParserError, HTTPException, UnicodeError) as exc:
-                            issues.append({"source_url": linked, "status": "source_issue", "detail": str(exc)})
+            if url in saved:
+                # Offline evidence is always a review candidate, including on pilot URLs.
+                rows = review_page(saved[url], url, checked_at)
+                for row in rows:
+                    row.update(starting_url=url, evidence_origin="uploaded_html")
                 candidates.extend(rows)
-                if not rows:
-                    issues.append({"source_url": final_url, "status": "needs_review",
-                                   "detail": "No exam and price found together in readable HTML"})
-                continue
-            content = fetch_page(url)
-            center, found = extract(url, content, checked_at)
-        except (OSError, ValueError, ParserError, HTTPException, UnicodeError) as exc:
-            issues.append({"source_url": url, "status": "source_issue", "detail": str(exc)})
-            continue
-        centers.append(center)
-        offers.extend(found)
-    report = {"source_count": len(urls), "review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
+                attempts.append({"url": url, "detail": "Read uploaded provider HTML snapshot; capture date requires review"})
+            elif url in BRANCHES:
+                content = fetch_page(url)
+                center, found = extract(url, content, checked_at)
+                centers.append(center)
+                offers.extend(found)
+                attempts.append({"url": url, "detail": "Read provider price list"})
+            else:
+                read_source(url, checked_at, attempts, candidates)
+        except SOURCE_ERRORS as exc:
+            status, detail = "unavailable", str(exc)
+            attempts.append({"url": url, "detail": detail})
+        batch = candidates[start:]
+        count = len(found) + sum(is_numeric(row) for row in batch)
+        if count:
+            status = "prices_found"
+        elif status == "read":
+            status = "review"
+            detail = "No numeric self-pay exam price identified in the checked content."
+        if detail:
+            issues.append({"source_url": url, "status": "source_issue" if status == "unavailable" else "needs_review",
+                           "detail": detail})
+        sources.append({"source_url": url, "status": status, "numeric_count": count, "attempts": attempts})
+    report = {"source_count": len(urls), "review_candidates": candidates, "source_results": sources,
+              "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
     report["pricing_rows"] = list(price_rows(report))
     report["body_part_overview"] = overview(report["pricing_rows"])
     return report

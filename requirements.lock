@@ -21,3 +21,4 @@ phonenumberslite==9.0.43
 lxml==6.1.1
 PyOTP==2.9.0
 qrcode==8.2
+pypdf==6.21.4

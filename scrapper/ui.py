@@ -4,6 +4,7 @@ import argparse
 import csv
 import io
 import json
+from lxml.etree import ParserError
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -13,7 +14,7 @@ from .body_parts import OVERVIEW_FIELDS, overview_records
 
 
 PAGE = Path(__file__).with_name("review.html")
-MAX_UPLOAD = 2_000_000
+MAX_UPLOAD = 8_000_000
 
 
 class ReviewHandler(BaseHTTPRequestHandler):
@@ -48,7 +49,7 @@ class ReviewHandler(BaseHTTPRequestHandler):
         try:
             size = int(self.headers.get("Content-Length", "0"))
             if not 0 < size <= MAX_UPLOAD:
-                return self.json_reply(413, {"error": "Combined upload must be under 2 MB"})
+                return self.json_reply(413, {"error": "Combined upload must be under 8 MB"})
             self.connection.settimeout(10)
             request = json.loads(self.rfile.read(size))
             if not isinstance(request, dict) or not isinstance(request.get("csv"), str):
@@ -56,8 +57,11 @@ class ReviewHandler(BaseHTTPRequestHandler):
             previous = request.get("offers", [])
             if not isinstance(previous, list) or any(not isinstance(row, dict) for row in previous):
                 raise ValueError("The baseline must contain an offers array")
-            report = run_csv(io.StringIO(request["csv"].lstrip("\ufeff"), newline=""), previous)
-        except (ValueError, TypeError, KeyError, OSError, csv.Error) as exc:
+            snapshots = request.get("snapshots", [])
+            if not isinstance(snapshots, list) or len(snapshots) > 8:
+                raise ValueError("Upload up to eight saved HTML pages")
+            report = run_csv(io.StringIO(request["csv"].lstrip("\ufeff"), newline=""), previous, snapshots=snapshots)
+        except (ValueError, TypeError, KeyError, OSError, csv.Error, ParserError) as exc:
             return self.json_reply(400, {"error": str(exc)})
         prices = io.StringIO(newline="")
         write_csv(prices, report["pricing_rows"])
