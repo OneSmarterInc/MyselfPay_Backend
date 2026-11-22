@@ -8,6 +8,7 @@ from django.test import TestCase, Client, override_settings
 from django.utils import timezone
 from admin_settings import secret_cipher
 from api.models import MailerContact, MailerMailbox, MailerMessage, MailerReply, MailerCampaign
+from api.admin_login_helper import verified_login
 import admin_mailer
 
 
@@ -17,7 +18,7 @@ import admin_mailer
 class MailerTests(TestCase):
     def setUp(self):
         self.admin = get_user_model().objects.create_superuser('mailer-admin', password='Synthetic-password!')
-        self.client.force_login(self.admin)
+        verified_login(self.client, self.admin)
         self.client.defaults['HTTP_ORIGIN'] = 'http://testserver'
         now = timezone.now()
         MailerContact.objects.bulk_create([MailerContact(email=f'center{n:03d}@example.test',
@@ -174,7 +175,7 @@ class MailerTests(TestCase):
         self.assertNotContains(self.client.get('/admin/mailer/'), 'synthetic-imap-secret')
         self.assertContains(self.client.get('/admin/mailer/'), 'Reply mailbox')
         csrf_client = Client(enforce_csrf_checks=True)
-        csrf_client.force_login(self.admin)
+        verified_login(csrf_client, self.admin)
         self.assertEqual(csrf_client.post('/admin/mailer/', {'action': 'contacts'}).status_code, 403)
         self.client.logout()
         self.assertEqual(self.client.get('/admin/mailer/').status_code, 302)
@@ -457,7 +458,7 @@ class MailerTests(TestCase):
         data={'action':'enable','suppression_id':suppression.pk}
         self.assertContains(self.client.get(url),'Enable email')
         self.assertTrue(MailerSuppression.objects.exists())
-        secure=Client(enforce_csrf_checks=True);secure.force_login(self.admin)
+        secure=Client(enforce_csrf_checks=True);verified_login(secure, self.admin)
         self.assertEqual(secure.post(url,data,HTTP_ORIGIN='http://testserver').status_code,403)
         self.assertTrue(MailerSuppression.objects.exists())
         anonymous=Client()
