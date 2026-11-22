@@ -18,18 +18,23 @@ def observation_rows(report):
         center = centers[row["location_id"], row["source_url"]]
         yield "offer", center, row, row["scope"], row["amount_cents"], row["price_type"]
     for row in report.get("review_candidates", []):
-        label = row["exam"]
-        evidence = row["evidence"].strip()
-        amount = row.get("amount_cents")
-        kind = "cash_column" if amount is not None else "unconfirmed"
-        # Recover standalone exam/amount pairs from older reports. Keep fees,
-        # exclusions and source wording available for the review decision.
-        match = re.fullmatch(r"(?:/\s*)?([^$|:]{2,150}?)\s*(?:\||:)\s*(Starting at\s+)?(" + PRICE + r")", evidence, re.I)
-        if match and re.search(r"\b(?:MRI|CT)\b", match[1], re.I):
-            label = match[1].strip()
-            amount = int(Decimal(match[3][1:].replace(",", "")) * 100)
-            kind = "starting" if match[2] else "listed"
+        label, amount, kind = candidate_price(row)
         yield "candidate", {}, row, label, amount, kind
+
+
+def candidate_price(row):
+    label = row["exam"]
+    evidence = row["evidence"].strip()
+    amount = row.get("amount_cents")
+    kind = row.get("price_type") or ("cash_column" if amount is not None else "unconfirmed")
+    # Recover standalone exam/amount pairs from older reports. Keep fees,
+    # exclusions and source wording available for the review decision.
+    match = re.fullmatch(r"(?:/\s*)?([^$|:]{2,150}?)\s*(?:\||:)\s*(Starting at\s+)?(" + PRICE + r")", evidence, re.I)
+    if match and re.search(r"\b(?:MRI|CT)\b", match[1], re.I):
+        label = match[1].strip()
+        amount = int(Decimal(match[3][1:].replace(",", "")) * 100)
+        kind = "starting" if match[2] else "listed"
+    return label, amount, kind
 
 
 def stage(db, report, bindings=None):

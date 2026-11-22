@@ -6,11 +6,12 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 from lxml.etree import ParserError
 
-from .dynamic import fetch_public, review_page
+from .dynamic import fetch_public, price_links, review_page
 from http.client import HTTPException
 from .providers import BRANCHES, extract
 
@@ -83,6 +84,17 @@ def run_csv(stream, previous, fetch_page=fetch):
             if url not in BRANCHES:
                 content, final_url = fetch_public(url, MAX_PAGE_BYTES)
                 rows = review_page(content, final_url, checked_at)
+                if not rows:
+                    for linked in price_links(content, final_url):
+                        try:
+                            page, origin = fetch_public(linked, MAX_PAGE_BYTES)
+                            if urlsplit(origin).netloc != urlsplit(final_url).netloc:
+                                raise ValueError("Pricing link redirected outside the provider website")
+                            for candidate in review_page(page, origin, checked_at):
+                                candidate["starting_url"] = url
+                                rows.append(candidate)
+                        except (OSError, ValueError, ParserError, HTTPException, UnicodeError) as exc:
+                            issues.append({"source_url": linked, "status": "source_issue", "detail": str(exc)})
                 candidates.extend(rows)
                 if not rows:
                     issues.append({"source_url": final_url, "status": "needs_review",

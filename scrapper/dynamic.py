@@ -10,6 +10,7 @@ from urllib.parse import unquote, urljoin, urlsplit
 from lxml import html
 
 from .providers import PRICE, node_text
+from .staging import candidate_price
 
 
 def fetch_public(url, limit):
@@ -79,7 +80,10 @@ def review_page(content, url, checked):
         if evidence in seen:
             return
         seen.add(evidence)
-        contrast_words = re.search(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", label, re.I)
+        normalized = re.sub(r"\bw/\s*&\s*w/o\b", "with and without", label, flags=re.I)
+        normalized = re.sub(r"\bw/o\b", "without", normalized, flags=re.I)
+        normalized = re.sub(r"\bw/(?=\s)", "with", normalized, flags=re.I)
+        contrast_words = re.search(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", normalized, re.I)
         contrast = "unknown"
         if contrast_words:
             wording = contrast_words[1].lower()
@@ -123,4 +127,26 @@ def review_page(content, url, checked):
         value = " ".join(" ".join(block.itertext()).split())
         if len(value) <= 500 and "$" in value:
             add(node_text(children[0]), value)
+    for candidate in candidates:
+        candidate["exam"], candidate["amount_cents"], candidate["price_type"] = candidate_price(candidate)
     return candidates
+
+
+def price_links(content, source):
+    """Prioritize explicit self-pay links, then general pricing links on this host."""
+    doc = html.document_fromstring(content)
+    ranked = {}
+    for link in doc.xpath("//a[@href]"):
+        url = urljoin(source, link.get("href")).split("#")[0]
+        parts = urlsplit(url)
+        if parts.scheme != "https" or parts.netloc != urlsplit(source).netloc or url == source:
+            continue
+        words = (node_text(link) + " " + parts.path).lower()
+        if re.search(r"self[- ]pay|cash[- ](?:price|pricing|rate)", words):
+            rank = 0
+        elif re.search(r"\bpric(?:es|ing|e list)\b", words):
+            rank = 1
+        else:
+            continue
+        ranked[url] = min(rank, ranked.get(url, rank))
+    return sorted(ranked, key=ranked.get)[:3]

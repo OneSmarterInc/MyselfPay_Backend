@@ -95,3 +95,18 @@ class ScrapperTests(TestCase):
             self.assertEqual(len(rows), 1)
             self.assertIsNone(rows[0]["amount_cents"])
             self.assertIn(header, rows[0]["evidence"])
+
+    def test_homepage_to_provider_pricing_menu(self):
+        import io
+        from unittest.mock import patch
+        from scrapper.__main__ import run_csv
+        home = "https://example.org/"
+        menu = home + "self-pay"
+        pages = {home: b'<a href="/self-pay">Cash prices</a><a href="/self-pay#ct">CT pricing</a>',
+                 menu: b'<table><tr><td>MRI w/ &amp; w/o Contrast</td><td>$575</td></tr></table>'}
+        with patch("scrapper.__main__.fetch_public", side_effect=lambda url, limit: (pages[url], url)) as fetch:
+            report = run_csv(io.StringIO("pricing_url\n" + home), [])
+        candidate, = report["review_candidates"]
+        self.assertEqual(fetch.call_count, 2)
+        self.assertEqual((candidate["amount_cents"], candidate["contrast"]), (57500, "both"))
+        self.assertEqual((candidate["source_url"], candidate["starting_url"]), (menu, home))

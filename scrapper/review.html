@@ -46,7 +46,7 @@
     </div>
   </form>
   <div id="results" hidden>
-    <section id="candidate-section" hidden><h2>New provider rows to review</h2><ul id="candidates"></ul></section>
+    <section id="candidate-section" hidden><h2>New provider rows to review</h2><div class="table-wrap"><table><thead><tr><th>Provider page</th><th>Exam</th><th>Contrast</th><th>Price</th><th>Source evidence</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
     <section id="issues-section" hidden>
       <h2>Source issues</h2>
       <ul id="issues"></ul>
@@ -109,15 +109,20 @@
     const list = get('candidates');
     list.replaceChildren();
     for (const candidate of data.review_candidates || []) {
-      const item = document.createElement('li');
-      item.textContent = candidate.evidence + ' ';
+      const row = list.insertRow();
+      cell(row, candidate.provider_page_title || new URL(candidate.source_url).hostname);
+      cell(row, candidate.exam);
+      cell(row, contrastNames[candidate.contrast] || 'Unspecified');
+      const prefix = candidate.price_type === 'starting' ? 'From ' : '';
+      cell(row, candidate.amount_cents == null ? 'Review wording' : prefix + usd.format(candidate.amount_cents / 100));
+      const item = cell(row, candidate.evidence + ' ');
       const link = document.createElement('a');
       link.href = candidate.source_url;
       link.textContent = 'Provider source';
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       item.append(link);
-      list.append(item);
+
     }
     get('candidate-section').hidden = list.children.length === 0;
     for (const issue of data.issues) {
