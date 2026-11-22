@@ -47,15 +47,19 @@ class ScrapperTests(TestCase):
             + pineywoods_section("CT", common + [
                 ("Abdomen &amp; Pelvis — without contrast", 410),
                 ("Abdomen &amp; Pelvis — with contrast", 510),
+                ("Angiogram — first body part", 225),
                 ("Angiogram — each additional body part", 90),
+                ("Calcium scoring", 125),
             ])
             + pineywoods_section("MRA", common)
             + "<h4>3318 N. University Drive Nacogdoches, Texas 75965</h4>"
         )
         _, offers = extract(PINEYWOODS, page.encode("utf-8"), "first")
-        self.assertEqual(len(offers), 8)
+        self.assertEqual(len(offers), 11)
+        self.assertEqual([(r["price_type"], r["amount_cents"]) for r in offers[-3:]],
+                         [("fixed", 22500), ("add_on", 9000), ("fixed", 12500)])
         self.assertEqual(
-            [(o["body"], o["contrast"], o["amount_cents"]) for o in offers[-3:]],
+            [(o["body"], o["contrast"], o["amount_cents"]) for o in offers[5:8]],
             [("general", "both", 30000), ("abdomen and pelvis", "without", 41000),
              ("abdomen and pelvis", "with", 51000)],
         )
@@ -84,7 +88,7 @@ class ScrapperTests(TestCase):
         <tr><td>CT neck</td><td>$600</td><td>From $200</td></tr></table>
         <p>CT spine $350 plus $40 reading fee</p>"""
         rows = review_page(page, "https://example.org/prices", "now")
-        self.assertEqual([r["amount_cents"] for r in rows], [37500, None, None])
+        self.assertEqual([r["amount_cents"] for r in rows], [37500, 20000, None])
         self.assertTrue(all(r["status"] == "needs_review" for r in rows))
 
     def test_cash_deposit_is_not_a_scan_price(self):
@@ -110,3 +114,43 @@ class ScrapperTests(TestCase):
         self.assertEqual(fetch.call_count, 2)
         self.assertEqual((candidate["amount_cents"], candidate["contrast"]), (57500, "both"))
         self.assertEqual((candidate["source_url"], candidate["starting_url"]), (menu, home))
+
+    def test_numeric_output_from_different_html_layouts(self):
+        import csv
+        import io
+        from unittest.mock import patch
+        from scrapper.__main__ import run_csv
+        from scrapper.prices import write_csv
+
+        source = "https://example.org/pricing"
+        page = """<title>Imaging Center</title><h1>Cash Pay Imaging Prices</h1>
+        <ul><li>MRI: Starting at $440</li><li>CT Scan: Starting at $285</li></ul>
+        <dl><dt>CT pelvis with contrast</dt><dd>$335.75 to $480.00</dd></dl>
+        <p>Call today for MRI. Save $200 with this promotion!</p>
+        <table><tr><th>Exam</th><th>Insurance</th><th>Cash price</th></tr>
+        <tr><td>Breast MRI</td><td>$990</td><td>$520</td></tr></table>
+        <h2>Insurance charges</h2><p>CT neck: $999</p>
+        <h1>Other services</h1><p>CT spine: $475</p>"""
+        with patch("scrapper.__main__.fetch_public", return_value=(page, source)):
+            report = run_csv(io.StringIO("pricing_url\n" + source), [])
+        rows = report["pricing_rows"]
+        self.assertCountEqual([(r["exam"], r["price_usd"], r["max_price_usd"], r["price_type"])
+                               for r in rows], [
+            ("MRI", 440, None, "starting"), ("CT Scan", 285, None, "starting"),
+            ("CT pelvis with contrast", 335.75, 480, "range"), ("Breast MRI", 520, None, "listed")])
+        self.assertTrue(all(r["location_id"] is None and r["status"] == "needs_review" for r in rows))
+        buf = io.StringIO()
+        write_csv(buf, rows)
+        self.assertEqual([float(r["price_usd"]) for r in csv.DictReader(io.StringIO(buf.getvalue()))],
+                         [r["price_usd"] for r in rows])
+
+    def test_currency_header_and_ambiguous_prices(self):
+        from scrapper.dynamic import review_page
+        from scrapper.prices import price_rows
+        page = """<h1>Self-pay</h1><table><tr><th>Exam</th><th>Cash price (USD)</th></tr>
+        <tr><td>CT ankle</td><td>395.50</td></tr></table>
+        <table><tr><td>Service</td><td>Cash deposit</td></tr><tr><td>CT neck</td><td>$50</td></tr></table>
+        <li>MRI knee: $300 plus $40 reading fee</li><p>CT brain: $700 to $400</p>"""
+        report = dict(centers=[], offers=[], review_candidates=review_page(page, "https://example.org/", "now"))
+        row, = price_rows(report)
+        self.assertEqual((row["exam"], row["price_usd"]), ("CT ankle", 395.50))

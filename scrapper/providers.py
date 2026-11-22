@@ -76,13 +76,19 @@ def pineywoods_rows(doc):
             for row in container.xpath(f".//*[{class_match('pwi-price-row')}]"):
                 label, = row.xpath(f".//*[{class_match('pwi-price-name')}]")
                 amount, = row.xpath(f".//*[{class_match('pwi-price-amt')}]")
-                scope, separator, contrast = node_text(label).partition(" — ")
-                body = "general"
-                if separator:
-                    if scope.casefold() != "abdomen & pelvis":
-                        continue
-                    body = "abdomen and pelvis"
-                rows.append((modality, body, contrast if separator else scope, node_text(amount), terms))
+                name = node_text(label)
+                scope, separator, variant = name.partition(" — ")
+                if not separator and scope.casefold() in CONTRAST:
+                    body, wording = "general", scope
+                elif separator and scope.casefold() == "abdomen & pelvis":
+                    body, wording = "abdomen and pelvis", variant
+                elif modality == "CT" and name.casefold() in (
+                    "calcium scoring", "angiogram — first body part", "angiogram — each additional body part",
+                ):
+                    body, wording = name.casefold(), "unspecified"
+                else:
+                    continue
+                rows.append((modality, body, wording, node_text(amount), terms))
     return rows
 
 
@@ -115,7 +121,7 @@ def extract(url, content, checked_at):
     offers = []
     keys = set()
     for modality, body, wording, amount, terms in rows:
-        contrast = CONTRAST.get(wording.casefold())
+        contrast = "unknown" if wording == "unspecified" else CONTRAST.get(wording.casefold())
         if contrast is None or not re.fullmatch(PRICE, amount):
             continue
         key = (modality, body, contrast)
@@ -124,7 +130,7 @@ def extract(url, content, checked_at):
         keys.add(key)
         offers.append({
             "location_id": location_id, "mod": modality, "body": body, "contrast": contrast,
-            "payment_option": "direct_prompt_pay", "price_type": "fixed",
+            "payment_option": "direct_prompt_pay", "price_type": "add_on" if "each additional body part" in body.lower() else "fixed",
             "amount_cents": int(Decimal(amount[1:].replace(",", "")) * 100),
             "scope": f"{modality}, {body}, {wording}", "payment_terms": terms,
             "source_url": url, "evidence": f"{modality}, {body}, {wording} — {amount}",

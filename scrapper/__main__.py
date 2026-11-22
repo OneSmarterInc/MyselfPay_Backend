@@ -13,6 +13,7 @@ from lxml.etree import ParserError
 
 from .dynamic import fetch_public, price_links, review_page
 from http.client import HTTPException
+from .prices import price_rows, write_csv
 from .providers import BRANCHES, extract
 
 
@@ -84,7 +85,7 @@ def run_csv(stream, previous, fetch_page=fetch):
             if url not in BRANCHES:
                 content, final_url = fetch_public(url, MAX_PAGE_BYTES)
                 rows = review_page(content, final_url, checked_at)
-                if not rows:
+                if not any(row["amount_cents"] is not None and row["payment_context"] for row in rows):
                     for linked in price_links(content, final_url):
                         try:
                             page, origin = fetch_public(linked, MAX_PAGE_BYTES)
@@ -107,19 +108,27 @@ def run_csv(stream, previous, fetch_page=fetch):
             continue
         centers.append(center)
         offers.extend(found)
-    return {"source_count": len(urls), "review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
+    report = {"source_count": len(urls), "review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
+    report["pricing_rows"] = list(price_rows(report))
+    return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("urls_csv", type=Path)
     parser.add_argument("--baseline", type=Path, help="A reviewed report containing the approved offers")
+    parser.add_argument("--prices-csv", type=Path, help="Write numeric price observations as CSV")
     args = parser.parse_args()
     try:
         baseline = json.loads(args.baseline.read_text(encoding="utf-8"))["offers"] if args.baseline else []
         if not isinstance(baseline, list):
             raise ValueError("Baseline offers must be a list")
         report = run(args.urls_csv, baseline)
+        if args.prices_csv:
+            if args.prices_csv.resolve() in {p.resolve() for p in (args.urls_csv, args.baseline) if p}:
+                raise ValueError("Choose a different path for the prices CSV")
+            with args.prices_csv.open("w", encoding="utf-8-sig", newline="") as output:
+                write_csv(output, report["pricing_rows"])
     except (OSError, ValueError, KeyError, TypeError, csv.Error) as exc:
         parser.error(str(exc))
     print(json.dumps(report, ensure_ascii=True, indent=2))

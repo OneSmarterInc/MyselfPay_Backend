@@ -4,13 +4,12 @@ import ipaddress
 import re
 import socket
 import ssl
-from decimal import Decimal
 from urllib.parse import unquote, urljoin, urlsplit
 
 from lxml import html
 
 from .providers import PRICE, node_text
-from .staging import candidate_price
+from .prices import EXAM, NON_OFFER, PAIR, parse_value
 
 
 def fetch_public(url, limit):
@@ -58,7 +57,31 @@ CASH = re.compile(
     r"(?:self[- ]pay|cash(?:[- ]pay)?|prompt[- ]pay)(?: (?:price|rate|amount))?(?: \(USD\))?",
     re.I,
 )
-EXAM = re.compile(r"\b(?:MRI|CT)\b", re.I)
+PAY_CONTEXT = re.compile(r"\b(?:cash(?:[- ]pay)?|self[- ]pay|prompt[- ]pay)\b", re.I)
+OFFER_SENTENCE = re.compile(
+    rf"We offer (?P<label>[\w -]{{2,100}}) for (?P<value>{PRICE})"
+    r"(?: \(this price may change[^$()]*\))?\.?(?: We require an order[^$.]*\.)?", re.I)
+HEADING = re.compile(r"h[1-6]$")
+
+
+def payment_contexts(doc):
+    """Apply a section heading until a sibling or higher-level heading replaces it."""
+    headings = {}
+    contexts = {}
+    for node in doc.iter():
+        if not isinstance(node.tag, str):
+            continue
+        if HEADING.fullmatch(node.tag):
+            level = int(node.tag[1])
+            headings = {n: title for n, title in headings.items() if n < level}
+            headings[level] = node_text(node)
+        if any(NON_OFFER.search(title) for title in headings.values()):
+            continue
+        for title in reversed(headings.values()):
+            if PAY_CONTEXT.search(title):
+                contexts[node] = title
+                break
+    return contexts
 
 
 def review_page(content, url, checked):
@@ -72,63 +95,109 @@ def review_page(content, url, checked):
             for link in doc.xpath("//a/@href") if link.lower().startswith(scheme)
         ))
     contacts["addresses"] = [node_text(n) for n in doc.xpath("//address") if node_text(n)]
-    title = doc.xpath("string(//meta[@property='og:site_name']/@content)") or doc.xpath("string(//title)")
+    title = doc.xpath("string(//meta[@property='og:site_name']/@content)") or doc.xpath("string(//title)") or urlsplit(url).hostname
     candidates = []
     seen = set()
 
-    def add(label, evidence, amount=None):
-        if evidence in seen:
+    contexts = payment_contexts(doc)
+
+    def add(label, evidence, parsed=None, context=""):
+        if (evidence, context) in seen:
             return
-        seen.add(evidence)
+        seen.add((evidence, context))
+        if NON_OFFER.search(label):
+            parsed = None
+        low, high, kind = parsed or (None, None, "unconfirmed")
+        if parsed and re.search(r"\b(?:add[- ]on|each additional|additional fee)\b", label, re.I):
+            kind = "add_on" if high is None and kind == "listed" else "unconfirmed"
+            if kind == "unconfirmed":
+                low = high = None
         normalized = re.sub(r"\bw/\s*&\s*w/o\b", "with and without", label, flags=re.I)
         normalized = re.sub(r"\bw/o\b", "without", normalized, flags=re.I)
         normalized = re.sub(r"\bw/(?=\s)", "with", normalized, flags=re.I)
         contrast_words = re.search(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", normalized, re.I)
         contrast = "unknown"
-        if contrast_words:
+        if re.search(r"\bwith(?:out)?\s+(?:or|/)\s*with(?:out)?\s+contrast", normalized, re.I):
+            contrast = "unknown"
+        elif contrast_words:
             wording = contrast_words[1].lower()
             contrast = wording if wording in ("with", "without") else "both"
+        elif re.search(r"\bnon[- ]?contrast\b", normalized, re.I):
+            contrast = "without"
         candidates.append({"provider_page_title": title, "page_contacts": contacts,
                            "contrast": contrast, "exam": label, "evidence": evidence, "source_url": url,
                            "checked_at": checked, "status": "needs_review",
-                           "amount_cents": int(Decimal(amount[1:].replace(",", "")) * 100) if amount else None})
+                           "amount_cents": low, "max_amount_cents": high, "price_type": kind,
+                           "payment_context": context})
 
     for table in doc.xpath("//table"):
         headers = []
+        simple = not table.xpath(".//*[@rowspan or @colspan] | .//table")
         for row in table.xpath(".//tr"):
             if row.xpath("ancestor::table[1]")[0] != table:
                 continue
             cells = row.xpath("./th|./td")
             values = [node_text(cell) for cell in cells]
-            if cells and all(cell.tag == "th" for cell in cells):
+            if cells and (all(cell.tag == "th" for cell in cells) or (len(values) >= 2 and
+                    not any("$" in v for v in values) and any(re.search(r"insurance|cash|self.pay|price|charge|deposit|rate", v, re.I) for v in values))):
                 headers = values if all(cell.get("colspan","1")==cell.get("rowspan","1")=="1" for cell in cells) else []
                 continue
             evidence = " | ".join(values)
-            if not EXAM.search(evidence) or "$" not in evidence:
-                continue
             cash = [i for i, heading in enumerate(headers) if CASH.fullmatch(heading)]
-            amount = None
-            if len(values) == len(headers) and len(cash) == 1 and not table.xpath(".//*[@rowspan or @colspan]"):
+            explicit_usd = len(cash) == 1 and "USD" in headers[cash[0]].upper()
+            if not EXAM.search(evidence) or ("$" not in evidence and not explicit_usd):
+                continue
+            label = next(v for v in values if EXAM.search(v))
+            context = contexts.get(row, "")
+            parsed = None
+            if simple and len(values) == len(headers) and len(cash) == 1:
+                context = headers[cash[0]]
                 value = values[cash[0]]
-                if re.fullmatch(PRICE, value):
-                    amount = value
-            add(next(v for v in values if EXAM.search(v)), " | ".join(headers) + " / " + evidence, amount)
+                if explicit_usd and re.fullmatch(r"\d+(?:\.\d{2})?", value):
+                    value = "$" + value
+                parsed = parse_value(value)
+            elif simple and len(values) == 2 and label == values[0] and (
+                not any(headers) or (len(headers) == 2 and
+                                     headers[1].lower() in ("price", "amount", "rate", "price (usd)"))
+            ):
+                value = values[1]
+                main, marker, note = value.partition("*")
+                if marker and re.fullmatch(r"\s*Please note that cost may vary dependent upon [\w -]+\.?", note, re.I):
+                    value = main
+                parsed = parse_value(value)
+            if "$" in label:
+                parsed = None
+            add(label, " | ".join(headers) + " / " + evidence, parsed, context)
 
     for node in doc.xpath("//p|//li[not(.//li)]|//div[not(div or p or table or ul or ol)]"):
         if node.xpath("ancestor::table"):
             continue
         value = node_text(node)
         if len(value) <= 600 and EXAM.search(value) and "$" in value:
-            add(value, value)
+            match = PAIR.fullmatch(value) or OFFER_SENTENCE.fullmatch(value)
+            if match and EXAM.search(match["label"]) and not NON_OFFER.search(match["label"]):
+                label = match["label"].strip()
+                context = label if PAY_CONTEXT.search(label) else contexts.get(node, "")
+                add(label, value, parse_value(match["value"]), context)
+            else:
+                add(value, value)
+    for term in doc.xpath("//dt"):
+        label = node_text(term)
+        description = term.xpath("following-sibling::*[1][self::dd]")
+        if EXAM.search(label) and description:
+            value = node_text(description[0])
+            if "$" in value:
+                add(label, label + " | " + value, parse_value(value), contexts.get(term, ""))
+
     for block in doc.xpath("//section|//article|//div"):
         children = block.xpath("./h2|./h3|./h4")
         if len(children) != 1 or not EXAM.search(node_text(children[0])):
             continue
         value = " ".join(" ".join(block.itertext()).split())
         if len(value) <= 500 and "$" in value:
-            add(node_text(children[0]), value)
-    for candidate in candidates:
-        candidate["exam"], candidate["amount_cents"], candidate["price_type"] = candidate_price(candidate)
+            label = node_text(children[0])
+            tail = value.removeprefix(label).strip() if value.startswith(label) else ""
+            add(label, value, parse_value(tail), contexts.get(children[0], ""))
     return candidates
 
 

@@ -27,6 +27,8 @@ def candidate_price(row):
     evidence = row["evidence"].strip()
     amount = row.get("amount_cents")
     kind = row.get("price_type") or ("cash_column" if amount is not None else "unconfirmed")
+    if "payment_context" in row:
+        return label, amount, kind
     # Recover standalone exam/amount pairs from older reports. Keep fees,
     # exclusions and source wording available for the review decision.
     match = re.fullmatch(r"(?:/\s*)?([^$|:]{2,150}?)\s*(?:\||:)\s*(Starting at\s+)?(" + PRICE + r")", evidence, re.I)

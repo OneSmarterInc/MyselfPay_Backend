@@ -8,6 +8,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 from .__main__ import run_csv
+from .prices import write_csv
 
 
 PAGE = Path(__file__).with_name("review.html")
@@ -57,7 +58,9 @@ class ReviewHandler(BaseHTTPRequestHandler):
             report = run_csv(io.StringIO(request["csv"].lstrip("\ufeff"), newline=""), previous)
         except (ValueError, TypeError, KeyError, OSError, csv.Error) as exc:
             return self.json_reply(400, {"error": str(exc)})
-        self.json_reply(200, report)
+        prices = io.StringIO(newline="")
+        write_csv(prices, report["pricing_rows"])
+        self.json_reply(200, {**report, "prices_csv": prices.getvalue()})
 
 
 def main():

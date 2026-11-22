@@ -12,6 +12,11 @@ On Linux or macOS, use `python -m scrapper.ui` in the active virtual environment
 Open the URL printed in the terminal (usually `http://127.0.0.1:8765/`). Upload
 the same CSV shown below. An approved baseline JSON is optional. The page shows
 prices, changes, evidence and source issues, and can download the report.
+Use **Download prices CSV** for the same numeric observations shown in the first table.
+The JSON report includes these in `pricing_rows`. Each row has numeric USD fields
+`price_usd` and, for a range, `max_price_usd`. The price type distinguishes listed,
+fixed, starting, range and add-on amounts. Unresolved text stays in the review report.
+Rows from generic pages require confirmation of the provider, branch and terms.
 The terminal must stay open while the page is in use.
 
 ## Command line
@@ -26,7 +31,7 @@ https://pineywoodsimaging.com/pricing/
 ```
 
 ```sh
-python -m scrapper urls.csv > first-check.json
+python -m scrapper urls.csv --prices-csv prices.csv > first-check.json
 python -m scrapper urls.csv --baseline approved.json > next-check.json
 python -m unittest tests.test_scrapper -v
 ```
