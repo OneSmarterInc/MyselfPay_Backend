@@ -12,7 +12,18 @@ On Linux or macOS, use `python -m scrapper.ui` in the active virtual environment
 Open the URL printed in the terminal (usually `http://127.0.0.1:8765/`). Upload
 the same CSV shown below. An approved baseline JSON is optional. The page shows
 prices, changes, evidence and source issues, and can download the report.
-Use **Download prices CSV** for the same numeric observations shown in the first table.
+**Prices by body part** groups observations by location, service and contrast.
+A provider page without a confirmed location is grouped by its source URL. General rates,
+special exams and excluded anatomy keep their original scope. The fixed body-part columns
+include Knee, Brain, Lumbar spine, Shoulder, Abdomen & pelvis, Breast, Lung, Prostate and Whole body.
+A dash means no mapped price in that cell. Open a price or variant count to see each exam,
+payment context and source. Other exams retains observations outside these columns.
+
+**Download overview CSV** exports the matrix. A unique offer supplies a numeric USD amount
+(the lower bound for a range). The cell_details column gives price types, bounds and variants.
+When a cell has several observations its numeric field stays blank and its details list them all.
+**Download prices CSV** exports individual observations, including body_part, exam_variant and
+exclusions. These are the rows shown under Offer detail.
 The JSON report includes these in `pricing_rows`. Each row has numeric USD fields
 `price_usd` and, for a range, `max_price_usd`. The price type distinguishes listed,
 fixed, starting, range and add-on amounts. Unresolved text stays in the review report.
@@ -31,7 +42,7 @@ https://pineywoodsimaging.com/pricing/
 ```
 
 ```sh
-python -m scrapper urls.csv --prices-csv prices.csv > first-check.json
+python -m scrapper urls.csv --prices-csv prices.csv --overview-csv overview.csv > first-check.json
 python -m scrapper urls.csv --baseline approved.json > next-check.json
 python -m unittest tests.test_scrapper -v
 ```

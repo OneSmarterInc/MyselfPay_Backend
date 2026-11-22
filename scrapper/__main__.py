@@ -13,7 +13,8 @@ from lxml.etree import ParserError
 
 from .dynamic import fetch_public, price_links, review_page
 from http.client import HTTPException
-from .prices import price_rows, write_csv
+from .body_parts import OVERVIEW_FIELDS, overview, overview_records
+from .prices import FIELDS, price_rows, write_csv
 from .providers import BRANCHES, extract
 
 
@@ -110,6 +111,7 @@ def run_csv(stream, previous, fetch_page=fetch):
         offers.extend(found)
     report = {"source_count": len(urls), "review_candidates": candidates, "centers": centers, "offers": offers, "findings": compare(offers, previous), "issues": issues}
     report["pricing_rows"] = list(price_rows(report))
+    report["body_part_overview"] = overview(report["pricing_rows"])
     return report
 
 
@@ -118,17 +120,22 @@ def main():
     parser.add_argument("urls_csv", type=Path)
     parser.add_argument("--baseline", type=Path, help="A reviewed report containing the approved offers")
     parser.add_argument("--prices-csv", type=Path, help="Write numeric price observations as CSV")
+    parser.add_argument("--overview-csv", type=Path, help="Write the branch, scan and contrast overview")
     args = parser.parse_args()
     try:
         baseline = json.loads(args.baseline.read_text(encoding="utf-8"))["offers"] if args.baseline else []
         if not isinstance(baseline, list):
             raise ValueError("Baseline offers must be a list")
+        outputs = [p.resolve() for p in (args.prices_csv, args.overview_csv) if p]
+        if len(set(outputs)) < len(outputs) or set(outputs) & {p.resolve() for p in (args.urls_csv, args.baseline) if p}:
+            raise ValueError("Choose separate paths for input and output files")
         report = run(args.urls_csv, baseline)
-        if args.prices_csv:
-            if args.prices_csv.resolve() in {p.resolve() for p in (args.urls_csv, args.baseline) if p}:
-                raise ValueError("Choose a different path for the prices CSV")
-            with args.prices_csv.open("w", encoding="utf-8-sig", newline="") as output:
-                write_csv(output, report["pricing_rows"])
+        prices = report["pricing_rows"]
+        summary = overview_records(report["body_part_overview"], prices)
+        for path, rows, fields in ((args.prices_csv, prices, FIELDS), (args.overview_csv, summary, OVERVIEW_FIELDS)):
+            if path:
+                with path.open("w", encoding="utf-8-sig", newline="") as output:
+                    write_csv(output, rows, fields)
     except (OSError, ValueError, KeyError, TypeError, csv.Error) as exc:
         parser.error(str(exc))
     print(json.dumps(report, ensure_ascii=True, indent=2))

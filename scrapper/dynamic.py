@@ -8,6 +8,7 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 from lxml import html
 
+from .body_parts import CONTRAST as CONTRAST_PHRASE, split_exclusions
 from .providers import PRICE, node_text
 from .prices import EXAM, NON_OFFER, PAIR, parse_value
 
@@ -64,6 +65,43 @@ OFFER_SENTENCE = re.compile(
 HEADING = re.compile(r"h[1-6]$")
 
 
+DESCRIPTORS = {"exam", "exam name", "procedure", "service", "modality", "scan", "body part",
+               "body region", "body area", "region", "body site", "anatomy", "contrast", "protocol", "variant", "description", "notes",
+               "restrictions", "exclusions"}
+PROTOCOLS = {
+    "without contrast": "without contrast", "with contrast": "with contrast",
+    "with and without contrast": "with and without contrast",
+    "without and with contrast": "with and without contrast",
+}
+
+
+def protocol_header(value):
+    return PROTOCOLS.get(" ".join(value.lower().replace("&", "and").split()))
+
+
+def exam_table_label(headers, values):
+    """Combine named columns so a modality-only cell never swallows anatomy or protocol."""
+    pieces = []
+    for header, value in zip(headers, values):
+        name = header.casefold()
+        if not value:
+            continue
+        if name not in DESCRIPTORS:
+            # Preserve unfamiliar text qualifiers beside an exam. Dropping a
+            # package or anatomy column could turn its rate into a general rate.
+            if not name or CASH.fullmatch(header) or protocol_header(header) or "$" in value:
+                continue
+            if re.search(r"[a-z]", value, re.I):
+                pieces.append(f"({header}: {value})")
+            continue
+        if name == "contrast" and value.casefold() in {"with", "without", "both"}:
+            value = "with and without contrast" if value.casefold() == "both" else value + " contrast"
+        if name == "exclusions":
+            value = "(excludes " + value + ")"
+        pieces.append(value)
+    return " ".join(pieces)
+
+
 def payment_contexts(doc):
     """Apply a section heading until a sibling or higher-level heading replaces it."""
     headings = {}
@@ -102,27 +140,29 @@ def review_page(content, url, checked):
     contexts = payment_contexts(doc)
 
     def add(label, evidence, parsed=None, context=""):
-        if (evidence, context) in seen:
+        identity = (label, evidence, context)
+        if identity in seen:
             return
-        seen.add((evidence, context))
-        if NON_OFFER.search(label):
+        seen.add(identity)
+        positive, _ = split_exclusions(label)
+        if NON_OFFER.search(label) or len({m.upper() for m in EXAM.findall(positive)}) != 1 or "$" in label:
             parsed = None
         low, high, kind = parsed or (None, None, "unconfirmed")
         if parsed and re.search(r"\b(?:add[- ]on|each additional|additional fee)\b", label, re.I):
             kind = "add_on" if high is None and kind == "listed" else "unconfirmed"
             if kind == "unconfirmed":
                 low = high = None
-        normalized = re.sub(r"\bw/\s*&\s*w/o\b", "with and without", label, flags=re.I)
+        normalized = re.sub(r"\bw/\s*&\s*w/o\b", "with and without", positive, flags=re.I)
         normalized = re.sub(r"\bw/o\b", "without", normalized, flags=re.I)
         normalized = re.sub(r"\bw/(?=\s)", "with", normalized, flags=re.I)
-        contrast_words = re.search(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", normalized, re.I)
+        contrast_words = re.findall(r"\b(with(?:out)?\s+(?:and|&)\s+with(?:out)?|without|with)\s+contrast\b", normalized, re.I)
         contrast = "unknown"
         if re.search(r"\bwith(?:out)?\s+(?:or|/)\s*with(?:out)?\s+contrast", normalized, re.I):
             contrast = "unknown"
-        elif contrast_words:
-            wording = contrast_words[1].lower()
+        elif len(contrast_words) == 1:
+            wording = contrast_words[0].lower()
             contrast = wording if wording in ("with", "without") else "both"
-        elif re.search(r"\bnon[- ]?contrast\b", normalized, re.I):
+        elif not contrast_words and re.search(r"\bnon[- ]?contrast\b", normalized, re.I):
             contrast = "without"
         candidates.append({"provider_page_title": title, "page_contacts": contacts,
                            "contrast": contrast, "exam": label, "evidence": evidence, "source_url": url,
@@ -131,6 +171,9 @@ def review_page(content, url, checked):
                            "payment_context": context})
 
     for table in doc.xpath("//table"):
+        headings = table.xpath("./caption") or table.xpath("preceding-sibling::*[1][self::h2 or self::h3 or self::h4]")
+        section = node_text(headings[0]) if headings else ""
+        table_modality = section if re.fullmatch(r"(MRI|CT)(?: scans?| exams?)?", section, re.I) else ""
         headers = []
         simple = not table.xpath(".//*[@rowspan or @colspan] | .//table")
         for row in table.xpath(".//tr"):
@@ -145,17 +188,36 @@ def review_page(content, url, checked):
             evidence = " | ".join(values)
             cash = [i for i, heading in enumerate(headers) if CASH.fullmatch(heading)]
             explicit_usd = len(cash) == 1 and "USD" in headers[cash[0]].upper()
-            if not EXAM.search(evidence) or ("$" not in evidence and not explicit_usd):
+            if "$" not in evidence and not explicit_usd:
                 continue
-            label = next(v for v in values if EXAM.search(v))
+            label = exam_table_label(headers, values) if len(headers) == len(values) else ""
+            if not label:
+                label = next((v for v in values if EXAM.search(v)), "")
+            if label and table_modality and not EXAM.search(label):
+                label = table_modality + " " + label
+                evidence = section + " / " + evidence
+            if not EXAM.search(label):
+                continue
             context = contexts.get(row, "")
             parsed = None
+            protocol_columns = [(i, protocol_header(h)) for i, h in enumerate(headers) if protocol_header(h)]
+            if simple and context and len(headers) == len(values) and protocol_columns and not CONTRAST_PHRASE.search(label) and all(
+                    h.casefold() in DESCRIPTORS or protocol_header(h) for h in headers):
+                for i, protocol in protocol_columns:
+                    add(label + " " + protocol, " | ".join(headers) + " / " + evidence + " / " + headers[i],
+                        parse_value(values[i]), context)
+                continue
             if simple and len(values) == len(headers) and len(cash) == 1:
                 context = headers[cash[0]]
                 value = values[cash[0]]
                 if explicit_usd and re.fullmatch(r"\d+(?:\.\d{2})?", value):
                     value = "$" + value
                 parsed = parse_value(value)
+            elif (simple and context and len(headers) == len(values)
+                  and sum(h.casefold() in {"price", "amount", "rate"} for h in headers) == 1
+                  and all(h.casefold() in DESCRIPTORS | {"price", "amount", "rate"} for h in headers)):
+                index = next(i for i, h in enumerate(headers) if h.casefold() in {"price", "amount", "rate"})
+                parsed = parse_value(values[index])
             elif simple and len(values) == 2 and label == values[0] and (
                 not any(headers) or (len(headers) == 2 and
                                      headers[1].lower() in ("price", "amount", "rate", "price (usd)"))
@@ -165,8 +227,6 @@ def review_page(content, url, checked):
                 if marker and re.fullmatch(r"\s*Please note that cost may vary dependent upon [\w -]+\.?", note, re.I):
                     value = main
                 parsed = parse_value(value)
-            if "$" in label:
-                parsed = None
             add(label, " | ".join(headers) + " / " + evidence, parsed, context)
 
     for node in doc.xpath("//p|//li[not(.//li)]|//div[not(div or p or table or ul or ol)]"):

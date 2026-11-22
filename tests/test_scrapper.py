@@ -154,3 +154,72 @@ class ScrapperTests(TestCase):
         report = dict(centers=[], offers=[], review_candidates=review_page(page, "https://example.org/", "now"))
         row, = price_rows(report)
         self.assertEqual((row["exam"], row["price_usd"]), ("CT ankle", 395.50))
+
+    def test_projection_preserves_body_scope_and_price_variants(self):
+        import csv
+        import io
+        from unittest.mock import patch
+        from scrapper.__main__ import run_csv
+        from scrapper.body_parts import OVERVIEW_FIELDS, overview_records
+        from scrapper.prices import write_csv
+
+        page = """<title>One operator</title><h1>Self-pay prices</h1>
+        <p>MRI without contrast (excludes breast and prostate): $400</p>
+        <p>MRI left knee without contrast: From $350</p>
+        <p>MRI right knee without contrast: $310 to $410</p>
+        <p>Whole body screening MRI: $950</p><p>CT calcium scoring: $125</p>"""
+        urls = ["https://example.org/east", "https://example.org/west"]
+        with patch("scrapper.__main__.fetch_public", side_effect=lambda url, _: (page, url)):
+            report = run_csv(io.StringIO("pricing_url\n" + "\n".join(urls)), [])
+        view, prices = report["body_part_overview"], report["pricing_rows"]
+        self.assertEqual(len(view["rows"]), 6)
+        self.assertEqual(len(prices), 10)
+        for group in view["rows"]:
+            for indexes in group["cells"].values():
+                self.assertTrue(all(prices[i]["source_url"] == group["source_url"] for i in indexes))
+        cells = view["rows"][0]["cells"]
+        self.assertEqual(cells, {"General": [0], "Knee": [1, 2]})
+        self.assertEqual(prices[0]["exclusions"], "breast and prostate")
+        self.assertEqual(prices[2]["max_price_usd"], 410)
+        self.assertEqual(view["rows"][1]["cells"], {"Whole body": [3]})
+        self.assertEqual(view["rows"][1]["contrast"], "unknown")
+        self.assertEqual(view["rows"][2]["cells"], {"Other exams": [4]})
+        output = io.StringIO()
+        write_csv(output, overview_records(view, prices), OVERVIEW_FIELDS)
+        first = next(csv.DictReader(io.StringIO(output.getvalue())))
+        self.assertEqual((first["General"], first["Knee"], first["Breast"]), ("400.0", "", ""))
+        self.assertIn("starting, USD 350.00", first["cell_details"])
+        self.assertIn("range, USD 310.00–410.00", first["cell_details"])
+
+    def test_table_prices_follow_explicit_body_and_contrast(self):
+        from scrapper.dynamic import review_page
+        from scrapper.prices import price_rows
+
+        page = """<h1>Self-pay prices</h1><h2>MRI</h2><table>
+        <tr><th>Body part</th><th>Without contrast</th><th>With contrast</th></tr>
+        <tr><td>Brain</td><td>$275</td><td>$375</td></tr></table>
+        <table><tr><th>Modality</th><th>Body part</th><th>Contrast</th><th>Insured</th><th>Cash price</th></tr>
+        <tr><td>CT</td><td>Abdomen and pelvis</td><td>both</td><td>$1900</td><td>$600</td></tr></table>"""
+        candidates = review_page(page, "https://example.org/", "now")
+        rows = list(price_rows(dict(centers=[], offers=[], review_candidates=candidates)))
+        self.assertCountEqual([(r["body_part"], r["modality"], r["contrast"], r["price_usd"]) for r in rows], [
+            ("Brain", "MRI", "without", 275), ("Brain", "MRI", "with", 375),
+            ("Abdomen & pelvis", "CT", "both", 600)])
+
+    def test_ambiguous_or_excluded_regions_do_not_fill_body_cells(self):
+        from scrapper.body_parts import exam_scope
+
+        for label in ("MRI knee and ankle", "MRI non-breast", "CT calcium scoring", "MRI ankle",
+                      "CT angiogram — each additional body part", "MRI biopsy"):
+            self.assertEqual(exam_scope(label)["body_part_column"], "Other exams", label)
+        self.assertEqual(exam_scope("MRI (excludes breast) left knee without contrast")["body_part"], "Knee")
+        self.assertEqual(exam_scope("MRI w/ & w/o Contrast (excludes Prostate MRI)")["body_part_column"], "General")
+
+    def test_new_knee_rate_on_a_pilot_page(self):
+        from scrapper.prices import price_rows
+        page = ONCALL_HTML.replace(b"<p>$300 without contrast</p>",
+                                   b"<p>$300 without contrast</p><p>$375 Knee without contrast</p>")
+        center, offers = extract(ONCALL, page, "now")
+        rows = list(price_rows(dict(centers=[center], offers=offers, review_candidates=[])))
+        knee, = [r for r in rows if r["body_part"] == "Knee"]
+        self.assertEqual((knee["contrast"], knee["price_usd"]), ("without", 375))

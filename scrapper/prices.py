@@ -4,11 +4,13 @@ import re
 from decimal import Decimal
 
 from .providers import PRICE
+from .body_parts import exam_scope
 
 
 FIELDS = ("center", "location_id", "address", "modality", "exam", "contrast",
           "price_type", "price_usd", "max_price_usd", "payment_terms",
-          "status", "source_url", "evidence", "checked_at")
+          "status", "source_url", "evidence", "checked_at",
+          "body_part", "exam_variant", "exclusions", "body_part_column")
 EXAM = re.compile(r"\b(PET\s*/\s*CT|MRI|CT)\b", re.I)
 NON_OFFER = re.compile(
     r"\b(?:deposit|copay|co-pay|discount|insurance|insured|average|savings?|"
@@ -51,6 +53,7 @@ def price_rows(report):
             terms, status = row["payment_context"], "needs_review"
         high = row.get("max_amount_cents")
         yield {
+            **exam_scope(exam),
             "center": name, "location_id": row.get("location_id"), "address": address,
             "modality": modality, "exam": exam, "contrast": row["contrast"],
             "price_type": row["price_type"], "price_usd": row["amount_cents"] / 100,
@@ -60,8 +63,8 @@ def price_rows(report):
         }
 
 
-def write_csv(stream, rows):
-    writer = csv.DictWriter(stream, fieldnames=FIELDS)
+def write_csv(stream, rows, fields=FIELDS):
+    writer = csv.DictWriter(stream, fieldnames=fields)
     writer.writeheader()
     for row in rows:
         # Provider-controlled labels must remain text when opened in a spreadsheet.

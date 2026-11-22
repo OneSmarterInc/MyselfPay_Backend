@@ -5,6 +5,8 @@ from decimal import Decimal
 
 from lxml import html
 
+from .body_parts import CONTRAST as CONTRAST_PHRASE, exam_scope
+
 
 ONCALL = "https://oncallimaging.net/pricing/"
 PINEYWOODS = "https://pineywoodsimaging.com/pricing/"
@@ -40,6 +42,21 @@ def class_match(name):
     return f"contains(concat(' ', normalize-space(@class), ' '), ' {name} ')"
 
 
+def body_protocol(label):
+    """Bind newly listed, anatomically specific rows to their source protocol."""
+    scope = exam_scope(label)
+    if not scope["body_part"] or scope["exclusions"]:
+        return None
+    matches = list(CONTRAST_PHRASE.finditer(label))
+    if not matches:
+        return label.casefold(), "unspecified"
+    if len(matches) != 1 or matches[0][0].casefold() not in CONTRAST:
+        return None
+    match = matches[0]
+    body = (label[:match.start()] + " " + label[match.end():]).strip(" —-,()")
+    return " ".join(body.casefold().split()), match[0].casefold()
+
+
 def oncall_rows(doc):
     rows = []
     modality, cash, terms = None, False, ""
@@ -55,7 +72,8 @@ def oncall_rows(doc):
         elif modality and cash and terms and node.tag == "p":
             match = re.fullmatch(f"({PRICE})\\s+(.+)", value)
             if match:
-                rows.append((modality, "general", match[2], match[1], terms))
+                body, wording = body_protocol(match[2]) or ("general", match[2])
+                rows.append((modality, body, wording, match[1], terms))
     return rows
 
 
@@ -87,7 +105,10 @@ def pineywoods_rows(doc):
                 ):
                     body, wording = name.casefold(), "unspecified"
                 else:
-                    continue
+                    pair = body_protocol(name)
+                    if not pair:
+                        continue
+                    body, wording = pair
                 rows.append((modality, body, wording, node_text(amount), terms))
     return rows
 

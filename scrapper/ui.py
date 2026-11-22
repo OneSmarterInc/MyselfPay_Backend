@@ -9,6 +9,7 @@ from pathlib import Path
 
 from .__main__ import run_csv
 from .prices import write_csv
+from .body_parts import OVERVIEW_FIELDS, overview_records
 
 
 PAGE = Path(__file__).with_name("review.html")
@@ -60,7 +61,9 @@ class ReviewHandler(BaseHTTPRequestHandler):
             return self.json_reply(400, {"error": str(exc)})
         prices = io.StringIO(newline="")
         write_csv(prices, report["pricing_rows"])
-        self.json_reply(200, {**report, "prices_csv": prices.getvalue()})
+        summary = io.StringIO(newline="")
+        write_csv(summary, overview_records(report["body_part_overview"], report["pricing_rows"]), OVERVIEW_FIELDS)
+        self.json_reply(200, {**report, "prices_csv": prices.getvalue(), "overview_csv": summary.getvalue()})
 
 
 def main():
