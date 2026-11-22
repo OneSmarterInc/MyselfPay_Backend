@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/health', views.HealthView.as_view(), name='health'),
     re_path(r'^api/center/(?P<action>code|find|listing-code|verify|dashboard|request|price|profile|confirm-price|contact-verify|contact|inbox-verify|inbox-remove|inbox|logout)$', views.CenterPortalView.as_view(), name='center-portal'),
     path('api/directory-summary', views.DirectorySummaryView.as_view(), name='directory-summary'),
+    path('api/hospital-rates', views.HospitalRatesView.as_view(), name='hospital-rates'),
     path('api/guest', views.GuestView.as_view(), name='guest'),
     re_path(r'^api/registration/mobile/(?P<action>code|verify)$', views.RegistrationMobileView.as_view()),
     re_path(r'^api/auth/mobile/(?P<action>code|verify)$', views.MobileOTPView.as_view()),

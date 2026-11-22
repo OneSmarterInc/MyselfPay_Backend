@@ -1,0 +1,889 @@
+cms_number,hospital_name,name_missing,zip,city,latitude,longitude,cpt,exam,cash_price,gross_charge,negotiated_low,negotiated_high,payer_count,reading_negotiated_low,reading_negotiated_high,reading_included,shared_list_id
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,70450,CT head without contrast,,1888.0,1132.8,2149.0,132,,,Unknown,
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,73721,MRI knee without contrast,,2350.0,1410.0,2588.0,132,,,Unknown,
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,73721,MRI knee without contrast,1234.35,1899.0,198.44,2849.0,193,,,Unknown,SL003
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,70551,MRI brain without contrast,1798.38,2997.3,117.14,2547.71,142,,,Unknown,
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,71250,CT chest without contrast,599.46,999.1,76.34,849.24,142,,,Unknown,
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,72148,MRI lumbar spine without contrast,2397.84,3996.4,113.15,3396.94,142,,,Unknown,
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,74177,CT abdomen and pelvis with contrast,1798.38,2997.3,198.66,2547.71,132,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,73721,MRI knee without contrast,1672.8,2788.0,230.77,2230.4,31,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,70450,CT head without contrast,1251.6,2086.0,101.52,1668.8,31,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,72148,MRI lumbar spine without contrast,1240.8,2068.0,117.33,2068.0,73,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,74177,CT abdomen and pelvis with contrast,2814.6,4691.0,162.17,4691.0,73,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,70551,MRI brain without contrast,1240.8,2068.0,119.07,2252.0,73,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,71250,CT chest without contrast,691.8,1153.0,97.76,1153.0,73,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,70450,CT head without contrast,2952.05,2952.05,98.79,2952.05,57,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,73721,MRI knee without contrast,4414.2,4414.2,225.46,8828.4,57,,,Unknown,
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,74177,CT abdomen and pelvis with contrast,2080.0,3200.0,295.72,3200.0,192,,,Unknown,
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,71250,CT chest without contrast,2121.6,2496.0,122.9,5628.88,15,,,Unknown,
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,74177,CT abdomen and pelvis with contrast,3979.7,4682.0,122.9,5628.88,15,,,Unknown,
+361320,Holzer Medical Center Jackson,false,45640,JACKSON,39.019728,-82.656314,70450,CT head without contrast,1208.0,2416.0,1215.248,2295.2,15,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,71250,CT chest without contrast,2121.6,2496.0,309.95,5628.88,17,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,74177,CT abdomen and pelvis with contrast,3979.7,4682.0,664.45,5628.88,17,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,70551,MRI brain without contrast,3313.3,3898.0,431.13,5628.88,17,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,72148,MRI lumbar spine without contrast,4006.05,4713.0,431.13,5628.88,17,,,Unknown,
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,70551,MRI brain without contrast,3313.3,3898.0,431.13,5628.88,15,,,Unknown,
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,72148,MRI lumbar spine without contrast,4006.05,4713.0,431.13,5628.88,15,,,Unknown,
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,70450,CT head without contrast,1658.0,1842.0,1842.0,1842.0,8,,,Unknown,
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,73721,MRI knee without contrast,2792.0,3102.0,3102.0,3102.0,8,,,Unknown,
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,70450,CT head without contrast,1350.0,1500.0,99.75,2132.0,25,37.97,62.81,Unknown,
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,73721,MRI knee without contrast,2254.5,2505.0,157.39,2529.0,25,60.41,193.9,Unknown,
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,70450,CT head without contrast,978.25,1505.0,88.62,1505.0,193,,,Unknown,SL015
+360234,MERCY HEALTH WEST HOSPITAL LLC,false,45211,CINCINNATI,39.158667,-84.599661,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,73721,MRI knee without contrast,1234.35,1899.0,202.25,2849.0,123,,,Unknown,SL015
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,70551,MRI brain without contrast,3313.3,3898.0,431.13,5628.88,15,,,Unknown,
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,72148,MRI lumbar spine without contrast,4006.05,4713.0,431.13,5628.88,15,,,Unknown,
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,71250,CT chest without contrast,2121.6,2496.0,309.95,5628.88,15,,,Unknown,
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,74177,CT abdomen and pelvis with contrast,3979.7,4682.0,664.45,5628.88,15,,,Unknown,
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,72148,MRI lumbar spine without contrast,1236.3,1902.0,198.44,1904.0,193,,,Unknown,SL003
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,71250,CT chest without contrast,1018.55,1567.0,86.95,1567.0,193,,,Unknown,SL003
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,74177,CT abdomen and pelvis with contrast,2174.0,4348.0,330.06,4174.08,36,,,Unknown,
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,71250,CT chest without contrast,1111.5,2223.0,98.91,2134.08,36,,,Unknown,
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,70551,MRI brain without contrast,1075.0,2150.0,225.74,2064.0,36,,,Unknown,
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,72148,MRI lumbar spine without contrast,1192.0,2384.0,225.74,2288.64,36,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,70450,CT head without contrast,738.0,1640.0,90.73,33500.0,27,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,73721,MRI knee without contrast,958.95,2131.0,207.06,33500.0,27,,,Unknown,
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,72148,MRI lumbar spine without contrast,1236.3,1902.0,202.25,1914.0,192,,,Unknown,
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,71250,CT chest without contrast,1018.55,1567.0,88.62,1567.0,192,,,Unknown,
+360172,MERCY HEALTH REGIONAL MEDICAL CENTER LLC,false,44053,LORAIN,41.430125,-82.222205,71250,CT chest without contrast,704.4,1174.0,,,0,,,Unknown,
+360172,MERCY HEALTH REGIONAL MEDICAL CENTER LLC,false,44053,LORAIN,41.430125,-82.222205,74177,CT abdomen and pelvis with contrast,1743.6,2906.0,,,0,,,Unknown,
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,73721,MRI knee without contrast,1512.55,2327.0,,,0,,,Unknown,
+360112,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43608,TOLEDO,41.679872,-83.528913,74177,CT abdomen and pelvis with contrast,1470.6,2451.0,,,0,,,Unknown,
+360161,MERCY HEALTH YOUNGSTOWN LLC,false,44484,WARREN,41.235541,-80.74975,70450,CT head without contrast,854.4,1424.0,,,0,,,Unknown,SL009
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,73721,MRI knee without contrast,1234.35,1899.0,202.25,2849.0,193,,,Unknown,SL015
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,70551,MRI brain without contrast,1344.2,2068.0,202.25,2068.0,192,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,70450,CT head without contrast,1355.75,1595.0,1595.0,1595.0,24,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,73721,MRI knee without contrast,2589.95,3047.0,3047.0,3047.0,24,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,70450,CT head without contrast,845.0,1300.0,95.77,3663.0,18,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,73721,MRI knee without contrast,1170.0,1800.0,218.57,3199.0,18,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,74177,CT abdomen and pelvis with contrast,2324.4,3874.0,340.37,3815.89,113,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,71250,CT chest without contrast,770.4,1284.0,101.35,1264.74,113,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,70551,MRI brain without contrast,1359.0,2265.0,230.38,2231.03,113,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,72148,MRI lumbar spine without contrast,1359.0,2265.0,230.38,2231.03,113,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,70551,MRI brain without contrast,1626.0,3252.0,,,0,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,71250,CT chest without contrast,900.5,1801.0,,,0,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,74177,CT abdomen and pelvis with contrast,1905.0,3810.0,,,0,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,72148,MRI lumbar spine without contrast,1649.0,3298.0,,,0,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,71250,CT chest without contrast,265.3456,294.8296,97.292,1553.188,8,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,74177,CT abdomen and pelvis with contrast,369.0128,410.0096,135.304,3585.1192,8,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,70551,MRI brain without contrast,339.352,377.052,124.4256,3362.4136,8,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,72148,MRI lumbar spine without contrast,339.352,377.052,124.4256,2638.584,8,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,71250,CT chest without contrast,764.32,1528.63,209.42,1452.2,27,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,70551,MRI brain without contrast,1159.83,2319.65,317.79,2203.67,27,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,72148,MRI lumbar spine without contrast,1144.25,2288.5,313.52,2174.08,27,,,Unknown,
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,73721,MRI knee without contrast,1009.2,1682.0,,,0,,,Unknown,SL016
+360276,MERCY HEALTH YOUNGSTOWN LLC,false,44512,YOUNGSTOWN,41.025937,-80.666955,74177,CT abdomen and pelvis with contrast,1941.0,3235.0,,,0,,,Unknown,SL009
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,70450,CT head without contrast,978.25,1505.0,88.62,1505.0,123,,,Unknown,SL015
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,70551,MRI brain without contrast,1344.2,2068.0,198.44,2068.0,193,,,Unknown,SL003
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,70450,CT head without contrast,978.25,1505.0,86.95,94012.4,193,,,Unknown,SL003
+360064,MERCY HEALTH YOUNGSTOWN LLC,false,44504,YOUNGSTOWN,41.123512,-80.654651,74177,CT abdomen and pelvis with contrast,1941.0,3235.0,,,0,,,Unknown,SL009
+360262,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43623,,41.702956,-83.650077,70450,CT head without contrast,511.2,852.0,,,0,,,Unknown,
+360066,MERCY HEALTH ST RITAS MEDICAL CENTER LLC,false,45801,LIMA,40.772863,-84.034098,74177,CT abdomen and pelvis with contrast,3134.4,5224.0,,,0,,,Unknown,
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,74177,CT abdomen and pelvis with contrast,2080.0,3200.0,290.16,3200.0,193,,,Unknown,SL003
+360112,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43608,TOLEDO,41.679872,-83.528913,71250,CT chest without contrast,543.0,905.0,,,0,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,70551,MRI brain without contrast,2682.0,3576.0,231.4,3254.16,36,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,71250,CT chest without contrast,1557.0,2076.0,101.39,1889.16,36,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,72148,MRI lumbar spine without contrast,2854.5,3806.0,231.4,3463.46,36,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,74177,CT abdomen and pelvis with contrast,3180.75,4241.0,338.34,3859.31,36,,,Unknown,
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,70551,MRI brain without contrast,2081.25,2775.0,225.74,2497.5,35,,,Unknown,SL007
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,72148,MRI lumbar spine without contrast,2265.75,3021.0,225.74,2718.9,35,,,Unknown,SL007
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,74177,CT abdomen and pelvis with contrast,2493.75,3325.0,330.06,2992.5,35,,,Unknown,SL007
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,71250,CT chest without contrast,1519.5,2026.0,98.91,1898.0,35,,,Unknown,SL007
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,70450,CT head without contrast,302.99,403.99,101.88,313.33,9,,,Unknown,SL008
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,73721,MRI knee without contrast,494.7,659.6,232.52,715.11,9,,,Unknown,SL008
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,70450,CT head without contrast,1257.0,1676.0,98.91,1898.0,35,,,Unknown,SL007
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,73721,MRI knee without contrast,2628.75,3505.0,225.74,3154.5,35,,,Unknown,SL007
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,72148,MRI lumbar spine without contrast,2265.75,3021.0,243.77,2718.9,35,,,Unknown,
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,71250,CT chest without contrast,1519.5,2026.0,106.81,1898.0,35,,,Unknown,
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,74177,CT abdomen and pelvis with contrast,2493.75,3325.0,356.43,2992.5,35,,,Unknown,
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,70551,MRI brain without contrast,2081.25,2775.0,243.77,2523.0,35,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,71250,CT chest without contrast,1602.25,2465.0,99.82,103.82,3,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,70551,MRI brain without contrast,2447.9,3766.0,227.83,236.94,3,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,72148,MRI lumbar spine without contrast,2946.45,4533.0,227.83,236.94,3,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,74177,CT abdomen and pelvis with contrast,2825.55,4347.0,333.12,346.44,3,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,70551,MRI brain without contrast,2081.25,2775.0,243.77,2497.5,36,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,72148,MRI lumbar spine without contrast,2265.75,3021.0,243.77,2718.9,36,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,74177,CT abdomen and pelvis with contrast,2493.75,3325.0,356.43,2992.5,36,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,71250,CT chest without contrast,1519.5,2026.0,106.81,1898.0,36,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,70450,CT head without contrast,456.3,1014.0,98.91,357.07,4,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,73721,MRI knee without contrast,324.45,721.0,225.74,814.94,4,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,70551,MRI brain without contrast,2243.25,2991.0,225.74,3374.0,38,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,72148,MRI lumbar spine without contrast,2244.0,2992.0,225.74,3374.0,38,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,74177,CT abdomen and pelvis with contrast,2446.5,3262.0,330.06,2935.8,38,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,71250,CT chest without contrast,1692.75,2257.0,98.91,2210.0,38,,,Unknown,
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,70551,MRI brain without contrast,2081.25,2775.0,225.74,2497.5,36,,,Unknown,SL007
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,72148,MRI lumbar spine without contrast,2265.75,3021.0,225.74,2718.9,36,,,Unknown,SL007
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,71250,CT chest without contrast,1519.5,2026.0,98.91,1898.0,36,,,Unknown,SL007
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,74177,CT abdomen and pelvis with contrast,2493.75,3325.0,330.06,2992.5,36,,,Unknown,SL007
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,71250,CT chest without contrast,996.45,1533.0,103.01,103.01,1,,,Unknown,
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,70551,MRI brain without contrast,1274.65,1961.0,235.1,235.1,1,,,Unknown,
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,72148,MRI lumbar spine without contrast,1309.1,2014.0,235.1,235.1,1,,,Unknown,
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,74177,CT abdomen and pelvis with contrast,1931.8,2972.0,343.75,343.75,1,,,Unknown,
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,70450,CT head without contrast,764.32,1528.63,99.82,2149.0,23,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,71250,CT chest without contrast,1471.5,1962.0,520.0,1962.0,36,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,74177,CT abdomen and pelvis with contrast,2346.75,3129.0,520.0,3129.0,36,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,70551,MRI brain without contrast,1815.0,2420.0,728.0,2420.0,36,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,72148,MRI lumbar spine without contrast,1977.0,2636.0,728.0,2636.0,36,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,74177,CT abdomen and pelvis with contrast,2016.23,4032.45,712.86,4556.67,23,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,70551,MRI brain without contrast,1159.83,2319.65,487.54,2621.2,23,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,71250,CT chest without contrast,764.32,1528.63,213.62,1727.35,23,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,72148,MRI lumbar spine without contrast,1144.25,2288.5,487.54,2586.01,23,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,73721,MRI knee without contrast,2116.0,4232.0,487.54,4020.4,26,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,70450,CT head without contrast,764.32,1528.63,213.62,1452.2,26,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,74177,CT abdomen and pelvis with contrast,224.4,440.0,57.1425,4033.0,35,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,71250,CT chest without contrast,134.13,263.0,33.7725,2043.0,35,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,72148,MRI lumbar spine without contrast,184.11,361.0,46.395,4212.0,35,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,70551,MRI brain without contrast,183.09,359.0,46.215,4224.0,35,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,73721,MRI knee without contrast,2577.75,3437.0,225.74,3093.3,38,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,70450,CT head without contrast,1233.0,1644.0,98.91,1519.0,38,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,71250,CT chest without contrast,1125.9,1125.9,102.46,265.85,16,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,72148,MRI lumbar spine without contrast,5623.5,5623.5,161.72,604.3,16,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,70551,MRI brain without contrast,2017.4,2017.4,166.04,604.3,16,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,74177,CT abdomen and pelvis with contrast,3238.4,3238.4,252.18,714.26,16,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,70450,CT head without contrast,922.35,1419.0,99.82,100.82,2,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,73721,MRI knee without contrast,2250.3,3462.0,227.83,230.11,2,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,71250,CT chest without contrast,565.65,1257.0,98.91,296.86,5,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,70551,MRI brain without contrast,677.25,1505.0,225.74,677.51,5,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,72148,MRI lumbar spine without contrast,869.4,1932.0,225.74,677.51,5,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,74177,CT abdomen and pelvis with contrast,1433.7,3186.0,330.06,990.62,5,,,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,70450,CT head without contrast,739.5,1479.0,1628.0,4748.0,3,4748.0,4748.0,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,73721,MRI knee without contrast,1426.0,2852.0,1730.0,4748.0,3,4748.0,4748.0,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,70551,MRI brain without contrast,1843.0,1843.0,236.56,721.91,5,,,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,71250,CT chest without contrast,1286.0,1286.0,103.65,326.21,5,,,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,72148,MRI lumbar spine without contrast,1862.0,1862.0,236.56,721.91,5,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,70450,CT head without contrast,637.2,1593.0,103.65,360.25,7,,,Unknown,
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,70551,MRI brain without contrast,494.7,659.6,232.52,715.11,8,,,Unknown,SL008
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,71250,CT chest without contrast,302.99,403.99,101.88,313.33,8,,,Unknown,SL008
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,73721,MRI knee without contrast,2116.0,4232.0,227.83,4020.4,23,,,Unknown,
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,70551,MRI brain without contrast,1554.72,3109.45,230.74,364.83,3,,,Unknown,
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,71250,CT chest without contrast,939.17,1878.34,101.1,229.56,3,,,Unknown,
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,74177,CT abdomen and pelvis with contrast,1376.76,2753.52,337.38,606.48,3,,,Unknown,
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,72148,MRI lumbar spine without contrast,1666.8,3333.6,230.74,350.14,3,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,70450,CT head without contrast,302.99,403.99,101.88,299.43,8,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,73721,MRI knee without contrast,494.7,659.6,232.52,683.38,8,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,74177,CT abdomen and pelvis with contrast,4143.75,5525.0,451.87,451.87,1,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,70551,MRI brain without contrast,1518.0,2024.0,561.06,561.06,1,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,71250,CT chest without contrast,1049.25,1399.0,233.19,233.19,1,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,72148,MRI lumbar spine without contrast,1518.0,2024.0,561.06,561.06,1,,,Unknown,
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,70551,MRI brain without contrast,1033.2,2583.0,233.84,819.19,7,,,Unknown,SL005
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,341.91,1197.78,7,,,Unknown,SL005
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,72148,MRI lumbar spine without contrast,965.2,2413.0,233.84,819.19,7,,,Unknown,SL005
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,71250,CT chest without contrast,708.0,1770.0,102.46,358.93,7,,,Unknown,SL005
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,73721,MRI knee without contrast,511.0,730.0,77.11,4955.68,12,7.42,300.26,Unknown,
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,70450,CT head without contrast,1769.6,2528.0,48.44,2376.32,12,3.27,153.66,Unknown,
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,70551,MRI brain without contrast,1285.7,1978.0,230.07,239.27,3,,,Unknown,
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,72148,MRI lumbar spine without contrast,1311.7,2018.0,230.07,239.27,3,,,Unknown,
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,74177,CT abdomen and pelvis with contrast,1474.2,2268.0,336.39,349.85,3,,,Unknown,
+360211,TRINITY HOSPITAL HOLDING COMPANY,false,43952,STEUBENVILLE,40.409127,-80.665297,70450,CT head without contrast,790.52,1594.0,98.26,1292.0,12,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,74177,CT abdomen and pelvis with contrast,1986.4,2483.0,274.12,2309.19,19,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,71250,CT chest without contrast,940.0,1175.0,96.93,1092.75,19,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,72148,MRI lumbar spine without contrast,1840.0,2300.0,175.95,2139.0,19,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,70551,MRI brain without contrast,1635.2,2044.0,179.24,1900.92,19,,,Unknown,
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,70450,CT head without contrast,1945.75,1945.75,90.76,439.33,8,,,Unknown,SL004
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,73721,MRI knee without contrast,2483.0,2483.0,207.13,1002.67,8,,,Unknown,SL004
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,73721,MRI knee without contrast,1741.6,2177.0,230.07,368.1,5,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,70450,CT head without contrast,968.0,1210.0,103.01,334.78,3,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,73721,MRI knee without contrast,2086.4,2608.0,235.1,764.06,3,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,74177,CT abdomen and pelvis with contrast,2016.23,4032.45,552.45,3830.83,27,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,70551,MRI brain without contrast,1419.0,2838.0,237.38,712.14,4,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,71250,CT chest without contrast,658.5,1317.0,104.01,312.03,4,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,72148,MRI lumbar spine without contrast,1497.5,2995.0,237.38,712.14,4,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,74177,CT abdomen and pelvis with contrast,2285.0,4570.0,347.08,1041.25,4,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,72148,MRI lumbar spine without contrast,,,211.9,214.02,2,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,71250,CT chest without contrast,,,95.07,96.02,2,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,70551,MRI brain without contrast,,,211.9,214.02,2,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,74177,CT abdomen and pelvis with contrast,,,332.56,335.89,2,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,70450,CT head without contrast,1021.0,1021.0,98.91,98.91,1,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,73721,MRI knee without contrast,2620.0,2620.0,225.74,225.74,1,,,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,74177,CT abdomen and pelvis with contrast,3978.0,3978.0,345.89,1055.54,5,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,73721,MRI knee without contrast,1013.2,2533.0,236.56,822.19,7,,,Unknown,
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,72148,MRI lumbar spine without contrast,494.7,659.6,232.52,715.11,8,,,Unknown,SL008
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,74177,CT abdomen and pelvis with contrast,605.98,807.98,339.98,1045.6,8,,,Unknown,SL008
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,70450,CT head without contrast,835.25,1285.0,100.81,100.81,1,,,Unknown,SL002
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,73721,MRI knee without contrast,1223.95,1883.0,230.07,230.07,1,,,Unknown,SL002
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,73721,MRI knee without contrast,1013.2,2533.0,235.1,810.01,7,,,Unknown,SL014
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,71250,CT chest without contrast,993.85,1529.0,100.81,104.84,3,,,Unknown,
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,70450,CT head without contrast,1356.0,1695.0,100.81,161.29,5,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,74177,CT abdomen and pelvis with contrast,2854.6,4078.0,340.23,510.35,3,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,70551,MRI brain without contrast,1554.7,2221.0,232.69,349.04,3,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,72148,MRI lumbar spine without contrast,1939.7,2771.0,232.69,349.04,3,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,71250,CT chest without contrast,1205.4,1722.0,101.96,152.94,3,,,Unknown,
+360086,COMMUNITY MERCY HEALTH PARTNERS,false,45504,SPRINGFIELD,39.94697,-83.864897,70450,CT head without contrast,1170.6,1951.0,,,0,,,Unknown,
+360276,MERCY HEALTH YOUNGSTOWN LLC,false,44512,YOUNGSTOWN,41.025937,-80.666955,71250,CT chest without contrast,822.6,1371.0,,,0,,,Unknown,SL009
+360374,MERCY HEALTH KINGS MILLS HOSPITAL LLC,false,45040,MASON,39.350783,-84.313198,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,73721,MRI knee without contrast,1037.4,1729.0,,,0,,,Unknown,
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,70450,CT head without contrast,757.8,1263.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,70450,CT head without contrast,756.0,1260.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,73721,MRI knee without contrast,1388.4,2314.0,,,0,,,Unknown,
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,70450,CT head without contrast,477.1,734.0,84.07,1294.12,37,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,70450,CT head without contrast,1092.0,1092.0,95.3414,1059.24,34,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,73721,MRI knee without contrast,841.5,841.5,212.5,1563.16,34,,,Unknown,
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,70450,CT head without contrast,1740.6,1934.0,103.65,168.95,6,,,Unknown,
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,73721,MRI knee without contrast,2931.3,3257.0,236.56,385.59,6,,,Unknown,
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,70450,CT head without contrast,571.35,879.0,57.25,879.0,26,93.5,879.0,Unknown,SL010
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,73721,MRI knee without contrast,941.85,1449.0,130.66,1449.0,26,177.31,1449.0,Unknown,SL010
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,71250,CT chest without contrast,477.1,734.0,0.87,1294.12,44,,,Unknown,SL012
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,44,,,Unknown,SL012
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,70551,MRI brain without contrast,641.0,641.0,209.1,1360.99,43,,,Unknown,SL013
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,71250,CT chest without contrast,250.0,250.0,93.81,350.51,43,215.9,215.9,Unknown,SL013
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,72148,MRI lumbar spine without contrast,641.0,641.0,209.1,601.9,45,300.3,329.38,Unknown,SL013
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,74177,CT abdomen and pelvis with contrast,1174.0,1174.0,324.92,3373.45,52,219.31,3373.09,Unknown,SL013
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,70551,MRI brain without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,70450,CT head without contrast,477.1,734.0,106.34,734.0,30,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,70551,MRI brain without contrast,1419.0,2838.0,,,0,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,72148,MRI lumbar spine without contrast,1497.5,2995.0,,,0,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,71250,CT chest without contrast,658.5,1317.0,,,0,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,74177,CT abdomen and pelvis with contrast,2285.0,4570.0,,,0,,,Unknown,
+361330,"",true,43138,LOGAN,39.51834,-82.414097,70450,CT head without contrast,1400.0,1400.0,434.0,2021.0,32,,,Unknown,
+363047,"Cincinnati Rehabilitation Hospital, LLC",false,45242,BLUE ASH,39.242803,-84.352996,70450,CT head without contrast,2074.68,2074.68,,,0,,,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,71250,CT chest without contrast,1160.0,2320.0,98.26,2483.52,14,64.78,1552.2,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,74177,CT abdomen and pelvis with contrast,2580.0,5160.0,329.98,5121.6,14,61.25,3201.0,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,70551,MRI brain without contrast,1826.0,3652.0,223.34,3745.92,14,87.5,2341.2,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,72148,MRI lumbar spine without contrast,1826.0,3652.0,223.34,3745.92,14,87.5,2341.2,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,70450,CT head without contrast,134.1,149.0,,,0,,,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,73721,MRI knee without contrast,282.6,314.0,,,0,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,73721,MRI knee without contrast,1084.2,1668.0,1.01,4036081.0,32,,,Unknown,
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,70551,MRI brain without contrast,,1782.0,0.62,1731.57,21,,,Unknown,
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,71250,CT chest without contrast,477.1,734.0,0.87,734.0,39,,,Unknown,SL006
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,39,,,Unknown,SL006
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,71250,CT chest without contrast,477.1,734.0,0.87,1294.12,40,,,Unknown,SL012
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,71250,CT chest without contrast,1640.6,2524.0,98.91,102.86,3,,,Unknown,
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,74177,CT abdomen and pelvis with contrast,2190.5,3370.0,330.06,343.26,3,,,Unknown,
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,70551,MRI brain without contrast,2676.05,4117.0,225.74,234.77,3,,,Unknown,
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,72148,MRI lumbar spine without contrast,2802.8,4312.0,225.74,234.77,3,,,Unknown,
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,71250,CT chest without contrast,708.0,1770.0,103.01,354.98,7,,,Unknown,SL011
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,343.75,1184.58,7,,,Unknown,SL011
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,70551,MRI brain without contrast,1033.2,2583.0,235.1,810.16,7,,,Unknown,SL011
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,72148,MRI lumbar spine without contrast,965.2,2413.0,235.1,810.16,7,,,Unknown,SL011
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,70450,CT head without contrast,637.2,1593.0,103.01,354.91,7,,,Unknown,SL014
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,70450,CT head without contrast,477.1,734.0,0.87,1294.12,34,,,Unknown,SL012
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,70450,CT head without contrast,250.0,250.0,96.75,706.06,51,207.33,502.52,Unknown,SL013
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,73721,MRI knee without contrast,641.0,641.0,158.51,608.31,42,,,Unknown,SL013
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,73721,MRI knee without contrast,2216.8,2771.0,157.38,3823.52,34,,,Unknown,
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,70450,CT head without contrast,1139.2,1424.0,242.56,1310.08,34,,,Unknown,
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,71250,CT chest without contrast,996.45,1533.0,100.81,100.81,1,,,Unknown,SL002
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,74177,CT abdomen and pelvis with contrast,1931.8,2972.0,336.39,336.39,1,,,Unknown,SL002
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,70551,MRI brain without contrast,1274.65,1961.0,230.07,230.07,1,,,Unknown,SL002
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,72148,MRI lumbar spine without contrast,1309.1,2014.0,230.07,230.07,1,,,Unknown,SL002
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,70450,CT head without contrast,477.1,734.0,0.87,734.0,36,,,Unknown,SL006
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,70450,CT head without contrast,1168.82,1168.82,83.95,1168.82,64,,,Unknown,
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,73721,MRI knee without contrast,3653.21,3653.21,65.93,3653.21,64,,,Unknown,
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,71250,CT chest without contrast,2649.75,3533.0,99.09,8374.92,22,,,Unknown,
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,70551,MRI brain without contrast,350.0,6010.0,226.16,14246.6,22,,,Unknown,
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,72148,MRI lumbar spine without contrast,350.0,5040.0,226.16,11947.23,22,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,72148,MRI lumbar spine without contrast,2096.84,3225.9,313.93,3129.12,33,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,70551,MRI brain without contrast,2096.84,3225.9,313.93,3129.12,33,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,71250,CT chest without contrast,822.06,1264.7,225.69,2549.94,33,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,74177,CT abdomen and pelvis with contrast,2267.46,3488.4,483.82,3383.75,33,,,Unknown,
+360064,MERCY HEALTH YOUNGSTOWN LLC,false,44504,YOUNGSTOWN,41.123512,-80.654651,71250,CT chest without contrast,822.6,1371.0,,,0,,,Unknown,SL009
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,71250,CT chest without contrast,708.0,1770.0,103.01,354.91,7,,,Unknown,SL014
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,343.75,1184.36,7,,,Unknown,SL014
+361330,"",true,43138,LOGAN,39.51834,-82.414097,73721,MRI knee without contrast,2000.0,2000.0,620.0,1960.0,31,,,Unknown,
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,70551,MRI brain without contrast,1033.2,2583.0,235.1,810.01,7,,,Unknown,SL014
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,72148,MRI lumbar spine without contrast,965.2,2413.0,235.1,810.01,7,,,Unknown,SL014
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,40,,,Unknown,SL012
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,74177,CT abdomen and pelvis with contrast,3020.25,4027.0,330.68,9545.94,22,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,70551,MRI brain without contrast,143.5,410.0,122.89,897.72,13,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,71250,CT chest without contrast,113.4,324.0,53.84,393.34,13,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,72148,MRI lumbar spine without contrast,150.85,431.0,119.4,897.72,13,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,74177,CT abdomen and pelvis with contrast,220.15,629.0,179.68,1312.61,13,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,73721,MRI knee without contrast,224.0,1937.0,224.62,353.03,26,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,70450,CT head without contrast,98.0,2300.0,98.42,544.09,26,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,70450,CT head without contrast,1208.22,2013.7,69.24,247.27,5,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,73721,MRI knee without contrast,1920.0,3200.0,158.02,564.34,5,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,70551,MRI brain without contrast,1610.7,2478.0,230.07,352.35,1,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,71250,CT chest without contrast,1307.15,2011.0,100.81,220.48,1,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,72148,MRI lumbar spine without contrast,1482.0,2280.0,230.07,340.6,1,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,74177,CT abdomen and pelvis with contrast,2494.7,3838.0,336.39,592.57,1,,,Unknown,
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,70450,CT head without contrast,637.2,1593.0,102.46,358.93,7,,,Unknown,SL005
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,73721,MRI knee without contrast,1013.2,2533.0,233.84,819.19,7,,,Unknown,SL005
+360001,MERCY HEALTH ANDERSON HOSPITAL LLC,false,45255,CINCINNATI,39.059554,-84.328333,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+360001,MERCY HEALTH ANDERSON HOSPITAL LLC,false,45255,CINCINNATI,39.059554,-84.328333,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,70450,CT head without contrast,588.6,981.0,,,0,,,Unknown,SL016
+360066,MERCY HEALTH ST RITAS MEDICAL CENTER LLC,false,45801,LIMA,40.772863,-84.034098,71250,CT chest without contrast,915.0,1525.0,,,0,,,Unknown,
+360236,MERCY HEALTH CLERMONT HOSPITAL LLC,false,45103,BATAVIA,39.091617,-84.143715,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+360236,MERCY HEALTH CLERMONT HOSPITAL LLC,false,45103,BATAVIA,39.091617,-84.143715,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,70551,MRI brain without contrast,2017.2,3362.0,,,0,,,Unknown,
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,74177,CT abdomen and pelvis with contrast,3531.6,5886.0,,,0,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,73721,MRI knee without contrast,1922.23,3844.47,232.33,3460.02,9,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,70450,CT head without contrast,1058.65,2117.3,101.8,1905.57,9,,,Unknown,
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,72148,MRI lumbar spine without contrast,1080.0,1800.0,,,0,,,Unknown,
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,71250,CT chest without contrast,719.4,1199.0,,,0,,,Unknown,
+360263,InstituteforOrthopaedicSurgery,false,45804,LIMA,40.709623,-84.061153,74177,CT abdomen and pelvis with contrast,,4988.72,634.61,3492.1,3,,,Unknown,
+360263,InstituteforOrthopaedicSurgery,false,45804,LIMA,40.709623,-84.061153,71250,CT chest without contrast,,2349.05,188.97,1644.34,3,,,Unknown,
+360263,InstituteforOrthopaedicSurgery,false,45804,LIMA,40.709623,-84.061153,72148,MRI lumbar spine without contrast,,1182.6,429.53,827.82,3,,,Unknown,
+360016,JEWISH HOSPITAL LLC,false,45236,CINCINNATI,39.209678,-84.397222,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,70450,CT head without contrast,588.6,981.0,,,0,,,Unknown,SL016
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,73721,MRI knee without contrast,1009.2,1682.0,,,0,,,Unknown,SL016
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,71250,CT chest without contrast,1050.0,1400.0,1400.0,1400.0,1,,,Unknown,
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,74177,CT abdomen and pelvis with contrast,2475.0,3300.0,3300.0,3300.0,1,,,Unknown,
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,70551,MRI brain without contrast,339.0,452.0,452.0,2660.0,1,,,Unknown,
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,72148,MRI lumbar spine without contrast,330.0,440.0,440.0,2660.0,1,,,Unknown,
+360056,MERCY HEALTH FAIRFIELD HOSPITAL LLC,false,45014,FAIRFIELD,39.325714,-84.55239,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+360056,MERCY HEALTH FAIRFIELD HOSPITAL LLC,false,45014,FAIRFIELD,39.325714,-84.55239,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,70450,CT head without contrast,518.05,797.0,,,0,,,Unknown,
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,70450,CT head without contrast,1396.0,1396.0,102.46,326.21,5,,,Unknown,
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,73721,MRI knee without contrast,2048.0,2048.0,233.84,721.95,5,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,72148,MRI lumbar spine without contrast,3282.23,6564.46,225.74,1498.0,18,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,70551,MRI brain without contrast,3282.23,6564.46,225.74,1498.0,18,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,71250,CT chest without contrast,1056.77,2113.54,98.91,930.0,18,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,74177,CT abdomen and pelvis with contrast,793.255,1586.51,330.06,978.18,18,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,73721,MRI knee without contrast,1208.75,3021.87,282.17,2719.68,9,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,70450,CT head without contrast,831.66,2079.15,123.64,1871.24,9,,,Unknown,
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,73721,MRI knee without contrast,1013.2,2533.0,235.1,810.16,7,,,Unknown,SL011
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,70450,CT head without contrast,637.2,1593.0,103.01,354.98,7,,,Unknown,SL011
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,73721,MRI knee without contrast,224.0,2635.85,92.29,360.34,25,,,Unknown,
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,70450,CT head without contrast,98.0,2292.45,44.05,555.35,25,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,70450,CT head without contrast,682.8,1138.0,103.65,302.96,9,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,73721,MRI knee without contrast,937.2,1562.0,236.56,691.43,9,,,Unknown,
+360019,Summa Health System,false,44213,,,,72148,MRI lumbar spine without contrast,2344.5,2344.5,207.13,1002.67,8,,,Unknown,SL004
+360019,Summa Health System,false,44213,,,,70551,MRI brain without contrast,3267.25,3267.25,207.13,1002.67,8,,,Unknown,SL004
+360019,Summa Health System,false,44213,,,,74177,CT abdomen and pelvis with contrast,4369.5,4369.5,302.86,1466.06,8,,,Unknown,SL004
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,70551,MRI brain without contrast,2220.0,2220.0,236.56,707.57,5,,,Unknown,
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,71250,CT chest without contrast,1274.0,1274.0,103.65,326.21,5,,,Unknown,
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,72148,MRI lumbar spine without contrast,2048.0,2048.0,236.56,707.57,5,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,74177,CT abdomen and pelvis with contrast,1539.6,2566.0,339.98,965.56,8,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,72148,MRI lumbar spine without contrast,1116.6,1861.0,232.52,660.36,8,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,71250,CT chest without contrast,693.0,1155.0,101.88,289.34,8,,,Unknown,
+360089,MERCY HEALTH TIFFIN HOSPITAL LLC,false,44883,TIFFIN,41.124173,-83.173639,70450,CT head without contrast,1025.4,1709.0,,,0,,,Unknown,
+360089,MERCY HEALTH TIFFIN HOSPITAL LLC,false,44883,TIFFIN,41.124173,-83.173639,73721,MRI knee without contrast,884.4,1474.0,,,0,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,71250,CT chest without contrast,1409.25,1409.25,101.13,101.13,1,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,70551,MRI brain without contrast,1907.75,1907.75,230.8,230.8,1,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,72148,MRI lumbar spine without contrast,2085.75,2085.75,230.8,230.8,1,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,74177,CT abdomen and pelvis with contrast,3241.5,3241.5,337.46,337.46,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,70450,CT head without contrast,623.7,1386.0,197.82,357.07,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,73721,MRI knee without contrast,1850.4,4112.0,451.47,814.94,1,,,Unknown,
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,71250,CT chest without contrast,996.45,1533.0,100.81,100.81,1,,,Unknown,SL002
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,70551,MRI brain without contrast,1274.65,1961.0,230.07,230.07,1,,,Unknown,SL002
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,72148,MRI lumbar spine without contrast,1309.1,2014.0,230.07,230.07,1,,,Unknown,SL002
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,74177,CT abdomen and pelvis with contrast,1931.8,2972.0,336.39,336.39,1,,,Unknown,SL002
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,70450,CT head without contrast,1233.05,1897.0,99.82,103.82,3,,,Unknown,
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,73721,MRI knee without contrast,2519.4,3876.0,227.83,236.94,3,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,70450,CT head without contrast,,,98.91,118.69,4,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,73721,MRI knee without contrast,,,225.74,270.88,4,,,Unknown,
+360019,Summa Health System,false,44213,,,,71250,CT chest without contrast,2857.5,2857.5,90.76,439.33,8,,,Unknown,SL004
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,74177,CT abdomen and pelvis with contrast,3941.0,3941.0,345.89,1034.58,5,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,70551,MRI brain without contrast,1039.2,1732.0,232.52,660.36,8,,,Unknown,
+361302,TWIN CITY HOSPITAL CORPORATION,false,44621,DENNISON,40.432127,-81.288171,70450,CT head without contrast,799.56,1612.0,17.75,1402.44,16,,,Unknown,
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,73721,MRI knee without contrast,1084.2,1668.0,0.87,1668.0,44,,,Unknown,SL006
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,71250,CT chest without contrast,477.1,734.0,0.87,1294.12,41,,,Unknown,SL012
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,41,,,Unknown,SL012
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,74177,CT abdomen and pelvis with contrast,,2650.0,0.62,2575.01,21,,,Unknown,
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,72148,MRI lumbar spine without contrast,,2580.0,0.62,2506.99,21,,,Unknown,
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,70551,MRI brain without contrast,1084.2,1668.0,0.87,1668.0,39,,,Unknown,SL006
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,1668.0,39,,,Unknown,SL006
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,71250,CT chest without contrast,477.1,734.0,0.87,1294.12,44,,,Unknown,SL012
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,44,,,Unknown,SL012
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,71250,CT chest without contrast,987.35,1519.0,57.25,1367.1,19,121.22,1367.1,Unknown,
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,74177,CT abdomen and pelvis with contrast,3415.1,5254.0,191.05,4728.6,19,272.71,4728.6,Unknown,
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,70551,MRI brain without contrast,2464.15,3791.0,130.66,3411.9,19,178.32,3411.9,Unknown,
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,72148,MRI lumbar spine without contrast,3012.75,4635.0,130.66,4171.5,19,175.05,4171.5,Unknown,
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,70551,MRI brain without contrast,1084.2,1668.0,0.87,1668.0,40,,,Unknown,SL006
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,1668.0,40,,,Unknown,SL006
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,70450,CT head without contrast,,2064.0,0.62,2180.0,23,,,Unknown,
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,70450,CT head without contrast,477.1,734.0,0.87,734.0,44,,,Unknown,SL006
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,74177,CT abdomen and pelvis with contrast,2204.25,2939.0,142.36,3377.0,28,,,Unknown,
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,71250,CT chest without contrast,1683.0,2244.0,42.39,2244.0,28,,,Unknown,
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,70551,MRI brain without contrast,2136.75,2849.0,96.36,2849.0,28,,,Unknown,
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,72148,MRI lumbar spine without contrast,2152.5,2870.0,96.36,2870.0,28,,,Unknown,
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,73721,MRI knee without contrast,1084.2,1668.0,241.72,1668.0,30,,,Unknown,
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,70551,MRI brain without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,70551,MRI brain without contrast,1084.2,1668.0,0.87,2005.89,40,,,Unknown,SL012
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,2005.89,40,,,Unknown,SL012
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,71250,CT chest without contrast,1179.1,1814.0,57.25,1447.57,20,119.28,1447.57,Unknown,
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,74177,CT abdomen and pelvis with contrast,2353.0,3620.0,191.05,2888.76,20,268.34,2888.76,Unknown,
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,70551,MRI brain without contrast,2193.75,3375.0,130.66,2693.25,20,175.46,2693.25,Unknown,
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,72148,MRI lumbar spine without contrast,2193.75,3375.0,130.66,2693.25,20,172.25,2693.25,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,70551,MRI brain without contrast,2262.75,3017.0,348.12,5997.3,43,,,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,72148,MRI lumbar spine without contrast,4937.25,6583.0,348.12,6510.59,43,,,Unknown,
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,71250,CT chest without contrast,477.1,734.0,0.87,734.0,40,,,Unknown,SL006
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,71250,CT chest without contrast,1651.0,2540.0,,,0,,,Unknown,
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,74177,CT abdomen and pelvis with contrast,2595.45,3993.0,,,0,,,Unknown,
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,70551,MRI brain without contrast,2063.1,3174.0,,,0,,,Unknown,
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,72148,MRI lumbar spine without contrast,1725.1,2654.0,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,71250,CT chest without contrast,687.04,981.48,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,74177,CT abdomen and pelvis with contrast,1488.58,2126.54,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,70551,MRI brain without contrast,1842.78,2632.54,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,72148,MRI lumbar spine without contrast,1842.78,2632.54,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,73721,MRI knee without contrast,1188.2,1828.0,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,70450,CT head without contrast,800.15,1231.0,,,0,,,Unknown,
+362033,Kindred Hospital Dayton,false,45417,DAYTON,39.733066,-84.283296,70450,CT head without contrast,1607.69,1607.69,,,0,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,70450,CT head without contrast,477.1,734.0,1.01,4036081.0,32,,,Unknown,
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,71250,CT chest without contrast,,2072.0,0.62,2013.36,21,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,70450,CT head without contrast,3028.85,5507.0,138.85,1982.52,19,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,73721,MRI knee without contrast,4320.25,7855.0,316.9,5655.96,19,,,Unknown,
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,71250,CT chest without contrast,571.35,879.0,57.25,879.0,21,116.56,581.14,Unknown,SL010
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,74177,CT abdomen and pelvis with contrast,1617.2,2488.0,191.05,2488.0,21,262.69,1252.22,Unknown,SL010
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,70551,MRI brain without contrast,941.85,1449.0,130.66,1449.0,21,171.79,818.8,Unknown,SL010
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,72148,MRI lumbar spine without contrast,941.85,1449.0,130.66,1449.0,21,167.31,803.8,Unknown,SL010
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,73721,MRI knee without contrast,,2957.0,0.62,2956.0,23,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,71250,CT chest without contrast,1602.25,2465.0,,,0,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,74177,CT abdomen and pelvis with contrast,2825.55,4347.0,,,0,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,70551,MRI brain without contrast,2447.9,3766.0,,,0,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,72148,MRI lumbar spine without contrast,2946.45,4533.0,,,0,,,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,71250,CT chest without contrast,2555.25,3407.0,250.28,3369.52,43,,,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,74177,CT abdomen and pelvis with contrast,5343.75,7125.0,536.53,7046.63,43,,,Unknown,
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,70551,MRI brain without contrast,1084.2,1668.0,0.87,2005.89,41,,,Unknown,SL012
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,2005.89,41,,,Unknown,SL012
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,73721,MRI knee without contrast,1084.2,1668.0,191.88,2005.89,37,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,71250,CT chest without contrast,1575.3,1969.12,,,0,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,74177,CT abdomen and pelvis with contrast,2917.05,3646.31,,,0,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,70551,MRI brain without contrast,2117.02,2646.28,,,0,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,72148,MRI lumbar spine without contrast,2511.48,3139.35,,,0,,,Unknown,
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,40,,,Unknown,SL006
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,71250,CT chest without contrast,2184.6,3641.0,106.81,2803.57,16,,,Unknown,
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,74177,CT abdomen and pelvis with contrast,3768.6,6281.0,268.48,4836.37,16,,,Unknown,
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,71250,CT chest without contrast,477.1,734.0,95.38,83292.09,46,,,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,70551,MRI brain without contrast,1431.5,2045.0,151.33,1799.6,15,403.54,403.54,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,72148,MRI lumbar spine without contrast,1431.5,2045.0,173.3,2239.09,18,,,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,74177,CT abdomen and pelvis with contrast,2243.5,3205.0,645.24,3100.0,27,,,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,71250,CT chest without contrast,640.5,915.0,283.65,1427.74,22,,,Unknown,
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,73721,MRI knee without contrast,1084.2,1668.0,0.87,1668.0,36,,,Unknown,SL006
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,330.06,2464.0,46,,,Unknown,
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,70551,MRI brain without contrast,1084.2,1668.0,212.58,1668.0,46,,,Unknown,
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,72148,MRI lumbar spine without contrast,1084.2,1668.0,212.58,1668.0,46,,,Unknown,
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,73721,MRI knee without contrast,1084.2,1668.0,0.87,2005.89,34,,,Unknown,SL012
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,70551,MRI brain without contrast,2286.0,2540.0,365.66,2489.2,22,,,Unknown,
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,71250,CT chest without contrast,1296.0,1440.0,160.22,1411.2,22,,,Unknown,
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,72148,MRI lumbar spine without contrast,2430.0,2700.0,365.66,2646.0,22,,,Unknown,
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,74177,CT abdomen and pelvis with contrast,2421.0,2690.0,534.65,2636.2,22,,,Unknown,
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,70551,MRI brain without contrast,3130.2,5217.0,218.81,4017.09,16,,,Unknown,
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,72148,MRI lumbar spine without contrast,3140.4,5234.0,218.81,4030.18,16,,,Unknown,
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,70551,MRI brain without contrast,,2639.0,1583.4,2639.0,132,,,Unknown,
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,72148,MRI lumbar spine without contrast,,2702.0,1621.2,2702.0,132,,,Unknown,
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,74177,CT abdomen and pelvis with contrast,,4160.0,2496.0,4645.0,132,,,Unknown,
+361326,ADAMS COUNTY REGIONAL MEDICAL CENTER,false,45679,SEAMAN,38.977837,-83.570978,71250,CT chest without contrast,,1827.0,1096.2,1827.0,132,,,Unknown,
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,70551,MRI brain without contrast,1344.2,2068.0,198.44,2068.0,193,,,Unknown,SL003
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,70450,CT head without contrast,599.46,999.1,61.63,849.24,132,,,Unknown,
+360039,Genesis Healthcare System,false,43701,ZANESVILLE,39.963961,-81.995711,73721,MRI knee without contrast,1198.92,1998.2,130.01,1698.47,132,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,74177,CT abdomen and pelvis with contrast,2766.6,4611.0,262.0,3688.8,31,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,72148,MRI lumbar spine without contrast,1754.4,2924.0,218.52,2339.2,31,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,70551,MRI brain without contrast,1668.0,2780.0,227.69,2224.0,31,,,Unknown,
+360048,University of Toledo Medical Center,false,43614,TOLEDO,41.60446,-83.627515,71250,CT chest without contrast,985.8,1643.0,101.52,1314.4,31,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,70450,CT head without contrast,691.8,1153.0,56.64,1153.0,73,,,Unknown,
+360163,The Christ Hospital,false,45219,CINCINNATI,39.126624,-84.512017,73721,MRI knee without contrast,1240.8,2068.0,129.47,2068.0,73,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,70551,MRI brain without contrast,4414.2,4414.2,225.46,4414.2,57,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,74177,CT abdomen and pelvis with contrast,8469.8,8469.8,329.66,8469.8,57,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,71250,CT chest without contrast,2762.1,2762.1,98.79,3523.1,57,,,Unknown,
+360218,Licking Memorial Hospital,false,43055,NEWARK,40.110508,-82.378699,72148,MRI lumbar spine without contrast,4414.2,4414.2,225.46,4414.2,57,,,Unknown,
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,71250,CT chest without contrast,1018.55,1567.0,88.62,1567.0,193,,,Unknown,SL015
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,70450,CT head without contrast,1681.3,1978.0,47.8,5628.88,15,,,Unknown,
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,72148,MRI lumbar spine without contrast,1236.3,1902.0,202.25,1904.0,123,,,Unknown,SL015
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,70551,MRI brain without contrast,1344.2,2068.0,202.25,2068.0,123,,,Unknown,SL015
+361320,Holzer Medical Center Jackson,false,45640,JACKSON,39.019728,-82.656314,70551,MRI brain without contrast,1075.0,2150.0,1081.45,2042.5,15,,,Unknown,
+361320,Holzer Medical Center Jackson,false,45640,JACKSON,39.019728,-82.656314,74177,CT abdomen and pelvis with contrast,2174.0,4348.0,2187.044,4130.6,15,,,Unknown,
+361320,Holzer Medical Center Jackson,false,45640,JACKSON,39.019728,-82.656314,71250,CT chest without contrast,1111.5,2223.0,1118.169,2111.85,15,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,70450,CT head without contrast,1681.3,1978.0,664.45,5628.88,17,,,Unknown,
+361325,Galion Community Hospital,false,44833,GALION,40.709559,-82.795815,73721,MRI knee without contrast,3643.1,4286.0,431.13,5628.88,17,,,Unknown,
+360365,Avita Ontario Hospital,false,44906,ONTARIO,40.764486,-82.574974,73721,MRI knee without contrast,3643.1,4286.0,431.13,5628.88,15,,,Unknown,
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,70450,CT head without contrast,978.25,1505.0,86.95,94012.4,193,,,Unknown,SL003
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,70551,MRI brain without contrast,2892.0,3213.0,3213.0,3213.0,8,,,Unknown,
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,72148,MRI lumbar spine without contrast,3138.0,3487.0,3487.0,3487.0,8,,,Unknown,
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,71250,CT chest without contrast,2262.0,2513.0,2513.0,2513.0,8,,,Unknown,
+360032,Joint Township District Memorial Hospital,false,45885,SAINT MARYS,40.569863,-84.390644,74177,CT abdomen and pelvis with contrast,3148.0,3498.0,3498.0,3498.0,8,,,Unknown,
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,72148,MRI lumbar spine without contrast,1236.3,1902.0,198.44,1904.0,193,,,Unknown,SL003
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,74177,CT abdomen and pelvis with contrast,2080.0,3200.0,290.16,3200.0,193,,,Unknown,SL003
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,74177,CT abdomen and pelvis with contrast,3265.2,3628.0,242.56,3519.16,25,81.66,205.99,Unknown,
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,71250,CT chest without contrast,1215.0,1350.0,99.75,2132.0,25,48.1,77.98,Unknown,
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,70551,MRI brain without contrast,2205.0,2450.0,157.39,2529.0,25,65.83,120.47,Unknown,
+360065,Fisher-Titus Medical Center,false,44847,NORWALK,41.230414,-82.712888,72148,MRI lumbar spine without contrast,2637.0,2930.0,157.39,2842.1,25,66.12,115.62,Unknown,
+360234,MERCY HEALTH WEST HOSPITAL LLC,false,45211,CINCINNATI,39.158667,-84.599661,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360234,MERCY HEALTH WEST HOSPITAL LLC,false,45211,CINCINNATI,39.158667,-84.599661,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,74177,CT abdomen and pelvis with contrast,2080.0,3200.0,295.72,3200.0,123,,,Unknown,SL015
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,73721,MRI knee without contrast,3643.1,4286.0,431.13,5628.88,15,,,Unknown,
+361316,Bucyrus Community Hospital,false,44820,BUCYRUS,40.818352,-82.971722,70450,CT head without contrast,1681.3,1978.0,632.96,5628.88,15,,,Unknown,
+360012,Mount Carmel East,false,43081,WESTERVILLE,40.110443,-82.890646,73721,MRI knee without contrast,1234.35,1899.0,198.44,2849.0,193,,,Unknown,SL003
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,70450,CT head without contrast,1208.0,2416.0,98.91,2319.36,36,,,Unknown,
+360054,Holzer Medical Center,false,45631,GALLIPOLIS,38.821751,-82.264305,73721,MRI knee without contrast,1058.0,2116.0,225.74,2031.36,36,,,Unknown,
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,70551,MRI brain without contrast,1366.95,2103.0,,,0,,,Unknown,
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,74177,CT abdomen and pelvis with contrast,1541.15,2371.0,,,0,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,70551,MRI brain without contrast,958.95,2131.0,207.06,33500.0,27,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,71250,CT chest without contrast,738.0,1640.0,90.73,33500.0,27,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,72148,MRI lumbar spine without contrast,958.95,2131.0,207.06,33500.0,27,,,Unknown,
+360072,Fairfield Medical Center,false,43130,LANCASTER,39.696463,-82.614717,74177,CT abdomen and pelvis with contrast,947.25,2105.0,302.75,33500.0,27,,,Unknown,
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,72148,MRI lumbar spine without contrast,1236.3,1902.0,202.25,1904.0,193,,,Unknown,SL015
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,70551,MRI brain without contrast,1344.2,2068.0,202.25,2068.0,193,,,Unknown,SL015
+360172,MERCY HEALTH REGIONAL MEDICAL CENTER LLC,false,44053,LORAIN,41.430125,-82.222205,70450,CT head without contrast,936.0,1560.0,,,0,,,Unknown,
+360262,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43623,,41.702956,-83.650077,74177,CT abdomen and pelvis with contrast,1471.2,2452.0,,,0,,,Unknown,
+360262,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43623,,41.702956,-83.650077,71250,CT chest without contrast,511.2,852.0,,,0,,,Unknown,
+360161,MERCY HEALTH YOUNGSTOWN LLC,false,44484,WARREN,41.235541,-80.74975,71250,CT chest without contrast,822.6,1371.0,,,0,,,Unknown,SL009
+360266,Mount Carmel New Albany Surgical Hospital,false,43054,NEW ALBANY,40.070261,-82.802113,74177,CT abdomen and pelvis with contrast,2080.0,3200.0,295.72,3200.0,193,,,Unknown,SL015
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,70450,CT head without contrast,978.25,1505.0,88.62,1505.0,192,,,Unknown,
+360358,Diley Ridge Medical Center,false,43110,CANAL WINCHESTER,39.826682,-82.800074,73721,MRI knee without contrast,1234.35,1899.0,202.25,2849.0,192,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,70551,MRI brain without contrast,2977.55,3503.0,3503.0,3503.0,24,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,71250,CT chest without contrast,1555.5,1830.0,1830.0,1830.0,24,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,72148,MRI lumbar spine without contrast,3272.5,3850.0,3850.0,3850.0,24,,,Unknown,
+361300,"",true,45879,PAULDING,41.128322,-84.563105,74177,CT abdomen and pelvis with contrast,2689.4,3164.0,3164.0,3164.0,24,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,70551,MRI brain without contrast,1300.0,2000.0,218.57,3199.0,18,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,71250,CT chest without contrast,812.5,1250.0,95.77,3663.0,18,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,72148,MRI lumbar spine without contrast,1235.0,1900.0,218.57,3199.0,18,,,Unknown,
+360092,"",true,43040,MARYSVILLE,40.261305,-83.358138,74177,CT abdomen and pelvis with contrast,1462.5,2250.0,319.57,3663.0,18,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,70450,CT head without contrast,770.4,1284.0,101.35,1264.74,113,,,Unknown,
+360355,Ohio Valley Medical Center,false,45502,SPRINGFIELD,40.001239,-83.899983,73721,MRI knee without contrast,1592.4,2654.0,230.38,2614.19,113,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,73721,MRI knee without contrast,1752.5,3505.0,,,0,,,Unknown,
+361311,"",true,43907,CADIZ,40.248449,-81.019659,70450,CT head without contrast,800.5,1601.0,,,0,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,70450,CT head without contrast,199.4408,221.6032,73.1328,1320.384,8,,,Unknown,
+361329,Wyandot Memorial Hospital,false,43351,UPPER SANDUSKY,40.827604,-83.314046,73721,MRI knee without contrast,260.832,289.8168,95.6384,2967.1304,8,,,Unknown,
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,74177,CT abdomen and pelvis with contrast,2014.8,3358.0,,,0,,,Unknown,SL016
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,70551,MRI brain without contrast,1764.0,2940.0,,,0,,,Unknown,SL016
+360276,MERCY HEALTH YOUNGSTOWN LLC,false,44512,YOUNGSTOWN,41.025937,-80.666955,70450,CT head without contrast,854.4,1424.0,,,0,,,Unknown,SL009
+360035,Mount Carmel East,false,43123,COLUMBUS,39.867919,-83.11761,71250,CT chest without contrast,1018.55,1567.0,86.95,1567.0,193,,,Unknown,SL003
+360064,MERCY HEALTH YOUNGSTOWN LLC,false,44504,YOUNGSTOWN,41.123512,-80.654651,70450,CT head without contrast,854.4,1424.0,,,0,,,Unknown,SL009
+360066,MERCY HEALTH ST RITAS MEDICAL CENTER LLC,false,45801,LIMA,40.772863,-84.034098,70450,CT head without contrast,1009.2,1682.0,,,0,,,Unknown,
+360112,MERCY HEALTH ST VINCENT MEDICAL CENTER LLC,false,43608,TOLEDO,41.679872,-83.528913,70450,CT head without contrast,543.0,905.0,,,0,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,70450,CT head without contrast,1557.0,2076.0,101.39,1889.16,36,,,Unknown,
+360002,University Hospitals Health System,false,44805,ASHLAND,40.87322,-82.322775,73721,MRI knee without contrast,2854.5,3806.0,231.4,3463.46,36,,,Unknown,
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,73721,MRI knee without contrast,2628.75,3505.0,225.74,3154.5,35,,,Unknown,SL007
+360041,University Hospitals Health System,false,44129,PARMA,41.390459,-81.7353,70450,CT head without contrast,1257.0,1676.0,98.91,1898.0,35,,,Unknown,SL007
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,70551,MRI brain without contrast,494.7,659.6,232.52,715.11,9,,,Unknown,SL008
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,71250,CT chest without contrast,302.99,403.99,101.88,313.33,9,,,Unknown,SL008
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,72148,MRI lumbar spine without contrast,494.7,659.6,232.52,715.11,9,,,Unknown,SL008
+360046,"McCullough-Hyde Memorial Hospital, Inc.",false,45056,OXFORD,39.487425,-84.737908,74177,CT abdomen and pelvis with contrast,605.98,807.98,339.98,1045.6,9,,,Unknown,SL008
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,70551,MRI brain without contrast,2081.25,2775.0,225.74,2497.5,35,,,Unknown,SL007
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,71250,CT chest without contrast,1519.5,2026.0,98.91,1898.0,35,,,Unknown,SL007
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,72148,MRI lumbar spine without contrast,2265.75,3021.0,225.74,2718.9,35,,,Unknown,SL007
+360075,University Hospitals Health System,false,44024,CHARDON,41.578209,-81.19126,74177,CT abdomen and pelvis with contrast,2493.75,3325.0,330.06,2992.5,35,,,Unknown,SL007
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,70450,CT head without contrast,1257.0,1676.0,106.81,1898.0,35,,,Unknown,
+360078,University Hospitals Health System,false,44266,RAVENNA,41.16897,-81.196962,73721,MRI knee without contrast,2628.75,3505.0,243.77,3154.5,35,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,70450,CT head without contrast,1085.5,1670.0,99.82,103.82,3,,,Unknown,
+360118,Ohiohealth Mansfield Hospital,false,44903,MANSFIELD,40.776223,-82.526824,73721,MRI knee without contrast,2267.85,3489.0,227.83,236.94,3,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,70450,CT head without contrast,1257.0,1676.0,106.81,1898.0,36,,,Unknown,
+360123,University Hospitals Health System,false,44145,WESTLAKE,41.449531,-81.930162,73721,MRI knee without contrast,2628.75,3505.0,243.77,3154.5,36,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,71250,CT chest without contrast,472.5,1050.0,98.91,357.07,4,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,70551,MRI brain without contrast,1084.5,2410.0,225.74,814.94,4,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,72148,MRI lumbar spine without contrast,1048.05,2329.0,225.74,814.94,4,,,Unknown,
+360131,Alliance Community Hospital,false,44601,ALLIANCE,40.918593,-81.128745,74177,CT abdomen and pelvis with contrast,1189.35,2643.0,330.06,1191.56,4,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,70450,CT head without contrast,1233.0,1644.0,98.91,2210.0,38,,,Unknown,
+360137,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,73721,MRI knee without contrast,2577.75,3437.0,225.74,3374.0,38,,,Unknown,
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,73721,MRI knee without contrast,2628.75,3505.0,225.74,3154.5,36,,,Unknown,SL007
+360145,University Hospitals Health System,false,44035,ELYRIA,41.370046,-82.135976,70450,CT head without contrast,1257.0,1676.0,98.91,1898.0,36,,,Unknown,SL007
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,70450,CT head without contrast,835.25,1285.0,103.01,103.01,1,,,Unknown,
+360152,Doctors Hospital,false,43228,COLUMBUS,39.964019,-83.127747,73721,MRI knee without contrast,1223.95,1883.0,235.1,235.1,1,,,Unknown,
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,70551,MRI brain without contrast,1159.83,2319.65,227.83,2203.67,23,,,Unknown,
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,71250,CT chest without contrast,764.32,1528.63,99.82,2149.0,23,,,Unknown,
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,72148,MRI lumbar spine without contrast,1144.25,2288.5,227.83,2174.08,23,,,Unknown,
+360159,Adena Health System,false,45601,CHILLICOTHE,39.31206,-82.957071,74177,CT abdomen and pelvis with contrast,2016.23,4032.45,333.12,3830.83,23,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,73721,MRI knee without contrast,2116.0,4232.0,487.54,4020.4,27,,,Unknown,
+361304,Greenfield Area Medical Center,false,45123,GREENFIELD,39.348842,-83.388803,70450,CT head without contrast,764.32,1528.63,209.42,1452.2,27,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,70450,CT head without contrast,1471.5,1962.0,520.0,1962.0,36,,,Unknown,
+361308,University Hospitals Health System,false,44030,CONNEAUT,41.903318,-80.579879,73721,MRI knee without contrast,2292.0,3056.0,728.0,3056.0,36,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,70450,CT head without contrast,764.32,1528.63,213.62,1727.35,23,,,Unknown,
+361331,Adena Fayette Medical Center,false,43160,WASHINGTON COURT HOUSE,39.52874,-83.439186,73721,MRI knee without contrast,2116.0,4232.0,487.54,4782.16,23,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,74177,CT abdomen and pelvis with contrast,2016.23,4032.45,712.86,3830.83,26,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,73721,MRI knee without contrast,168.3,330.0,39.31,4126.0,35,,,Unknown,
+363300,Children's Hospital Medical Center,false,45229,CINCINNATI,39.153472,-84.486186,70450,CT head without contrast,105.06,206.0,26.64,2086.0,35,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,70551,MRI brain without contrast,2243.25,2991.0,225.74,2691.9,38,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,72148,MRI lumbar spine without contrast,2244.0,2992.0,225.74,2692.8,38,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,71250,CT chest without contrast,1692.75,2257.0,98.91,2031.3,38,,,Unknown,
+363302,University Hospitals Health System,false,44106,CLEVELAND,41.505341,-81.605432,74177,CT abdomen and pelvis with contrast,2446.5,3262.0,330.06,2935.8,38,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,73721,MRI knee without contrast,2017.4,2017.4,171.28,483.44,15,,,Unknown,
+363308,"",true,45404,DAYTON,39.788496,-84.152717,70450,CT head without contrast,1125.9,1125.9,90.39,265.85,16,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,71250,CT chest without contrast,764.32,1528.63,213.62,1452.2,26,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,70551,MRI brain without contrast,1159.83,2319.65,487.54,2203.67,26,,,Unknown,
+361334,Pike Health Services Inc,false,45690,WAVERLY,39.145655,-83.024997,72148,MRI lumbar spine without contrast,1144.25,2288.5,487.54,2174.08,26,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,71250,CT chest without contrast,1722.5,2650.0,99.82,100.82,2,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,70551,MRI brain without contrast,2070.25,3185.0,227.83,230.11,2,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,72148,MRI lumbar spine without contrast,2341.95,3603.0,227.83,230.11,2,,,Unknown,
+360014,Ohiohealth O'bleness Hospital,false,45701,ATHENS,39.311687,-82.073928,74177,CT abdomen and pelvis with contrast,2707.9,4166.0,333.12,336.45,2,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,70450,CT head without contrast,512.1,1138.0,98.91,296.86,5,,,Unknown,
+360084,Aultman Hospital,false,44710,CANTON,40.789613,-81.426572,73721,MRI knee without contrast,736.65,1637.0,225.74,677.51,5,,,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,70551,MRI brain without contrast,1426.0,2852.0,4748.0,4748.0,1,4748.0,4748.0,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,71250,CT chest without contrast,906.0,1812.0,1628.0,4748.0,3,4748.0,4748.0,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,72148,MRI lumbar spine without contrast,1426.0,2852.0,1730.0,4748.0,3,4748.0,4748.0,Unknown,
+361321,"",true,43713,BARNESVILLE,39.989862,-81.173715,74177,CT abdomen and pelvis with contrast,2223.5,4447.0,1628.0,4748.0,3,4748.0,4748.0,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,70450,CT head without contrast,1177.0,1177.0,103.65,326.21,5,,,Unknown,
+360076,Atrium Medical Center,false,45005,MIDDLETOWN,39.528928,-84.289524,73721,MRI knee without contrast,1862.0,1862.0,236.56,721.91,5,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,72148,MRI lumbar spine without contrast,965.2,2413.0,236.56,822.19,7,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,71250,CT chest without contrast,708.0,1770.0,103.65,360.25,7,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,70551,MRI brain without contrast,1033.2,2583.0,236.56,822.19,7,,,Unknown,
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,70450,CT head without contrast,302.99,403.99,101.88,313.33,8,,,Unknown,SL008
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,70450,CT head without contrast,800.47,1600.94,101.1,184.92,3,,,Unknown,
+360175,Clinton Memorial Hospital,false,45177,WILMINGTON,39.46069,-83.844305,73721,MRI knee without contrast,1707.35,3414.69,230.74,398.81,3,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,70551,MRI brain without contrast,494.7,659.6,232.52,683.38,8,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,71250,CT chest without contrast,302.99,403.99,101.88,299.43,8,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,72148,MRI lumbar spine without contrast,494.7,659.6,232.52,683.38,8,,,Unknown,
+360179,Bethesda Hospital Inc.,false,45242,CINCINNATI,39.242803,-84.352996,74177,CT abdomen and pelvis with contrast,605.98,807.98,339.98,999.2,8,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,73721,MRI knee without contrast,1844.25,2459.0,561.06,561.06,1,,,Unknown,
+361335,Wayne Hospital Company,false,45331,GREENVILLE,40.0986,-84.650595,70450,CT head without contrast,1049.25,1399.0,233.19,233.19,1,,,Unknown,
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,70450,CT head without contrast,637.2,1593.0,102.46,358.93,7,,,Unknown,SL005
+360026,Greene Memorial Hospital Inc,false,45431,XENIA,39.763835,-84.084204,73721,MRI knee without contrast,1013.2,2533.0,233.84,819.19,7,,,Unknown,SL005
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,71250,CT chest without contrast,1727.6,2468.0,60.78,2319.92,12,3.27,192.92,Unknown,
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,72148,MRI lumbar spine without contrast,3828.3,5469.0,84.11,5140.86,12,7.43,285.0,Unknown,
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,74177,CT abdomen and pelvis with contrast,777.7,1111.0,103.05,1044.34,12,11.01,445.38,Unknown,
+360125,Ashtabula County Medical Center,false,44004,ASHTABULA,41.855938,-80.790536,70551,MRI brain without contrast,3224.9,4607.0,83.34,4330.58,12,7.43,290.94,Unknown,
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,73721,MRI knee without contrast,1309.1,2014.0,230.07,239.27,3,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,70450,CT head without contrast,900.0,1125.0,96.93,1046.25,19,,,Unknown,
+361337,Pomerene Hospital,false,44654,MILLERSBURG,40.537937,-81.870867,73721,MRI knee without contrast,2058.4,2573.0,186.94,2392.89,19,,,Unknown,
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,71250,CT chest without contrast,2857.5,2857.5,90.76,439.33,8,,,Unknown,SL004
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,72148,MRI lumbar spine without contrast,2344.5,2344.5,207.13,1002.67,8,,,Unknown,SL004
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,70551,MRI brain without contrast,3267.25,3267.25,207.13,1002.67,8,,,Unknown,SL004
+360020,Summa Health System,false,44304,AKRON,41.085888,-81.509129,74177,CT abdomen and pelvis with contrast,4369.5,4369.5,302.86,1466.06,8,,,Unknown,SL004
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,70551,MRI brain without contrast,2012.8,2516.0,230.07,368.1,5,,,Unknown,
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,72148,MRI lumbar spine without contrast,1789.6,2237.0,230.07,368.1,5,,,Unknown,
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,74177,CT abdomen and pelvis with contrast,1883.2,2354.0,336.39,538.23,5,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,71250,CT chest without contrast,1485.6,1857.0,103.01,334.78,3,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,70551,MRI brain without contrast,1897.6,2372.0,235.1,764.06,3,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,72148,MRI lumbar spine without contrast,2086.4,2608.0,235.1,764.06,3,,,Unknown,
+360197,Mary Rutan Hospital,false,43311,BELLEFONTAINE,40.36441,-83.758426,74177,CT abdomen and pelvis with contrast,3092.8,3866.0,343.75,1117.18,3,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,70450,CT head without contrast,636.5,1273.0,104.01,312.03,4,,,Unknown,
+360121,"",true,43506,BRYAN,41.466211,-84.557133,73721,MRI knee without contrast,1511.5,3023.0,237.38,712.14,4,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,73721,MRI knee without contrast,,,211.9,214.02,2,,,Unknown,
+360245,Glenbeigh,false,44084,ROCK CREEK,41.671378,-80.899101,70450,CT head without contrast,,,95.07,96.02,2,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,70551,MRI brain without contrast,2565.0,2565.0,225.74,225.74,1,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,71250,CT chest without contrast,1412.0,1412.0,98.91,98.91,1,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,72148,MRI lumbar spine without contrast,3067.0,3067.0,225.74,225.74,1,,,Unknown,
+360025,Firelands Regional Medical Center,false,44870,SANDUSKY,41.41952,-82.713212,74177,CT abdomen and pelvis with contrast,3052.0,3052.0,330.06,330.06,1,,,Unknown,
+360132,Fort Hamilton Hospital,false,45013,HAMILTON,39.413632,-84.652679,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,345.89,1202.17,7,,,Unknown,
+360134,"The Good Samaritan Hospital of Cincinnati, OH",false,45219,CINCINNATI,39.126624,-84.512017,73721,MRI knee without contrast,494.7,659.6,232.52,715.11,8,,,Unknown,SL008
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,71250,CT chest without contrast,996.45,1533.0,100.81,100.81,1,,,Unknown,SL002
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,70551,MRI brain without contrast,1274.65,1961.0,230.07,230.07,1,,,Unknown,SL002
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,72148,MRI lumbar spine without contrast,1309.1,2014.0,230.07,230.07,1,,,Unknown,SL002
+360348,Dublin Methodist Hospital,false,43016,DUBLIN,40.097462,-83.150204,74177,CT abdomen and pelvis with contrast,1931.8,2972.0,336.39,336.39,1,,,Unknown,SL002
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,343.75,1184.36,7,,,Unknown,SL014
+360210,Grady Memorial Hospital,false,43015,DELAWARE,40.297783,-83.060168,70450,CT head without contrast,769.6,1184.0,100.81,104.84,3,,,Unknown,
+360189,Madison Health,false,43140,LONDON,39.880108,-83.428512,71250,CT chest without contrast,1424.0,1780.0,100.81,161.29,5,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,70450,CT head without contrast,1107.4,1582.0,101.96,152.94,3,,,Unknown,
+363306,"",true,45404,DAYTON,39.788496,-84.152717,73721,MRI knee without contrast,1983.1,2833.0,232.69,349.04,3,,,Unknown,
+360086,COMMUNITY MERCY HEALTH PARTNERS,false,45504,SPRINGFIELD,39.94697,-83.864897,71250,CT chest without contrast,1422.0,2370.0,,,0,,,Unknown,
+360086,COMMUNITY MERCY HEALTH PARTNERS,false,45504,SPRINGFIELD,39.94697,-83.864897,74177,CT abdomen and pelvis with contrast,1944.6,3241.0,,,0,,,Unknown,
+360374,MERCY HEALTH KINGS MILLS HOSPITAL LLC,false,45040,MASON,39.350783,-84.313198,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360374,MERCY HEALTH KINGS MILLS HOSPITAL LLC,false,45040,MASON,39.350783,-84.313198,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,74177,CT abdomen and pelvis with contrast,1741.2,2902.0,,,0,,,Unknown,
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,71250,CT chest without contrast,747.6,1246.0,,,0,,,Unknown,
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,72148,MRI lumbar spine without contrast,1108.2,1847.0,,,0,,,Unknown,
+361306,MERCY HEALTH ALLEN HOSPITAL LLC,false,44074,OBERLIN,41.289038,-82.235963,70551,MRI brain without contrast,1735.8,2893.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,72148,MRI lumbar spine without contrast,1093.8,1823.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,74177,CT abdomen and pelvis with contrast,2181.6,3636.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,70551,MRI brain without contrast,1374.6,2291.0,,,0,,,Unknown,
+361312,COMMUNITY MERCY HEALTH PARTNERS,false,43078,URBANA,40.117098,-83.78624,71250,CT chest without contrast,970.2,1617.0,,,0,,,Unknown,
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,71250,CT chest without contrast,477.1,734.0,84.07,1294.12,37,,,Unknown,
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,280.55,2464.0,37,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,71250,CT chest without contrast,1092.0,1092.0,95.3414,1059.24,34,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,70551,MRI brain without contrast,1611.5,1611.5,212.5,1563.16,34,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,72148,MRI lumbar spine without contrast,1611.5,1611.5,212.5,1563.16,34,,,Unknown,
+360029,Wood County Hospital Association,false,43402,BOWLING GREEN,41.4097,-83.653452,74177,CT abdomen and pelvis with contrast,1092.0,1092.0,333.508,1059.24,34,,,Unknown,
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,71250,CT chest without contrast,2375.1,2639.0,103.65,168.95,6,,,Unknown,
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,71250,CT chest without contrast,571.35,879.0,57.25,879.0,26,116.56,879.0,Unknown,SL010
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,74177,CT abdomen and pelvis with contrast,1617.2,2488.0,191.05,2488.0,26,262.69,2488.0,Unknown,SL010
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,70551,MRI brain without contrast,941.85,1449.0,130.66,1449.0,26,171.79,1449.0,Unknown,SL010
+360068,The Toledo Hospital,false,43606,TOLEDO,41.673136,-83.611414,72148,MRI lumbar spine without contrast,941.85,1449.0,130.66,1449.0,26,167.31,1449.0,Unknown,SL010
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,70450,CT head without contrast,477.1,734.0,0.87,1294.12,44,,,Unknown,SL012
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,70450,CT head without contrast,250.0,250.0,96.75,706.06,51,207.33,502.52,Unknown,SL013
+360095,Blanchard Valley Regional Health Center,false,45840,FINDLAY,41.025894,-83.648894,73721,MRI knee without contrast,641.0,641.0,158.51,608.31,42,,,Unknown,SL013
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,73721,MRI knee without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,71250,CT chest without contrast,477.1,734.0,106.34,734.0,30,,,Unknown,
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,356.43,2464.0,30,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,73721,MRI knee without contrast,1511.5,3023.0,,,0,,,Unknown,
+361327,"",true,43543,MONTPELIER,41.606489,-84.645346,70450,CT head without contrast,636.5,1273.0,,,0,,,Unknown,
+361330,"",true,43138,LOGAN,39.51834,-82.414097,71250,CT chest without contrast,1400.0,1400.0,434.0,2021.0,32,,,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,70450,CT head without contrast,1193.5,2387.0,98.26,2435.52,14,52.5,1522.2,Unknown,
+360008,"",true,45662,PORTSMOUTH,38.792267,-82.911915,73721,MRI knee without contrast,1826.0,3652.0,223.34,3745.92,14,87.2,2341.2,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,74177,CT abdomen and pelvis with contrast,450.9,501.0,,,0,,,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,71250,CT chest without contrast,134.1,149.0,,,0,,,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,70551,MRI brain without contrast,282.6,314.0,,,0,,,Unknown,
+360009,Lima Memorial Health System,false,45804,LIMA,40.709623,-84.061153,72148,MRI lumbar spine without contrast,282.6,314.0,,,0,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,70551,MRI brain without contrast,1084.2,1668.0,1.01,4036081.0,32,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,72148,MRI lumbar spine without contrast,1084.2,1668.0,1.01,4036081.0,32,,,Unknown,
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,70450,CT head without contrast,477.1,734.0,0.87,1294.12,40,,,Unknown,SL012
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,70450,CT head without contrast,1227.2,1888.0,98.91,102.86,3,,,Unknown,
+360203,Southeastern Ohio Regional Medical Center,false,43725,CAMBRIDGE,40.039607,-81.601202,73721,MRI knee without contrast,2273.7,3498.0,225.74,234.77,3,,,Unknown,
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,70450,CT head without contrast,637.2,1593.0,103.01,354.98,7,,,Unknown,SL011
+360239,Kettering Medical Center,false,45342,MIAMISBURG,39.629338,-84.275969,73721,MRI knee without contrast,1013.2,2533.0,235.1,810.16,7,,,Unknown,SL011
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,70551,MRI brain without contrast,,1782.0,0.62,2956.0,23,,,Unknown,
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,71250,CT chest without contrast,708.0,1770.0,103.01,354.91,7,,,Unknown,SL014
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,70551,MRI brain without contrast,1033.2,2583.0,235.1,810.01,7,,,Unknown,SL014
+360360,Beavercreek Medical Center,false,45431,BEAVERCREEK,39.763835,-84.084204,72148,MRI lumbar spine without contrast,965.2,2413.0,235.1,810.01,7,,,Unknown,SL014
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,71250,CT chest without contrast,477.1,734.0,0.87,1294.12,34,,,Unknown,SL012
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,74177,CT abdomen and pelvis with contrast,1174.0,1174.0,324.92,3373.45,52,219.31,3373.09,Unknown,SL013
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,70551,MRI brain without contrast,641.0,641.0,209.1,1360.99,43,,,Unknown,SL013
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,71250,CT chest without contrast,250.0,250.0,93.81,350.51,43,215.9,215.9,Unknown,SL013
+361322,Blanchard Valley Regional Health Center,false,45817,BLUFFTON,40.878759,-83.883974,72148,MRI lumbar spine without contrast,641.0,641.0,209.1,601.9,45,300.3,329.38,Unknown,SL013
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,70551,MRI brain without contrast,2216.8,2771.0,157.38,2549.32,34,,,Unknown,
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,72148,MRI lumbar spine without contrast,2216.8,2771.0,157.38,2549.32,34,,,Unknown,
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,71250,CT chest without contrast,1139.2,1424.0,113.15,1310.08,34,,,Unknown,
+361332,Highland District Hospital,false,45133,HILLSBORO,39.159797,-83.571065,74177,CT abdomen and pelvis with contrast,2707.2,3384.0,242.56,3113.28,34,,,Unknown,
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,70450,CT head without contrast,835.25,1285.0,100.81,100.81,1,,,Unknown,SL002
+360017,Grant Medical Center,false,43202,COLUMBUS,40.019403,-83.014471,73721,MRI knee without contrast,1223.95,1883.0,230.07,230.07,1,,,Unknown,SL002
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,71250,CT chest without contrast,477.1,734.0,0.87,734.0,36,,,Unknown,SL006
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,71250,CT chest without contrast,1160.61,1160.61,30.56,1174.7,64,,,Unknown,
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,74177,CT abdomen and pelvis with contrast,1875.13,1875.13,83.95,1875.13,64,,,Unknown,
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,70551,MRI brain without contrast,2470.4,2470.4,65.93,2470.4,64,,,Unknown,
+360036,CITY OF WOOSTER,false,44691,WOOSTER,40.806029,-81.977588,72148,MRI lumbar spine without contrast,3321.26,3321.26,65.93,3321.26,64,,,Unknown,
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,73721,MRI knee without contrast,350.0,5040.0,226.16,11947.23,22,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,73721,MRI knee without contrast,2096.84,3225.9,313.93,3129.12,33,,,Unknown,
+361313,Morrow County Hospital,false,43338,MOUNT GILEAD,40.564167,-82.760333,70450,CT head without contrast,1316.71,2025.7,483.82,1964.93,33,,,Unknown,
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,70551,MRI brain without contrast,3036.6,3374.0,236.56,385.59,6,,,Unknown,
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,72148,MRI lumbar spine without contrast,3294.9,3661.0,236.56,385.59,6,,,Unknown,
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,73721,MRI knee without contrast,,2957.0,0.62,2873.32,21,,,Unknown,
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,70450,CT head without contrast,637.2,1593.0,103.01,354.91,7,,,Unknown,SL014
+360058,Grand Lake Health System,false,45828,COLDWATER,40.483642,-84.682889,74177,CT abdomen and pelvis with contrast,3305.7,3673.0,345.89,563.8,6,,,Unknown,
+361330,"",true,43138,LOGAN,39.51834,-82.414097,74177,CT abdomen and pelvis with contrast,3237.82,3237.82,1003.7242,3173.0636,32,,,Unknown,
+361330,"",true,43138,LOGAN,39.51834,-82.414097,70551,MRI brain without contrast,2000.0,2000.0,620.0,1960.0,31,,,Unknown,
+361330,"",true,43138,LOGAN,39.51834,-82.414097,72148,MRI lumbar spine without contrast,2000.0,2000.0,620.0,1960.0,31,,,Unknown,
+360133,Dayton Osteopathic Hospital,false,45405,DAYTON,39.79216,-84.216028,73721,MRI knee without contrast,1013.2,2533.0,235.1,810.01,7,,,Unknown,SL014
+360351,CRYSTAL CLINIC ORTHOPAEDIC CENTER LLC,false,44333,AKRON,41.164952,-81.633826,70450,CT head without contrast,2649.75,3533.0,99.09,8374.92,22,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,70450,CT head without contrast,110.95,317.0,53.84,393.34,13,,,Unknown,
+360059,Metrohealth System,false,44109,CLEVELAND,41.444141,-81.698357,73721,MRI knee without contrast,136.5,390.0,122.89,897.72,13,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,70551,MRI brain without contrast,224.0,4524.79,224.62,353.03,26,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,72148,MRI lumbar spine without contrast,224.0,5803.81,224.62,353.03,26,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,74177,CT abdomen and pelvis with contrast,328.0,5307.84,328.44,544.09,26,,,Unknown,
+360109,Coshocton Regional Medical Center,false,43812,COSHOCTON,40.263839,-81.880915,71250,CT chest without contrast,98.0,1900.0,98.42,253.82,26,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,70551,MRI brain without contrast,1920.0,3200.0,158.02,564.34,5,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,71250,CT chest without contrast,1529.96,2549.94,69.24,247.27,5,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,72148,MRI lumbar spine without contrast,1920.0,3200.0,158.02,564.34,5,,,Unknown,
+360147,Marietta Memorial Hospital,false,45750,MARIETTA,39.429838,-81.432131,74177,CT abdomen and pelvis with contrast,1529.96,2549.94,231.04,825.15,5,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,70450,CT head without contrast,794.3,1222.0,100.81,176.59,1,,,Unknown,
+360170,Berger Hospital,false,43113,CIRCLEVILLE,39.58659,-82.962245,73721,MRI knee without contrast,1376.7,2118.0,230.07,383.84,1,,,Unknown,
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,71250,CT chest without contrast,708.0,1770.0,102.46,358.93,7,,,Unknown,SL005
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,70551,MRI brain without contrast,1033.2,2583.0,233.84,819.19,7,,,Unknown,SL005
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,341.91,1197.78,7,,,Unknown,SL005
+360368,Kettering Medical Center,false,45373,TROY,40.033003,-84.195649,72148,MRI lumbar spine without contrast,965.2,2413.0,233.84,819.19,7,,,Unknown,SL005
+360001,MERCY HEALTH ANDERSON HOSPITAL LLC,false,45255,CINCINNATI,39.059554,-84.328333,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,71250,CT chest without contrast,614.9,946.0,,,0,,,Unknown,
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,72148,MRI lumbar spine without contrast,1077.6,1796.0,,,0,,,Unknown,SL016
+360270,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,71250,CT chest without contrast,937.2,1562.0,,,0,,,Unknown,SL016
+360375,Mount Carmel Dublin,false,43016,DUBLIN,40.097462,-83.150204,71250,CT chest without contrast,1018.55,1567.0,88.62,1567.0,123,,,Unknown,SL015
+360236,MERCY HEALTH CLERMONT HOSPITAL LLC,false,45103,BATAVIA,39.091617,-84.143715,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,70450,CT head without contrast,632.4,1054.0,,,0,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,71250,CT chest without contrast,1058.65,2117.3,101.8,1905.57,9,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,70551,MRI brain without contrast,1922.23,3844.47,232.33,3460.02,9,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,72148,MRI lumbar spine without contrast,1922.23,3844.47,232.33,3460.02,9,,,Unknown,
+360013,"",true,45365,SIDNEY,40.28258,-84.155811,74177,CT abdomen and pelvis with contrast,2498.73,4997.47,339.71,4497.72,9,,,Unknown,
+360071,Van Wert Hospital,false,45891,VAN WERT,40.873982,-84.577107,72148,MRI lumbar spine without contrast,1467.7,2258.0,,,0,,,Unknown,
+361310,MERCY HEALTH WILLARD HOSPITAL LLC,false,44890,WILLARD,41.085172,-82.710562,73721,MRI knee without contrast,1011.0,1685.0,,,0,,,Unknown,
+360263,InstituteforOrthopaedicSurgery,false,45804,LIMA,40.709623,-84.061153,70450,CT head without contrast,,2213.36,188.97,1549.35,3,,,Unknown,
+360263,InstituteforOrthopaedicSurgery,false,45804,LIMA,40.709623,-84.061153,73721,MRI knee without contrast,,1453.44,429.53,1017.41,3,,,Unknown,
+360016,JEWISH HOSPITAL LLC,false,45236,CINCINNATI,39.209678,-84.397222,74177,CT abdomen and pelvis with contrast,1674.6,2791.0,,,0,,,Unknown,SL001
+360016,JEWISH HOSPITAL LLC,false,45236,CINCINNATI,39.209678,-84.397222,71250,CT chest without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,72148,MRI lumbar spine without contrast,1077.6,1796.0,,,0,,,Unknown,SL016
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,71250,CT chest without contrast,937.2,1562.0,,,0,,,Unknown,SL016
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,74177,CT abdomen and pelvis with contrast,2014.8,3358.0,,,0,,,Unknown,SL016
+361328,MERCY HEALTH DEFIANCE HOSPITAL LLC,false,43512,DEFIANCE,41.303378,-84.358279,70551,MRI brain without contrast,1764.0,2940.0,,,0,,,Unknown,SL016
+360161,MERCY HEALTH YOUNGSTOWN LLC,false,44484,WARREN,41.235541,-80.74975,74177,CT abdomen and pelvis with contrast,1941.0,3235.0,,,0,,,Unknown,SL009
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,70450,CT head without contrast,900.0,1200.0,1200.0,1200.0,1,,,Unknown,
+361309,"",true,43545,NAPOLEON,41.392249,-84.128288,73721,MRI knee without contrast,350.25,467.0,467.0,3250.0,1,,,Unknown,
+360056,MERCY HEALTH FAIRFIELD HOSPITAL LLC,false,45014,FAIRFIELD,39.325714,-84.55239,70450,CT head without contrast,665.4,1109.0,,,0,,,Unknown,SL001
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,70551,MRI brain without contrast,2220.0,2220.0,233.84,721.95,5,,,Unknown,
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,71250,CT chest without contrast,1274.0,1274.0,102.46,326.21,5,,,Unknown,
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,72148,MRI lumbar spine without contrast,2048.0,2048.0,233.84,721.95,5,,,Unknown,
+360174,Upper Valley Medical Center,false,45373,TROY,40.033003,-84.195649,74177,CT abdomen and pelvis with contrast,3941.0,3941.0,341.91,1055.61,5,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,73721,MRI knee without contrast,3282.23,6564.46,225.74,1498.0,18,,,Unknown,
+360352,"Surgery Center at Southwoods, LLC",false,44512,YOUNGSTOWN,41.025937,-80.666955,70450,CT head without contrast,1055.685,2111.37,98.91,930.0,18,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,74177,CT abdomen and pelvis with contrast,1748.34,4370.85,412.58,3933.77,9,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,72148,MRI lumbar spine without contrast,1140.29,2850.72,282.17,2565.65,9,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,71250,CT chest without contrast,800.66,2001.65,123.64,1801.49,9,,,Unknown,
+360361,Portsmouth Hospital Corporation,false,45662,PORTSMOUTH,38.792267,-82.911915,70551,MRI brain without contrast,1360.68,3401.7,282.17,3061.53,9,,,Unknown,
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,74177,CT abdomen and pelvis with contrast,1604.4,4011.0,343.75,1184.58,7,,,Unknown,SL011
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,72148,MRI lumbar spine without contrast,965.2,2413.0,235.1,810.16,7,,,Unknown,SL011
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,71250,CT chest without contrast,708.0,1770.0,103.01,354.98,7,,,Unknown,SL011
+360079,Kettering Medical Center,false,45429,KETTERING,39.683588,-84.162737,70551,MRI brain without contrast,1033.2,2583.0,235.1,810.16,7,,,Unknown,SL011
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,72148,MRI lumbar spine without contrast,224.0,3946.7,81.21,360.34,25,,,Unknown,
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,70551,MRI brain without contrast,224.0,1508.88,84.41,360.34,25,,,Unknown,
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,74177,CT abdomen and pelvis with contrast,328.0,6059.0,144.46,555.35,25,,,Unknown,
+360096,East Liverpool City Hospital,false,43920,EAST LIVERPOOL,40.677227,-80.594299,71250,CT chest without contrast,98.0,2685.43,54.63,259.07,25,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,74177,CT abdomen and pelvis with contrast,1539.6,2566.0,345.89,1010.98,9,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,71250,CT chest without contrast,693.0,1155.0,103.65,302.96,9,,,Unknown,
+360019,Summa Health System,false,44213,,,,70450,CT head without contrast,1945.75,1945.75,90.76,439.33,8,,,Unknown,SL004
+360019,Summa Health System,false,44213,,,,73721,MRI knee without contrast,2483.0,2483.0,207.13,1002.67,8,,,Unknown,SL004
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,70450,CT head without contrast,1396.0,1396.0,103.65,326.21,5,,,Unknown,
+360051,Miami Valley Hospital,false,45409,DAYTON,39.721305,-84.18797,73721,MRI knee without contrast,2048.0,2048.0,236.56,707.57,5,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,73721,MRI knee without contrast,937.2,1562.0,232.52,660.36,8,,,Unknown,
+360089,MERCY HEALTH TIFFIN HOSPITAL LLC,false,44883,TIFFIN,41.124173,-83.173639,71250,CT chest without contrast,679.8,1133.0,,,0,,,Unknown,
+360089,MERCY HEALTH TIFFIN HOSPITAL LLC,false,44883,TIFFIN,41.124173,-83.173639,74177,CT abdomen and pelvis with contrast,3528.6,5881.0,,,0,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,70450,CT head without contrast,1154.75,1154.75,101.13,101.13,1,,,Unknown,
+360185,Salem Regional Medical Center,false,44460,SALEM,40.902815,-80.868743,73721,MRI knee without contrast,1883.0,1883.0,230.8,230.8,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,71250,CT chest without contrast,678.6,1508.0,197.82,357.07,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,70551,MRI brain without contrast,1405.8,3124.0,451.47,814.94,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,72148,MRI lumbar spine without contrast,1682.55,3739.0,451.47,814.94,1,,,Unknown,
+361323,Aultman Orrville Hospital,false,44667,ORRVILLE,40.833793,-81.765184,74177,CT abdomen and pelvis with contrast,1413.9,3142.0,660.12,1191.56,1,,,Unknown,
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,70450,CT head without contrast,835.25,1285.0,100.81,100.81,1,,,Unknown,SL002
+360006,Riverside Methodist Hospital,false,43214,COLUMBUS,40.051734,-83.016269,73721,MRI knee without contrast,1223.95,1883.0,230.07,230.07,1,,,Unknown,SL002
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,71250,CT chest without contrast,2009.15,3091.0,99.82,103.82,3,,,Unknown,
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,70551,MRI brain without contrast,2702.05,4157.0,227.83,236.94,3,,,Unknown,
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,72148,MRI lumbar spine without contrast,2761.85,4249.0,227.83,236.94,3,,,Unknown,
+360011,Marion General Hospital,false,43302,MARION,40.599237,-83.130298,74177,CT abdomen and pelvis with contrast,3158.35,4859.0,333.12,346.44,3,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,70551,MRI brain without contrast,,,225.74,270.88,4,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,71250,CT chest without contrast,,,98.91,118.69,4,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,72148,MRI lumbar spine without contrast,,,225.74,270.88,4,,,Unknown,
+360107,"",true,44811,BELLEVUE,41.246317,-82.846599,74177,CT abdomen and pelvis with contrast,,,330.06,396.07,4,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,72148,MRI lumbar spine without contrast,1116.6,1861.0,236.56,691.43,9,,,Unknown,
+360003,"University of Cincinnati Medical Center, LLC",false,45219,CINCINNATI,39.126624,-84.512017,70551,MRI brain without contrast,1039.2,1732.0,236.56,691.43,9,,,Unknown,
+360354,"West Chester Hospital, LLC",false,45069,WEST CHESTER,39.343522,-84.412333,70450,CT head without contrast,682.8,1138.0,101.88,289.34,8,,,Unknown,
+361302,TWIN CITY HOSPITAL CORPORATION,false,44621,DENNISON,40.432127,-81.288171,70551,MRI brain without contrast,1564.39,3154.0,40.33,2743.98,16,,,Unknown,
+361302,TWIN CITY HOSPITAL CORPORATION,false,44621,DENNISON,40.432127,-81.288171,71250,CT chest without contrast,895.28,1805.0,17.75,1570.35,16,,,Unknown,
+361302,TWIN CITY HOSPITAL CORPORATION,false,44621,DENNISON,40.432127,-81.288171,72148,MRI lumbar spine without contrast,2032.12,4097.0,40.33,3564.39,16,,,Unknown,
+361302,TWIN CITY HOSPITAL CORPORATION,false,44621,DENNISON,40.432127,-81.288171,74177,CT abdomen and pelvis with contrast,1595.14,3216.0,59.58,2797.92,16,,,Unknown,
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,70551,MRI brain without contrast,1084.2,1668.0,0.87,1668.0,44,,,Unknown,SL006
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,1668.0,44,,,Unknown,SL006
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,70450,CT head without contrast,477.1,734.0,0.87,1294.12,41,,,Unknown,SL012
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,73721,MRI knee without contrast,1084.2,1668.0,0.87,1668.0,39,,,Unknown,SL006
+360143,MARYMOUNT HOSPITAL INC,false,44125,GARFIELD HEIGHTS,41.405777,-81.609715,70450,CT head without contrast,477.1,734.0,0.87,1294.12,44,,,Unknown,SL012
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,73721,MRI knee without contrast,3012.75,4635.0,130.66,4171.5,19,185.98,4171.5,Unknown,
+360156,Memorial Hospital,false,43420,FREMONT,41.357927,-83.110237,70450,CT head without contrast,1250.6,1924.0,57.25,1731.6,19,97.38,1731.6,Unknown,
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,73721,MRI knee without contrast,1084.2,1668.0,0.87,1668.0,40,,,Unknown,SL006
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,71250,CT chest without contrast,,2072.0,0.62,2180.0,23,,,Unknown,
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,36,,,Unknown,SL006
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,71250,CT chest without contrast,477.1,734.0,0.87,734.0,44,,,Unknown,SL006
+360077,Fairview Hospital,false,44111,CLEVELAND,41.457782,-81.789892,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,44,,,Unknown,SL006
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,70450,CT head without contrast,1287.75,1717.0,42.39,1717.0,28,,,Unknown,
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,70551,MRI brain without contrast,1084.2,1668.0,241.72,1668.0,30,,,Unknown,
+361303,LODI COMMUNITY HOSPITAL,false,44254,LODI,41.045359,-82.01245,72148,MRI lumbar spine without contrast,1084.2,1668.0,241.72,1668.0,30,,,Unknown,
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,70551,MRI brain without contrast,1084.2,1668.0,191.88,2005.89,37,,,Unknown,
+360010,THE UNION HOSPITAL ASSOCIATION,false,44622,DOVER,40.551338,-81.483514,72148,MRI lumbar spine without contrast,1084.2,1668.0,191.88,2005.89,37,,,Unknown,
+360087,LUTHERAN HOSPITAL,false,44113,CLEVELAND,41.483241,-81.697166,73721,MRI knee without contrast,1084.2,1668.0,0.87,2005.89,44,,,Unknown,SL012
+360155,Southwest General Health Center,false,44130,MIDDLEBURG HEIGHTS,41.376642,-81.787317,73721,MRI knee without contrast,2499.75,3333.0,96.36,3333.0,28,,,Unknown,
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,70450,CT head without contrast,1426.1,2194.0,57.25,1750.81,20,95.82,1750.81,Unknown,
+361318,Fostoria Hospital Association,false,44830,FOSTORIA,41.167936,-83.398998,73721,MRI knee without contrast,2193.75,3375.0,130.66,2693.25,20,183.01,2693.25,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,73721,MRI knee without contrast,2605.5,3474.0,348.12,13148.76,43,,,Unknown,
+360230,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,MAYFIELD HTS,41.49888,-81.470711,70450,CT head without contrast,477.1,734.0,0.87,734.0,40,,,Unknown,SL006
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,74177,CT abdomen and pelvis with contrast,,2650.0,0.62,2464.5,23,,,Unknown,
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,0.87,2464.0,34,,,Unknown,SL012
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,70450,CT head without contrast,884.0,1360.0,,,0,,,Unknown,
+361315,Hardin Memorial Hospital,false,43326,KENTON,40.64144,-83.614776,73721,MRI knee without contrast,1810.25,2785.0,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,70450,CT head without contrast,875.97,1251.38,,,0,,,Unknown,
+361333,Fulton County Health Center,false,43567,WAUSEON,41.580345,-84.161066,73721,MRI knee without contrast,1842.78,2632.54,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,70551,MRI brain without contrast,1242.15,1911.0,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,72148,MRI lumbar spine without contrast,1232.4,1896.0,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,71250,CT chest without contrast,763.1,1174.0,,,0,,,Unknown,
+362015,"",true,44113,PARMA,41.483241,-81.697166,74177,CT abdomen and pelvis with contrast,3406.0,5240.0,,,0,,,Unknown,
+362033,Kindred Hospital Dayton,false,45417,DAYTON,39.733066,-84.283296,72148,MRI lumbar spine without contrast,2490.89,2490.89,,,0,,,Unknown,
+362033,Kindred Hospital Dayton,false,45417,DAYTON,39.733066,-84.283296,70551,MRI brain without contrast,2524.66,2524.66,,,0,,,Unknown,
+362033,Kindred Hospital Dayton,false,45417,DAYTON,39.733066,-84.283296,71250,CT chest without contrast,1645.13,1645.13,,,0,,,Unknown,
+362033,Kindred Hospital Dayton,false,45417,DAYTON,39.733066,-84.283296,74177,CT abdomen and pelvis with contrast,3436.65,3436.65,,,0,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,71250,CT chest without contrast,477.1,734.0,1.01,4036081.0,32,,,Unknown,
+360070,Cleveland Clinic Mercy Hospital,false,44708,CANTON,40.816563,-81.435458,74177,CT abdomen and pelvis with contrast,1601.6,2464.0,1.01,4036081.0,32,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,74177,CT abdomen and pelvis with contrast,7364.5,13390.0,463.36,4820.4,19,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,71250,CT chest without contrast,3028.85,5507.0,138.85,1982.52,19,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,70551,MRI brain without contrast,5152.95,9369.0,316.9,3372.84,19,,,Unknown,
+360150,Western Reserve LLC,false,44223,CUYAHOGA FALLS,41.169665,-81.531057,72148,MRI lumbar spine without contrast,4320.25,7855.0,316.9,2827.8,19,,,Unknown,
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,73721,MRI knee without contrast,941.85,1449.0,130.66,1449.0,21,177.31,853.99,Unknown,SL010
+360259,Bay Park Community Hospital,false,43616,OREGON,41.658372,-83.408909,70450,CT head without contrast,571.35,879.0,57.25,879.0,21,93.5,448.58,Unknown,SL010
+360091,MEDINA HOSPITAL,false,44256,MEDINA,41.141354,-81.859522,70450,CT head without contrast,477.1,734.0,0.87,734.0,39,,,Unknown,SL006
+360144,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44124,WARRENSVILLE HEIGHTS,41.49888,-81.470711,73721,MRI knee without contrast,1084.2,1668.0,0.87,2005.89,40,,,Unknown,SL012
+360242,ARTHUR G JAMES CANCER HOSPITAL AND RESEARCH INSTITUTE,false,43210,COLUMBUS,40.006425,-83.02212,72148,MRI lumbar spine without contrast,,2580.0,0.62,2956.0,23,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,70450,CT head without contrast,1085.5,1670.0,,,0,,,Unknown,
+361324,Ohiohealth Shelby Hospital,false,44903,SHELBY,40.776223,-82.526824,73721,MRI knee without contrast,2267.85,3489.0,,,0,,,Unknown,
+363303,Children's Hospital Medical Center of Akron,false,44308,AKRON,41.081805,-81.517451,70450,CT head without contrast,2011.5,2682.0,536.53,3146.0,43,,,Unknown,
+360082,CLEVELAND CLINIC HEALTH SYSTEM - EAST REGION,false,44119,EUCLID,41.588256,-81.548746,73721,MRI knee without contrast,1084.2,1668.0,0.87,2005.89,41,,,Unknown,SL012
+360211,TRINITY HOSPITAL HOLDING COMPANY,false,43952,STEUBENVILLE,40.409127,-80.665297,70551,MRI brain without contrast,1872.64,3776.0,211.97,2907.52,12,,,Unknown,
+360211,TRINITY HOSPITAL HOLDING COMPANY,false,43952,STEUBENVILLE,40.409127,-80.665297,71250,CT chest without contrast,790.52,1594.0,98.26,1292.0,12,,,Unknown,
+360211,TRINITY HOSPITAL HOLDING COMPANY,false,43952,STEUBENVILLE,40.409127,-80.665297,72148,MRI lumbar spine without contrast,1981.25,3995.0,211.97,3076.15,12,,,Unknown,
+360211,TRINITY HOSPITAL HOLDING COMPANY,false,43952,STEUBENVILLE,40.409127,-80.665297,74177,CT abdomen and pelvis with contrast,1676.25,3380.0,329.98,2602.6,12,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,70450,CT head without contrast,1170.4,1463.0,,,0,,,Unknown,
+360040,Knox Community Hospital,false,43050,MOUNT VERNON,40.373976,-82.492721,73721,MRI knee without contrast,2409.69,3012.11,,,0,,,Unknown,
+360085,Ohio State University Hospitals,false,43210,COLUMBUS,40.006425,-83.02212,70450,CT head without contrast,,2064.0,0.62,2005.59,21,,,Unknown,
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,70450,CT head without contrast,1035.0,1150.0,160.22,1127.0,22,,,Unknown,
+363047,"Cincinnati Rehabilitation Hospital, LLC",false,45242,BLUE ASH,39.242803,-84.352996,74177,CT abdomen and pelvis with contrast,5214.24,5214.24,,,0,,,Unknown,
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,70450,CT head without contrast,1916.4,3194.0,106.81,2459.38,16,,,Unknown,
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,70450,CT head without contrast,477.1,734.0,95.38,82356.88,46,,,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,70450,CT head without contrast,640.5,915.0,169.28,1150.0,28,645.24,645.24,Unknown,
+361314,H.B. Magruder Memorial Hospital,false,43452,PORT CLINTON,41.506464,-82.953329,73721,MRI knee without contrast,1431.5,2045.0,418.66,2400.95,15,,,Unknown,
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,70551,MRI brain without contrast,1084.2,1668.0,0.87,1668.0,36,,,Unknown,SL006
+360027,AKRON GENERAL MEDICAL CENTER,false,44307,AKRON,41.069221,-81.546525,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,1668.0,36,,,Unknown,SL006
+360180,The Cleveland Clinic Foundation,false,44195,CLEVELAND,,,73721,MRI knee without contrast,1084.2,1668.0,212.58,1668.0,46,,,Unknown,
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,70551,MRI brain without contrast,1084.2,1668.0,0.87,2005.89,34,,,Unknown,SL012
+360364,CLEVELAND CLINIC AVON HOSPITAL,false,44011,AVON,41.4451,-82.005109,72148,MRI lumbar spine without contrast,1084.2,1668.0,0.87,2005.89,34,,,Unknown,SL012
+363305,Nationwide Children's Hospital,false,43205,COLUMBUS,39.957342,-82.962019,73721,MRI knee without contrast,2367.0,2630.0,365.66,2577.4,22,,,Unknown,
+363309,"NATIONWIDE CHILDREN'S HOSPITAL TOLEDO, LLC",false,43608,TOLEDO,41.679872,-83.528913,73721,MRI knee without contrast,3140.4,5234.0,198.93,4030.18,16,,,Unknown,
