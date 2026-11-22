@@ -15,6 +15,7 @@ import accounts
 import mobile_accounts
 import booking
 import core
+import hospital_rates
 import chat_questions
 from search_results import apply_filters
 
@@ -202,6 +203,28 @@ class DirectorySummaryView(ResourceView):
     def get(self, request):
         data = core.catalog_metadata(database(), include_locations=False)
         return Response({'listing_count': data['entry_count'], 'state_count': data['state_count'], 'spatial_api_version': 1, 'spatial_ready': data['spatial_ready'], 'account_zip_enabled': True})
+
+
+class HospitalRatesView(ResourceView):
+    """Public, read-only: hospital published rates within a radius of a ZIP for one of six exams."""
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        zip5 = request.query_params.get('zip', '')
+        cpt = request.query_params.get('cpt', '')
+        try:
+            radius = int(request.query_params.get('radius', 25))
+        except ValueError:
+            radius = 25
+        try:
+            with core.connect(database()) as db:
+                data = hospital_rates.nearby(db, zip5, cpt, radius)
+        except ValueError as error:
+            return Response({'error': str(error)}, status=400)
+        except LookupError as error:
+            return Response({'error': str(error)}, status=404)
+        return Response(data)
 
 
 class AuthenticationView(ResourceView):
