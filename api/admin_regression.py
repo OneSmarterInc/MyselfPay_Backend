@@ -2,6 +2,7 @@ from django.test import TransactionTestCase, Client, override_settings
 from django.db import connection
 from django.contrib.auth import get_user_model
 from api.models import PortalAccount, PortalMember, PortalSetting, TwilioConfiguration, SMTPConfiguration
+from api.admin_login_helper import verified_login
 from admin_settings import twilio_configuration, smtp_configuration
 import accounts
 import secrets
@@ -39,7 +40,7 @@ class AdminTests(TransactionTestCase):
         PortalMember.objects.all().delete()
         PortalSetting.objects.all().delete()
         self.admin = get_user_model().objects.create_superuser('admin-test', 'admin@example.test', 'Synthetic-admin-passphrase!')
-        self.client.force_login(self.admin)
+        verified_login(self.client, self.admin)
         salt = secrets.token_hex(16)
         PortalMember.objects.create(id='portal-test',tenant='selfpay',name='Portal User',email='portal@example.test',salt=salt,password_hash='scrypt-v1$'+accounts.password_hash('Synthetic-portal-password!',salt))
         PortalAccount.objects.create(member_id='portal-test',email='portal@example.test',phone='+15550102222',created=time.time())
@@ -109,7 +110,7 @@ class AdminTests(TransactionTestCase):
         staff=get_user_model().objects.create_user('delete-staff',password='Synthetic-staff-password!',is_staff=True)
         client=Client();client.force_login(staff)
         self.assertEqual(client.post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver').status_code,302)
-        client=Client(enforce_csrf_checks=True);client.force_login(get_user_model().objects.get(username='admin-test'))
+        client=Client(enforce_csrf_checks=True);verified_login(client, get_user_model().objects.get(username='admin-test'))
         self.assertEqual(client.post(url,{'post':'yes'},HTTP_ORIGIN='http://testserver').status_code,403)
         self.assertTrue(PortalAccount.objects.filter(pk='portal-test').exists())
 
@@ -133,7 +134,7 @@ class AdminTests(TransactionTestCase):
 
     def test_admin_requires_csrf(self):
         csrf_client=Client(enforce_csrf_checks=True)
-        csrf_client.force_login(self.admin)
+        verified_login(csrf_client, self.admin)
         response=csrf_client.post('/admin/api/twilioconfiguration/add/',{'api_key_sid':'SK'+'1'*32},HTTP_ORIGIN='http://testserver')
         self.assertEqual(response.status_code,403)
 
@@ -173,7 +174,7 @@ class AdminTests(TransactionTestCase):
         anonymous = Client()
         self.assertEqual(anonymous.get(url).status_code, 302)
         csrf_client = Client(enforce_csrf_checks=True)
-        csrf_client.force_login(self.admin)
+        verified_login(csrf_client, self.admin)
         self.assertEqual(csrf_client.post(url + '1/change/', fields, HTTP_ORIGIN='http://testserver').status_code, 403)
 
     def test_smtp_settings_validate_complete_configuration_and_retain_secret(self):
