@@ -452,6 +452,9 @@ class AdminAlertTests(unittest.TestCase):
             self.assertIn('Center prices', body)
             center_profile.submit(self.db, token, csrf, 'clinic-1', 'website', 'https://example.test/p')
             self.assertEqual(send.call_count, 4)
+        # pending_counts caches for 15 seconds; clear it so the second read sees the new submissions.
+        from django.core.cache import cache
+        cache.clear()
         self.assertEqual(admin_alerts.pending_counts(self.db), (2, 1))
 
     def test_mail_failure_does_not_block_the_center(self):
