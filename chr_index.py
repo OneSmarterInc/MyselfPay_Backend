@@ -105,6 +105,7 @@ def resolve_ohio_zip(db, query):
 
 
 def compare(query):
+    query = query.dict() if hasattr(query, 'dict') else dict(query)
     missing_zip = not str(query.get('zip', '')).strip()
     zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
     zip_basis = 'Saved center ZIP'
