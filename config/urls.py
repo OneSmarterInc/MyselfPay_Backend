@@ -1,3 +1,4 @@
+from api.chr_views import CHRIndexView
 from django.urls import path, re_path
 from django.conf import settings
 from django.views.generic import RedirectView
@@ -8,6 +9,7 @@ from api.spatial_views import SpatialBundleView
 from admin_mailer import unsubscribe_view
 
 urlpatterns = [
+    path('api/chr-index', CHRIndexView.as_view(), name='chr-index'),
     path('admin', RedirectView.as_view(url='/admin/', permanent=False)),
     path('admin/', admin_site.urls),
     path('admin-assets/<path:path>', serve, {'document_root': settings.STATIC_ROOT}),
