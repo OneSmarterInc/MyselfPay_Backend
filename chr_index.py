@@ -71,12 +71,43 @@ def build_result(rows, zip5, thresholds, origin=None):
     return {'zip': zip5, 'hospital_count': len(values), 'matches': matches,
             'thresholds': {key: float(value) if value is not None else None for key,value in thresholds.items()},
             'distance_basis': 'ZIP centroid; approximate straight-line miles' if origin is not None else None,
-            'price_basis': 'Median cash price across the database’s grouped noncontrast procedure codes.',
+            'price_basis': 'Median cash price across the databaseâ€™s grouped noncontrast procedure codes.',
             'hospitals': values}
 
 
+def resolve_ohio_zip(db, query):
+    if str(query.get('state', '')).strip().upper() not in ('OH', 'OHIO'):
+        raise ValueError('This center has no saved ZIP code. Hospital comparison is unavailable.')
+    lat, lng = query.get('latitude'), query.get('longitude')
+    if lat not in (None, '') and lng not in (None, ''):
+        try:
+            lat, lng = float(lat), float(lng)
+        except (TypeError, ValueError):
+            raise ValueError('Center coordinates are invalid.') from None
+        if not math.isfinite(lat) or not math.isfinite(lng) or abs(lat)>90 or abs(lng)>180:
+            raise ValueError('Center coordinates are invalid.')
+        row = db.execute("""SELECT zip5 FROM public.zip_centroid
+            WHERE state='OH' AND latitude IS NOT NULL AND longitude IS NOT NULL
+            ORDER BY (sin(radians(latitude-%s)/2)^2 + cos(radians(%s))*cos(radians(latitude))*sin(radians(longitude-%s)/2)^2),zip5 LIMIT 1""", (lat,lat,lng)).fetchone()
+        basis = 'Nearest Ohio ZIP to the center’s stored coordinates'
+    else:
+        city = str(query.get('city', '')).strip()[:120]
+        if not city:
+            raise ValueError('This Ohio center needs a saved city or coordinates to find a ZIP reference.')
+        row = db.execute("""SELECT zip5 FROM public.zip_centroid WHERE state='OH'
+            AND lower(city)=lower(%s) ORDER BY
+            (latitude-(SELECT avg(latitude) FROM public.zip_centroid WHERE state='OH' AND lower(city)=lower(%s)))^2+
+            (longitude-(SELECT avg(longitude) FROM public.zip_centroid WHERE state='OH' AND lower(city)=lower(%s)))^2,zip5 LIMIT 1""",(city,city,city)).fetchone()
+        basis = 'Ohio city ZIP reference; center coordinates unavailable'
+    if not row:
+        raise ValueError('No Ohio ZIP reference was found for this center’s saved location.')
+    return row['zip5'], basis
+
+
 def compare(query):
-    zip5, thresholds = parameters(query)
+    missing_zip = not str(query.get('zip', '')).strip()
+    zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
+    zip_basis = 'Saved center ZIP'
     target = os.getenv('CHR_DATABASE_URL', '')
     if not target:
         raise RuntimeError('CHR database is not configured')
@@ -85,6 +116,8 @@ def compare(query):
         raise RuntimeError('Unexpected CHR database configuration')
     with psycopg.connect(target, connect_timeout=5, row_factory=dict_row,
                          options='-c default_transaction_read_only=on -c statement_timeout=8000') as db:
+        if missing_zip:
+            zip5, zip_basis = resolve_ohio_zip(db, query)
         center = db.execute('SELECT latitude,longitude FROM public.zip_centroid WHERE zip5=%s', (zip5,)).fetchone()
         origin = (center['latitude'], center['longitude']) if center else None
         rows = []
@@ -92,4 +125,7 @@ def compare(query):
             if threshold is not None:
                 for row in db.execute(QUERY, (zip5, exam, threshold, 50)).fetchall():
                     rows.append({**row, 'exam': exam, 'distance_miles': row.get('miles')})
-    return build_result(rows, zip5, thresholds, origin)
+    result = build_result(rows, zip5, thresholds, origin)
+    result['zip_basis'] = zip_basis
+    result['zip_fallback'] = missing_zip
+    return result

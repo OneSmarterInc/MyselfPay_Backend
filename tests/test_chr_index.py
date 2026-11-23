@@ -5,6 +5,12 @@ import chr_index
 class CHRTests(unittest.TestCase):
  def row(self,ccn='1',exam='MRI',price='500',lat=39.1,lng=-84.5):
   return dict(ccn=ccn,hospital_name='Hospital '+ccn,zip5='45219',city='Cincinnati',latitude=lat,longitude=lng,exam=exam,self_pay_median=Decimal(price) if price else None,self_pay_min=Decimal(price) if price else None,self_pay_max=Decimal('900'),gross_charge=Decimal('1000'),insured_min=Decimal('200'),insured_max=Decimal('800'),codes_priced=12)
+ def test_non_ohio_cannot_use_fallback(self):
+  with self.assertRaises(ValueError):chr_index.resolve_ohio_zip(None,{'state':'KY','city':'Hebron'})
+ def test_invalid_coordinates_rejected(self):
+  with self.assertRaises(ValueError):chr_index.resolve_ohio_zip(None,{'state':'OH','latitude':'NaN','longitude':'-84'})
+ def test_fallback_requires_location(self):
+  with self.assertRaises(ValueError):chr_index.resolve_ohio_zip(None,{'state':'OH'})
  def test_zip_preserves_leading_zero(self):self.assertEqual(chr_index.parameters({'zip':'00501','mri':'400'})[0],'00501')
  def test_invalid_zip(self):
   for value in ['1234','123456','４５２１９','45219;DROP']:
