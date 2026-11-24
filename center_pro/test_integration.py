@@ -164,7 +164,7 @@ class DirectoryPricingTests(TestCase):
         rows={r['id']:r for r in response.data['results']}
         self.assertEqual(rows['higher']['comparisons'][0]['difference'],100)
         self.assertEqual(rows['different']['comparisons'],[])
-        self.assertEqual(rows['quote']['comparisons'],[])
+        self.assertNotIn('quote',rows)
         self.assertTrue(response.data['results'][0]['current'])
 
 

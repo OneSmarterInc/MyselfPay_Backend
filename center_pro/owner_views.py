@@ -189,6 +189,9 @@ class DirectoryPricesView(OwnerView):
                 for own in current_offers:
                     if offer['price'] is not None and own['price'] is not None and all(offer[k] == own[k] for k in ('exam','scope','contrast','type')):
                         row['comparisons'].append({'exam': offer['exam'], 'scope': offer['scope'], 'contrast': offer['contrast'], 'difference': round(offer['price']-own['price'],2)})
+        import re
+        currency=re.compile(r'(?:\$\s*|\bUSD\s*)[0-9]|[0-9][0-9,.]*\s*USD\b',re.I)
+        rows=[r for r in rows if any(o['price'] is not None and o['price']>0 for o in r['offers']) or any(currency.search(str(r[k])) for k in ('mri','ct','other'))]
         query = request.query_params.get('search', '').strip().casefold()[:120]
         rows = [r for r in rows if not query or query in ' '.join(str(r[k]) for k in ('name','location','mri','ct','other')).casefold()]
         rows.sort(key=lambda r: (not r['current'], r['name'].casefold(), r['id']))
