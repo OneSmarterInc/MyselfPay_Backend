@@ -176,3 +176,16 @@ class NearbyCompany(models.Model):
     class Meta:
         constraints=[models.UniqueConstraint(fields=['directory','source_row'],name='pro_company_source_row')]
         indexes=[models.Index(fields=['directory','distance_miles'],name='pro_company_distance')]
+
+
+class PreviousScanRecord(models.Model):
+    source_id=models.CharField(max_length=80,unique=True)
+    center=models.ForeignKey(Center,null=True,blank=True,on_delete=models.SET_NULL,related_name='previous_zip_scans')
+    center_name=models.TextField()
+    center_location=models.TextField(blank=True)
+    zip_code=models.CharField(max_length=5,blank=True,db_index=True)
+    scans_2022=models.PositiveBigIntegerField(null=True,blank=True)
+    scans_2023=models.PositiveBigIntegerField(null=True,blank=True)
+    scans_2024=models.PositiveBigIntegerField(null=True,blank=True)
+    source_status=models.TextField(blank=True)
+    source_note=models.TextField(blank=True)
