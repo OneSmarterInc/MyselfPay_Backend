@@ -69,6 +69,8 @@ def summary(con, row):
         return {}
     chat = con.execute('SELECT state,thread_id FROM booking_chat WHERE request_id=?', (row['id'],)).fetchone()
     if chat and chat['state'] == 'ready':
+        if os.getenv('SECURE_MAIL_TRANSPORT','hmac').lower()=='api':
+            return {'secure_chat_status':'ready'}  # Recipient-bound invitation is sent by Secure Mail.
         return {'secure_chat_url': link(chat['thread_id']), 'secure_chat_status': 'ready'}
     return {'secure_chat_status': 'pending'} if chat else {}
 
@@ -93,7 +95,14 @@ def create_thread(ident, payload):
             'body': body, 'delivery_mode': 'provider_only',
             'provider_action': {'url': payload['clinic_url'], 'expires_at': payload['clinic_link_expires']},
             'participants': [{'email': payload['recipient'], 'name': 'MySelfPay Patient Care' if support else payload['clinic_name'], 'role': 'provider'}]}
-    result = signed_request(data)
+    transport=os.getenv('SECURE_MAIL_TRANSPORT','hmac').lower()
+    if transport=='api':
+        from securemail_api import request
+        result=request('/bookings',data,'selfpay-booking-'+hashlib.sha256(ident.encode()).hexdigest())
+    elif transport=='hmac':
+        result = signed_request(data)
+    else:
+        raise ValueError('SECURE_MAIL_TRANSPORT must be api or hmac')
     if result.get('provider_notification') != 'queued':
         raise ValueError('Clinic notifications are suppressed in Secure Mail')
     return str(uuid.UUID(result['id']))

@@ -4,6 +4,7 @@ from email.headerregistry import Address
 from email.errors import MessageError
 from html import escape
 import os
+from urllib.error import HTTPError
 import smtplib
 import socket
 import ssl
@@ -116,7 +117,19 @@ def send_message(message, recipient):
     fingerprint = {'to_sha256': hashlib.sha256(str(recipient).strip().lower().encode()).hexdigest(),
                    'subject_sha256': hashlib.sha256(str(message['Subject'] or '').encode()).hexdigest()}
     try:
-        _deliver(message, recipient)
+        if os.getenv('SECUREMAIL_MESSAGES_ENABLED','false').lower()=='true':
+            try:
+                from securemail_api import send_message as protected_message
+                protected_message(message,recipient)
+            except HTTPError as error:
+                if error.code in (400,401,403,404,409,429,503):
+                    raise MailUnavailable('Secure Mail rejected the request (HTTP '+str(error.code)+'). Check the server API key, permissions and configuration.') from None
+                raise MailDeliveryUncertain('Secure Mail acceptance was not confirmed. Check delivery status before retrying.') from None
+            except Exception:
+                # Acceptance may have occurred before a timeout. Never fall back to SMTP.
+                raise MailDeliveryUncertain('Secure Mail acceptance was not confirmed. Check delivery status before retrying.') from None
+        else:
+            _deliver(message, recipient)
     except MailDeliveryUncertain as exc:
         audit.log('mail.send', target_type='email', result='uncertain', detail={**fingerprint, 'error': str(exc)[:200]}, actor_type='system')
         raise
