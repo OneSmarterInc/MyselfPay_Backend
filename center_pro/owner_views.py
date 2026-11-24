@@ -220,3 +220,11 @@ class CenterCHROfferView(OwnerView):
             offers.append(offer)
         offers.sort(key=lambda o:(o.get('mod')!='MRI',o.get('contrast')!='without',o.get('amount') is None,str(o.get('id',''))))
         return Response({'entry':entry,'offer':offers[0] if offers else None})
+
+
+class CenterCHRComparisonView(OwnerView):
+    def get(self,request,center_id):
+        self.owner(request,center_id)
+        # Reuse the exact public comparison service with the verified center identity.
+        from api.chr_views import CHRIndexView
+        return CHRIndexView.get(self,request)

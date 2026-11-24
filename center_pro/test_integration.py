@@ -274,3 +274,20 @@ class CenterCHROfferTests(TestCase):
         self.assertEqual(response.data['entry']['locations'][0]['zip'],'45432')
         self.assertEqual(response.data['offer']['amount'],400)
         self.assertEqual(response.data['entry']['booking_id'],'center-key')
+
+
+class CenterCHRAuthenticationTests(TestCase):
+    def test_owner_session_can_compare_without_patient_credentials(self):
+        from rest_framework.test import APIRequestFactory,force_authenticate
+        from .owner_views import CenterCHRComparisonView
+        user=get_user_model().objects.create_user(username='chr-center-owner')
+        center=Center.objects.create(name='Center')
+        member=Membership.objects.create(user=user,center=center,role='owner')
+        request=APIRequestFactory().get('/chr-index',{'zip':'45432','mri':'400','ct':'300'},HTTP_HOST='localhost');force_authenticate(request,user=user)
+        with patch('center_pro.integration.sync_requests'),patch('chr_index.compare',return_value={'zip':'45432','hospitals':[]}) as compare:
+            response=CenterCHRComparisonView.as_view()(request,center_id=center.pk)
+        self.assertEqual(response.status_code,200);compare.assert_called_once()
+        member.delete()
+        request=APIRequestFactory().get('/chr-index',HTTP_HOST='localhost');force_authenticate(request,user=user)
+        response=CenterCHRComparisonView.as_view()(request,center_id=center.pk)
+        self.assertEqual(response.status_code,404)
