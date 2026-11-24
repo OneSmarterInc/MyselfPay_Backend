@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views, owner_views, auth_flows, full_views
+from . import views, owner_views, auth_flows, full_views, employer_views
 
 urlpatterns = [
+    path("centers/<int:center_id>/nearby-companies", employer_views.NearbyCompaniesView.as_view()),
     path("centers/<int:center_id>/requests/<int:booking_id>/alternative-time", views.AlternativeTimeView.as_view()),
     path('auth/request', auth_flows.request_link), path('auth/verify', auth_flows.verify_link), path('auth/admin', auth_flows.admin_login),
     path('admin/centers', full_views.AdminCenters.as_view()), path('admin/audit', full_views.AdminAudit.as_view()),

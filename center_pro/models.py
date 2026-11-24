@@ -150,3 +150,29 @@ class EstimateDraft(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
         constraints = [models.UniqueConstraint(fields=['booking','version'],name='pro_unique_estimate_version')]
+
+
+class EmployerDirectory(models.Model):
+    source_id=models.CharField(max_length=80,unique=True)
+    operator_name=models.TextField()
+    operator_address=models.TextField(blank=True)
+    operator_location=models.TextField(blank=True)
+    center=models.ForeignKey(Center,null=True,blank=True,on_delete=models.SET_NULL,related_name='employer_directories')
+
+class NearbyCompany(models.Model):
+    directory=models.ForeignKey(EmployerDirectory,on_delete=models.CASCADE,related_name='companies')
+    source_row=models.PositiveIntegerField()
+    company_name=models.TextField()
+    company_address=models.TextField(blank=True)
+    public_email=models.TextField(blank=True)
+    email_type=models.TextField(blank=True)
+    business_phone=models.TextField(blank=True)
+    employee_count=models.TextField(blank=True)
+    distance_miles=models.DecimalField(max_digits=12,decimal_places=4,null=True,blank=True)
+    distance_text=models.TextField(blank=True)
+    location_distance_status=models.TextField(blank=True)
+    verification_status=models.TextField(blank=True)
+    source_links=models.TextField(blank=True)
+    class Meta:
+        constraints=[models.UniqueConstraint(fields=['directory','source_row'],name='pro_company_source_row')]
+        indexes=[models.Index(fields=['directory','distance_miles'],name='pro_company_distance')]

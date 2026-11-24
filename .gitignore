@@ -10,3 +10,6 @@ data/
 htmlcov/
 
 staticfiles/
+
+# Operator/company data uploaded separately for database import.
+/imports/
