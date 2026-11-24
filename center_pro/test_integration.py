@@ -254,3 +254,23 @@ class DefaultDirectoryOwnerTests(TestCase):
         with patch('center_portal.centers',return_value=[{'id':'revoked','name':'Revoked'}]):
             directory_owner_access(user.email)
         self.assertFalse(Membership.objects.filter(user=user).exists())
+
+
+class CenterCHROfferTests(TestCase):
+    def test_chr_uses_published_center_location_and_offer(self):
+        import json
+        from types import SimpleNamespace
+        from rest_framework.test import APIRequestFactory
+        from .owner_views import CenterCHROfferView
+        from .integration import Result
+        view=CenterCHROfferView()
+        request=view.initialize_request(APIRequestFactory().get('/chr-offer',HTTP_HOST='localhost'))
+        member=SimpleNamespace(center=SimpleNamespace(directory_key='center-key'))
+        entry={'name':'Center','states':'OH','locations':[{'zip':'45432','state':'OH'}]}
+        offer={'id':'published-mri','mod':'MRI','contrast':'without','type':'fixed'}
+        with patch.object(view,'owner',return_value=member),patch('core.active_batch',return_value='active'),patch('center_pro.integration.DomainConnection') as db:
+            db.return_value.execute.side_effect=[Result([{'payload':json.dumps(entry)}]),Result([{'payload':json.dumps(offer),'amount_cents':40000}])]
+            response=view.get(request,1)
+        self.assertEqual(response.data['entry']['locations'][0]['zip'],'45432')
+        self.assertEqual(response.data['offer']['amount'],400)
+        self.assertEqual(response.data['entry']['booking_id'],'center-key')

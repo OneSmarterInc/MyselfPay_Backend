@@ -200,3 +200,23 @@ class DirectoryPricesView(OwnerView):
         response = paginator.get_paginated_response(page)
         response.data['current_center'] = current
         return response
+
+
+class CenterCHROfferView(OwnerView):
+    def get(self,request,center_id):
+        import json,core
+        from .integration import DomainConnection
+        from directory_policy import visible_sql
+        member=self.owner(request,center_id)
+        db=DomainConnection();batch=core.active_batch(db);predicate,values=visible_sql()
+        row=db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=? AND '+predicate,(batch,member.center.directory_key,*values)).fetchone()
+        if not row:
+            from rest_framework.exceptions import NotFound
+            raise NotFound('This center has no active directory listing.')
+        entry=json.loads(row['payload']);entry['booking_id']=member.center.directory_key
+        offers=[]
+        for item in db.execute('SELECT payload,amount_cents FROM offers WHERE batch_id=? AND entry_key=? AND '+predicate,(batch,member.center.directory_key,*values)).fetchall():
+            offer=json.loads(item['payload']);offer['amount']=item['amount_cents']/100 if item['amount_cents'] is not None else None
+            offers.append(offer)
+        offers.sort(key=lambda o:(o.get('mod')!='MRI',o.get('contrast')!='without',o.get('amount') is None,str(o.get('id',''))))
+        return Response({'entry':entry,'offer':offers[0] if offers else None})
