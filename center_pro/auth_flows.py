@@ -49,6 +49,8 @@ def request_link(request):
     if not allowed('magic-ip:'+request.META.get('REMOTE_ADDR',''),30) or not allowed('magic-email:'+email,5):
         return JsonResponse({'detail':'Please wait before requesting another link.'},status=429)
     result={'detail':'If this email has center access, a sign-in link will be sent.'}
+    from .access import directory_owner_access
+    directory_owner_access(email)
     users=get_user_model().objects.filter(email__iexact=email,is_active=True)
     if '@' not in email or users.count()!=1:
         return JsonResponse(result)

@@ -55,7 +55,8 @@ class ExistingIdentityTests(TestCase):
         self.assertEqual(response.status_code,403)
         self.assertEqual(response.json()['code'],'csrf_failed')
 
-    def test_magic_link_uses_existing_smtp_adapter(self):
+    @patch('center_portal.centers', return_value=[])
+    def test_magic_link_uses_existing_smtp_adapter(self, directory_lookup):
         from django.test import override_settings
         from .models import MagicLink
         with override_settings(CENTER_PRO_LOCAL_LINKS=False),patch('booking_mail.send_message') as send:
@@ -221,3 +222,35 @@ class AlternativeTimeTests(TestCase):
         from rest_framework.exceptions import PermissionDenied
         Membership.objects.all().delete()
         with self.assertRaises(PermissionDenied):self.confirm()
+
+
+class DefaultDirectoryOwnerTests(TestCase):
+    def test_directory_email_gets_owner_and_staff_assignment_is_preserved(self):
+        from .access import directory_owner_access
+        from .integration import Result
+        import json
+        listing={'id':'directory-owner','name':'Directory center'}
+        with patch('center_portal.centers',return_value=[listing]),patch('core.active_batch',return_value='batch'),patch('center_pro.integration.DomainConnection') as db:
+            db.return_value.execute.return_value=Result([{'payload':json.dumps({'name':'Directory center','states':'OH'})}])
+            user=directory_owner_access('Owner@Example.test')
+            self.assertFalse(user.has_usable_password())
+            member=Membership.objects.get(user=user)
+            self.assertEqual(member.role,'owner')
+            member.role='staff';member.save()
+            directory_owner_access('owner@example.test')
+            member.refresh_from_db();self.assertEqual(member.role,'staff')
+            self.assertEqual(Membership.objects.count(),1)
+    def test_unknown_mailbox_creates_no_account(self):
+        from .access import directory_owner_access
+        with patch('center_portal.centers',return_value=[]):
+            self.assertIsNone(directory_owner_access('unknown@example.test'))
+        self.assertEqual(get_user_model().objects.count(),0)
+    def test_revoked_center_stays_manual_only(self):
+        from .access import directory_owner_access
+        user=get_user_model().objects.create_user(username='prior',email='owner@example.test')
+        center=Center.objects.create(name='Revoked',directory_key='revoked')
+        from .models import AuditEvent
+        AuditEvent.objects.create(center=center,actor=user,action='access.revoked',reference='MEMBER-1')
+        with patch('center_portal.centers',return_value=[{'id':'revoked','name':'Revoked'}]):
+            directory_owner_access(user.email)
+        self.assertFalse(Membership.objects.filter(user=user).exists())

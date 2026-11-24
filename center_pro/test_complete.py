@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import hashlib
 import secrets
 from datetime import timedelta
@@ -41,7 +42,8 @@ class CompleteWorkflowTests(TestCase):
     def booking(self):
         return BookingRequest.objects.create(center=self.center,reference='SAMPLE-1',patient_name='Synthetic Patient',exam='MRI',price_snapshot='395.00')
 
-    def test_magic_link_single_use_and_role_from_membership(self):
+    @patch('center_portal.centers', return_value=[])
+    def test_magic_link_single_use_and_role_from_membership(self, directory_lookup):
         client=APIClient(enforce_csrf_checks=True)
         csrf=client.get('/api/center-pro/session').json()['csrf_token']
         result=client.post('/api/center-pro/auth/request',{'email':self.staff.email},format='json',HTTP_X_CSRFTOKEN=csrf)
@@ -60,7 +62,8 @@ class CompleteWorkflowTests(TestCase):
             if revoked:Membership.objects.filter(user=self.staff).delete()
             self.assertEqual(self.client.post('/api/center-pro/auth/verify',{'token':raw},format='json').status_code,400)
 
-    def test_magic_unknown_email_and_rate_limit(self):
+    @patch('center_portal.centers', return_value=[])
+    def test_magic_unknown_email_and_rate_limit(self, directory_lookup):
         self.assertNotIn('development_url',self.client.post('/api/center-pro/auth/request',{'email':'missing@example.test'},format='json').json())
         for _ in range(4):self.client.post('/api/center-pro/auth/request',{'email':'missing@example.test'},format='json')
         self.assertEqual(self.client.post('/api/center-pro/auth/request',{'email':'missing@example.test'},format='json').status_code,429)

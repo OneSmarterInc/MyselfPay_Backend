@@ -51,3 +51,10 @@ python manage.py collectstatic --noinput
 Restart the existing backend service using the normal deployment process. Deploy the frontend main build after the backend is ready. Existing SMTP settings deliver the single-use email sign-in links; no OTP center-login screen is used by the integrated frontend. The main administrator still signs in with the existing password and TOTP, then assigns owner/staff access at `/admin/center-pro/`.
 
 Owners and staff may confirm an alternative appointment after patient agreement, with resource overlap checks. This explicit action can override saved hours and preferred periods; ordinary slot selection still validates them. Local database contents and credentials are never included in Git.
+
+
+## Default directory owner email
+
+When requesting an email sign-in link, an exact match to an active directory listing email is eligible for default owner membership for those listings. New accounts have unusable passwords, and access still requires the emailed single-use link. Existing staff memberships remain staff. Inactive or ambiguous duplicate-email accounts require administrator attention. Centers with an access-revoked audit record stay manual-only so removed access is not silently recreated. Main admin can explicitly assign those memberships again.
+
+This update needs a backend restart after pulling main; it adds no migration and requires no bulk account seed.
