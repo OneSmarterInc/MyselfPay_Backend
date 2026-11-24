@@ -1,0 +1,1 @@
+"""Center Pro domain logic."""

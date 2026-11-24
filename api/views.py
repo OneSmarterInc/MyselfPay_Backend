@@ -88,7 +88,8 @@ class HealthView(ResourceView):
 
 
 class CenterPortalView(ResourceView):
-    authentication_classes = []
+    from center_pro.integration_auth import OwnerPortalAuthentication
+    authentication_classes = [OwnerPortalAuthentication]
     permission_classes = [AllowAny]
 
     def get_serializer(self, *args, **kwargs):
@@ -100,11 +101,21 @@ class CenterPortalView(ResourceView):
     def cookie_name(self):
         return 'selfpay_center' if settings.DEBUG else '__Host-selfpay_center'
 
+    def portal_token(self, request):
+        scope = request.query_params.get('owner_center')
+        if scope is not None:
+            if not scope.isdigit():
+                from rest_framework.exceptions import ValidationError
+                raise ValidationError('Invalid center.')
+            from center_pro.integration_auth import owner_portal_token
+            return owner_portal_token(request, int(scope))
+        return request.COOKIES.get(self.cookie_name(), '')
+
     def get(self, request, action):
         import center_portal
         if action != 'dashboard':
             raise NotFound()
-        token = request.COOKIES.get(self.cookie_name(), '')
+        token = self.portal_token(request)
         return self.audited(request, action, token, {}, lambda: Response(center_portal.dashboard(database(), token)))
 
     def audited(self, request, action, token, data, run):
@@ -134,12 +145,12 @@ class CenterPortalView(ResourceView):
     def post(self, request, action):
         import center_portal
         data = self.validated(request)
-        token = request.COOKIES.get(self.cookie_name(), '')
+        token = self.portal_token(request)
         return self.audited(request, action, token, data, lambda: self.handle(request, action, data))
 
     def handle(self, request, action, data):
         import center_portal
-        token = request.COOKIES.get(self.cookie_name(), '')
+        token = self.portal_token(request)
         csrf = request.headers.get('X-Center-CSRF', '')
         if action == 'code':
             return Response(center_portal.issue(database(), data.get('email', '')))

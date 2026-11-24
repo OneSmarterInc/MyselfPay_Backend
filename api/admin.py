@@ -69,7 +69,7 @@ class SelfPayAdminSite(AdminSite):
 
     def get_urls(self):
         import admin_mailer
-        return [path('totp/', lambda request: __import__('admin_totp').challenge(request), name='totp'),
+        return [path('center-pro/', self.admin_view(self.center_workspace), name='center_workspace'), path('totp/', lambda request: __import__('admin_totp').challenge(request), name='totp'),
                 path('mailer/unsubscribed/', self.admin_view(lambda request: admin_mailer.unsubscribed_view(self, request)), name='mailer_unsubscribed'),
                 path('mailer/', self.admin_view(lambda request: admin_mailer.mailer_view(self, request)), name='mailer'),
                 path('mailer/campaign/<uuid:ident>/', self.admin_view(lambda request, ident: admin_mailer.campaign_view(self, request, ident)), name='mailer_campaign'),
@@ -80,6 +80,10 @@ class SelfPayAdminSite(AdminSite):
                 path('pricing/',self.admin_view(self.pricing_alias),name='center_pricing_alias'),
                 path('requests/',self.admin_view(self.requests_view),name='booking_requests'),
                 path('requests/<str:ident>/',self.admin_view(self.request_view),name='booking_request')] + super().get_urls()
+
+    def center_workspace(self, request):
+        from center_pro.admin_workspace import page
+        return page(self,request)
 
     def profiles_view(self, request):
         import center_profile
@@ -352,6 +356,10 @@ class SMTPConfigurationForm(forms.ModelForm):
         data = super().clean()
         if not 1 <= (data.get('port') or 0) <= 65535:
             self.add_error('port', 'Enter a port between 1 and 65535.')
+        if data.get('port') == 587 and data.get('security') == 'ssl':
+            self.add_error('security', 'Use STARTTLS with port 587. For implicit SSL use port 465.')
+        if data.get('port') == 465 and data.get('security') == 'starttls':
+            self.add_error('security', 'Use SSL with port 465. For STARTTLS use port 587.')
         for field in ('host', 'username', 'from_name'):
             if any(ord(c) < 32 for c in data.get(field, '')):
                 self.add_error(field, 'Remove line breaks and control characters.')

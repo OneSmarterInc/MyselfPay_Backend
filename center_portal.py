@@ -161,6 +161,9 @@ def verify(path, ident, code):
 
 
 def identity(db, token, csrf=None):
+    if token.startswith("owner-session:"):
+        from center_pro.integration_auth import owner_portal_identity
+        return owner_portal_identity(db, token, csrf)
     row = db.execute('SELECT * FROM center_portal_sessions WHERE token_hash=?', (booking.digest(token),)).fetchone()
     if not row or row['expires'] <= time.time():
         raise booking.BookingError('Your center session has expired. Log in again.', 401)
@@ -176,6 +179,11 @@ def identity(db, token, csrf=None):
 def actor_email(path, token):
     """The signed-in center email for the audit trail, or '' when there is no valid session."""
     try:
+        if token.startswith('owner-session:'):
+            from django.core import signing
+            from django.contrib.auth import get_user_model
+            value=signing.loads(token.split(':',1)[1],salt='center-owner-portal',max_age=28800)
+            return get_user_model().objects.get(pk=value['user'],is_active=True).email
         with booking.connection(path) as db:
             row = db.execute('SELECT * FROM center_portal_sessions WHERE token_hash=?', (booking.digest(token),)).fetchone()
             if row and row['expires'] > time.time():
@@ -241,6 +249,7 @@ def dashboard(path, token):
         prices = [dict(r) for r in db.execute(
             'SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status,decided FROM center_price_submissions '
             'WHERE email_hash IN (' + ','.join('?' * len(hashes)) + ') ORDER BY submitted DESC LIMIT 200', hashes).fetchall()]
+        prices = [p for p in prices if p['entry_key'] in keys]
         contact_history = [{'field': r['field'], 'old_value': r['old_value'], 'new_value': r['new_value'], 'changed': r['changed'], 'entry_keys': json.loads(r['entry_keys'])}
                            for r in db.execute('SELECT field,old_value,new_value,entry_keys,changed FROM center_contact_changes ORDER BY changed DESC LIMIT 500').fetchall()
                            if keys & set(json.loads(r['entry_keys']))][:100]

@@ -39,7 +39,7 @@ else:
     if not DEBUG:
         raise ImproperlyConfigured('Production requires PostgreSQL.')
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3', 'NAME': DOMAIN_DATABASE}}
-INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'corsheaders', 'rest_framework', 'api']
+INSTALLED_APPS = ['django.contrib.admin', 'django.contrib.auth', 'django.contrib.contenttypes', 'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles', 'corsheaders', 'rest_framework', 'api', 'center_pro']
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ['api.authentication.SelfPaySessionAuthentication'],
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticated'],
@@ -117,3 +117,10 @@ AUTH_PASSWORD_VALIDATORS = [
  {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
  {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
+
+# Center Pro shares the existing database, center sessions and admin TOTP.
+ENABLE_DEV_LOGIN = False
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+CORS_ALLOW_HEADERS = list(dict.fromkeys(CORS_ALLOW_HEADERS + ['x-csrftoken']))
+
+CSRF_FAILURE_VIEW = 'api.csrf.failure'
