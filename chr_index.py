@@ -119,6 +119,9 @@ def compare(query):
     if str(query.get('state','')).strip().upper() in ('CA','CALIFORNIA'):
         from chr_california import prices
         return prices(query)
+    if str(query.get('state','')).strip().upper() in ('DE','DELAWARE'):
+        from chr_delaware import compare as delaware_compare
+        return delaware_compare(query)
     missing_zip = not str(query.get('zip', '')).strip()
     zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
     zip_basis = 'Saved center ZIP'
