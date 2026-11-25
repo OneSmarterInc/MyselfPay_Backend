@@ -122,7 +122,8 @@ def owner_portal_identity(db, token, csrf=None):
     if not row:
         raise booking.BookingError('This listing is no longer available.',404)
     item=json.loads(row['payload'])
-    listing={'id':row['entry_key'],**{k:item.get(k,'') for k in ('name','area','states','address','phone','email','source','coverage','entity','mri','ct','other','is_test_center')}}
+    item['zip']=center_portal.saved_zip(item)
+    listing={'id':row['entry_key'],**{k:item.get(k,'') for k in ('name','area','states','address','zip','zip_code','phone','email','source','coverage','entity','mri','ct','other','is_test_center')}}
     return str(item.get('email') or member.user.email).strip().lower(),[listing],value['csrf']
 
 

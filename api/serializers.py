@@ -58,7 +58,7 @@ class CenterPriceConfirmSerializer(serializers.Serializer):
 
 class CenterProfileSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
-    field = serializers.ChoiceField(choices=('address', 'website'))
+    field = serializers.ChoiceField(choices=('address', 'website', 'zip'))
     value = serializers.CharField(max_length=300)
 
 

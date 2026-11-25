@@ -9,7 +9,7 @@ import center_contact
 import center_portal
 import core
 
-FIELDS = {'address': 'Address', 'website': 'Website'}
+FIELDS = {'address': 'Address', 'website': 'Website', 'zip': 'ZIP code'}
 HOUR_LIMIT = 20
 
 
@@ -19,8 +19,11 @@ class ProfileError(ValueError):
 
 def clean(field, value):
     value = ' '.join(str(value).split())
+    if field == 'zip':
+        if not re.fullmatch(r'[0-9]{5}',value):raise booking.BookingError('Enter a valid five-digit US ZIP code.')
+        return value
     if field == 'address':
-        if len(value) < 5 or len(value) > 200:
+        if len(value) < 5 or len(value) > 200 or not re.search(r"[A-Za-z]", value):
             raise booking.BookingError('Enter the full street address, up to 200 characters.')
         return value
     if field == 'website':
@@ -42,7 +45,7 @@ def submit(path, token, csrf, entry_key, field, value):
         if db.execute('SELECT COUNT(*) AS n FROM center_profile_edits WHERE email_hash=? AND submitted>?', (digest, now - 3600)).fetchone()['n'] >= HOUR_LIMIT:
             raise booking.BookingError('Too many changes. Try again in an hour.', 429)
         current = next(item for item in listings if item['id'] == entry_key)
-        current_value = current.get('source' if field == 'website' else 'address', '')
+        current_value = current.get('source' if field == 'website' else field, '')
         if value == current_value:
             raise booking.BookingError('That is already on your listing.')
         db.execute("UPDATE center_profile_edits SET status='replaced' WHERE entry_key=? AND field=? AND status='pending'", (entry_key, field))
@@ -103,9 +106,13 @@ def approve(path, ident, by):
         payload = json.loads(entry['payload'])
         if row['field'] == 'website':
             payload['source'] = row['value']
+        elif row['field'] == 'zip':
+            apply_zip(payload,clean('zip',row['value']))
         else:
-            payload['address'] = row['value']
+            payload['address'] = clean('address',row['value'])
             payload['address_needs_geocode'] = True
+            match=re.search(r'\b([0-9]{5})(?:-[0-9]{4})?\s*$',row['value'])
+            if match:apply_zip(payload,match[1])
         batch, previous = center_contact._clone_batch(db, 'profile-' + ident, {row['entry_key']: payload},
                                                        {'center_profile': row['field'], 'approved_by': by.strip(), 'entry': row['entry_key']})
         db.execute("UPDATE center_profile_edits SET status='approved',decided=?,decided_by=? WHERE id=?", (time.time(), by.strip(), ident))
@@ -141,3 +148,18 @@ def confirm_price(path, token, csrf, offer_id):
                   old='not confirmed by the center', new=f"{offer.get('mod')} ${offer.get('amount')} ({offer.get('contrast')})",
                   detail={'batch': batch, 'previous_batch': previous})
     return {'confirmed': offer_id, 'date': today, 'message': 'Thank you. Your price is marked as confirmed by you, ' + today + '.'}
+
+
+def apply_zip(payload,zip_code):
+    """Publish one authoritative ZIP without retaining coordinates for the old location."""
+    payload['zip']=zip_code
+    payload['zip_code']=zip_code
+    payload['address_needs_geocode']=True
+    for key in ('latitude','longitude','lat','lng'):
+        payload.pop(key,None)
+    locations=payload.get('locations') or []
+    for location in locations:
+        for key in ('latitude','longitude','lat','lng'):
+            location.pop(key,None)
+    if len(locations)==1:
+        locations[0]['zip']=zip_code

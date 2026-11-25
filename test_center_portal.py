@@ -383,6 +383,24 @@ class CenterProfileTests(unittest.TestCase):
         data = self.payload()
         self.assertEqual(data['address'], '12 Main Street, Dayton, OH 45402')
         self.assertTrue(data['address_needs_geocode'])
+        self.assertEqual(data['zip'],'45402')
+
+    def test_zip_waits_for_approval_and_is_persisted(self):
+        import center_profile
+        self.create()
+        token,csrf=self.login()
+        before=self.payload().get('zip')
+        center_profile.submit(self.db,token,csrf,'clinic-1','zip','01002')
+        self.assertEqual(self.payload().get('zip'),before)
+        center_profile.approve(self.db,center_profile.pending(self.db)[0]['id'],'admin1')
+        self.assertEqual(self.payload()['zip'],'01002')
+        self.assertEqual(center_portal.dashboard(self.db,token)['centers'][0]['zip'],'01002')
+
+    def test_zip_validation_and_address_is_not_a_zip(self):
+        import center_profile
+        for value in ('454595','4543','abcde'):
+            with self.assertRaises(booking.BookingError):center_profile.clean('zip',value)
+        with self.assertRaises(booking.BookingError):center_profile.clean('address','454595')
 
     def test_reject_changes_nothing(self):
         import center_profile

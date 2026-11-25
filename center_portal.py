@@ -12,14 +12,23 @@ import core
 from directory_policy import visible_sql
 
 
+def saved_zip(item):
+    for value in [item.get('zip'),item.get('zip_code'),item.get('postal_code'),*[loc.get('zip') for loc in item.get('locations',[])]]:
+        match=re.fullmatch(r'([0-9]{5})(?:-[0-9]{4})?',str(value or '').strip())
+        if match:return match[1]
+    match=re.search(r'\b([0-9]{5})(?:-[0-9]{4})?\s*$',str(item.get('address') or item.get('coverage') or ''))
+    return match[1] if match else ''
+
+
 def centers(db, email):
     found = []
     predicate, values = visible_sql()
     for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate, (core.active_batch(db),*values)).fetchall():
         item = json.loads(row['payload'])
+        item['zip']=saved_zip(item)
         if str(item.get('email', '')).strip().lower() == email:
             found.append({'id': row['entry_key'], **{key: item.get(key, '') for key in
-                ('name', 'area', 'states', 'address', 'phone', 'email', 'source', 'coverage', 'entity', 'mri', 'ct', 'other', 'is_test_center')}})
+                ('name', 'area', 'states', 'address', 'zip', 'zip_code', 'phone', 'email', 'source', 'coverage', 'entity', 'mri', 'ct', 'other', 'is_test_center')}})
     return found
 
 
