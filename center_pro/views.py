@@ -204,11 +204,11 @@ class OverviewView(CenterView):
 
 class AuditView(CenterView):
     def get(self, request, center_id):
-        self.membership(request, center_id)
-        rows = AuditEvent.objects.filter(center_id=center_id).order_by('-created_at', '-id')
-        paginator = Pagination()
-        page = paginator.paginate_queryset(rows, request)
-        return paginator.get_paginated_response([{'id': r.id, 'action': r.action, 'reference': r.reference, 'created_at': r.created_at} for r in page])
+        member=self.membership(request, center_id)
+        from .activity_feed import CenterActivityRows
+        paginator=Pagination()
+        page=paginator.paginate_queryset(CenterActivityRows(member.center),request)
+        return paginator.get_paginated_response(page)
 
 
 class AlternativeTimeView(CenterView):
