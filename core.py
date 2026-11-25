@@ -291,8 +291,8 @@ def clean_search(raw):
             'sort':raw.get('sort') if raw.get('sort') in ('price','scope') else 'distance',
             'selected':list(dict.fromkeys(x for x in raw.get('selected',[]) if isinstance(x,str)))[:3]}
 
-def search(raw,path=DB):
-    s=clean_search(raw); data=catalog(path); result=[]; location=s['location'].casefold()
+def search(raw,path=DB,*,catalog_data=None):
+    s=clean_search(raw); data=catalog(path) if catalog_data is None else catalog_data; result=[]; location=s['location'].casefold()
     from geo import lookup
     from proximity import nearest, offer_locations, annotate, covers
     candidates=lookup(s['location']) if location != 'national' else []

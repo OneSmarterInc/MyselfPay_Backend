@@ -40,10 +40,16 @@ def page(site,request):
             messages.error(request,str(detail))
     section='audit' if request.GET.get('section')=='audit' else 'centers'
     search=request.GET.get('q','').strip()[:120]
-    rows=AuditEvent.objects.select_related('center','actor').order_by('-created_at','-id') if section=='audit' else Center.objects.filter(directory_active=True).annotate(owners=Count('membership',filter=Q(membership__role='owner')),staff_count=Count('membership',filter=Q(membership__role='staff'))).order_by('name','id')
+    rows=AuditEvent.objects.select_related('center','actor').order_by('-created_at','-id') if section=='audit' else Center.objects.filter(directory_active=True).order_by('name','id')
     if search:
         rows=rows.filter(Q(center__name__icontains=search)|Q(action__icontains=search)|Q(reference__icontains=search)) if section=='audit' else rows.filter(name__icontains=search)
     page_obj=Paginator(rows,20).get_page(request.GET.get('page'))
+    if section=='centers':
+        page_obj.object_list=list(page_obj.object_list)
+        counts={r['center_id']:r for r in Membership.objects.filter(center_id__in=[c.pk for c in page_obj.object_list]).values('center_id').annotate(owners=Count('id',filter=Q(role='owner')),staff_count=Count('id',filter=Q(role='staff')))}
+        for item in page_obj.object_list:
+            totals=counts.get(item.pk,{})
+            item.owners=totals.get('owners',0);item.staff_count=totals.get('staff_count',0)
     members=Membership.objects.filter(center=center).select_related('user').order_by('role','id') if center else []
     revoke=get_object_or_404(Membership,pk=request.GET['revoke'],center=center) if center and request.GET.get('revoke') else None
     context={**site.each_context(request),'title':'Owner and staff assignments' if center else 'Center workspace & access','center':center,'form':form,'members':members,'revoke_member':revoke,'page_obj':page_obj,'section':section,'search':search,

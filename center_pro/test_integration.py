@@ -157,8 +157,9 @@ class DirectoryPricingTests(TestCase):
         entries=[{'entry_key':key,'payload':json.dumps({'name':key,'mri':'Quote required','ct':'Not listed'})} for key in ['own','higher','different','quote']]
         view=DirectoryPricesView()
         request=view.initialize_request(APIRequestFactory().get('/prices',HTTP_HOST='localhost'))
-        with patch.object(view,'owner',return_value=SimpleNamespace(center=SimpleNamespace(directory_key='own'))), patch('core.active_batch',return_value='batch'), patch('center_pro.integration.DomainConnection') as db:
-            db.return_value.execute.side_effect=[Result(offers),Result(entries)]
+        public_entries={row['entry_key']:{**json.loads(row['payload']),'booking_id':row['entry_key']} for row in entries}
+        catalog={'entries':list(public_entries.values()),'offers':[{**json.loads(row['payload']),'entry':public_entries[row['entry_key']],'amount':row['amount_cents']/100 if row['amount_cents'] is not None else None} for row in offers]}
+        with patch.object(view,'owner',return_value=SimpleNamespace(center=SimpleNamespace(directory_key='own'))),patch('core.catalog',return_value=catalog):
             response=view.get(request,1)
         self.assertEqual(response.data['current_center']['id'],'own')
         rows={r['id']:r for r in response.data['results']}

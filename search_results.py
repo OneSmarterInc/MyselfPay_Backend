@@ -34,7 +34,7 @@ def directory_matches(entry, search):
     return True
 
 
-def apply_filters(result, path, requested_sort=None, requested_scope=None, *, informational_body=False, statewide=False):
+def apply_filters(result, path, requested_sort=None, requested_scope=None, *, informational_body=False, statewide=False, catalog_data=None):
     search = result['search']
     if requested_sort is not None:
         search['sort'] = requested_sort
@@ -50,7 +50,7 @@ def apply_filters(result, path, requested_sort=None, requested_scope=None, *, in
         return result
     state = origin['state'] if origin else None
     spatial = bool(not statewide and origin and origin['kind'] in ('place', 'zcta') and search['scope'] == 'radius')
-    data = core.catalog(path)
+    data = core.catalog(path) if catalog_data is None else catalog_data
     offers, programs, facilities, program_entries = [], [], [], []
     missing_coordinates = 0
 

@@ -349,9 +349,10 @@ class SearchView(ResourceView):
 
     def post(self, request):
         data = self.validated(request)
-        result = core.search({**data, 'body': '', 'scope': 'state'}, database())
+        catalog_data = core.catalog(database())
+        result = core.search({**data, 'body': '', 'scope': 'state'}, database(), catalog_data=catalog_data)
         result['search'].update(body=data['body'], scope=data['scope'], radius=data['radius'])
-        return Response(apply_filters(result, database(), data['sort'], data['scope'], informational_body=True, statewide=True))
+        return Response(apply_filters(result, database(), data['sort'], data['scope'], informational_body=True, statewide=True, catalog_data=catalog_data))
 
 
 class GuestUsageView(ResourceView):

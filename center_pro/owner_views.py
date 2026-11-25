@@ -157,38 +157,25 @@ class DirectoryPricesView(OwnerView):
         from directory_policy import visible_sql
         from .integration import DomainConnection
         membership = self.owner(request, center_id)
-        db = DomainConnection()
-        batch = core.active_batch(db)
-        predicate, values = visible_sql()
-        published = {}
-        for row in db.execute('SELECT entry_key,payload,amount_cents FROM offers WHERE batch_id=? AND '+predicate, (batch,*values)).fetchall():
-            item = json.loads(row['payload'])
-            published.setdefault(row['entry_key'], []).append({
-                'exam': item.get('mod', 'Imaging'), 'scope': item.get('scope', ''),
-                'contrast': item.get('contrast', 'unknown'),
-                'price': row['amount_cents'] / 100 if row['amount_cents'] is not None else None,
-                'type': item.get('type', 'quote'),
-            })
-        rows = []
-        for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate, (batch,*values)).fetchall():
-            entry = json.loads(row['payload'])
-            rows.append({'id': row['entry_key'], 'name': entry.get('name', ''),
-                'location': ', '.join(filter(None, [entry.get('area'), entry.get('states')])),
-                'mri': entry.get('mri') or 'Not listed', 'ct': entry.get('ct') or 'Not listed',
-                'other': entry.get('other') or 'Not listed',
-                'offers': published.get(row['entry_key'], []),
-                'checked': entry.get('checked') or '',
-                'current': row['entry_key'] == membership.center.directory_key})
+        # Reuse the batch-versioned public snapshot; membership is always checked above.
+        from django.conf import settings
+        data=core.catalog(settings.DOMAIN_DATABASE)
+        published={}
+        for offer in data['offers']:
+            key=offer['entry']['booking_id']
+            published.setdefault(key,[]).append({'exam':offer.get('mod','Imaging'),'scope':offer.get('scope',''),'contrast':offer.get('contrast','unknown'),'price':offer.get('amount'),'type':offer.get('type','quote')})
+        rows=[]
+        for entry in data['entries']:
+            key=entry['booking_id']
+            rows.append({'id':key,'name':entry.get('name',''),
+                'location':', '.join(filter(None,[entry.get('area'),entry.get('states')])),
+                'mri':entry.get('mri') or 'Not listed','ct':entry.get('ct') or 'Not listed',
+                'other':entry.get('other') or 'Not listed','offers':published.get(key,[]),
+                'checked':entry.get('checked') or '', 'current':key==membership.center.directory_key})
         current = next((r for r in rows if r['current']), None)
         # Compare only identical published exam, scope and contrast; no guessed medians.
         current_offers = (current or {}).get('offers', [])
-        for row in rows:
-            row['comparisons'] = []
-            if row['current']: continue
-            for offer in row['offers']:
-                for own in current_offers:
-                    if offer['price'] is not None and own['price'] is not None and all(offer[k] == own[k] for k in ('exam','scope','contrast','type')):
-                        row['comparisons'].append({'exam': offer['exam'], 'scope': offer['scope'], 'contrast': offer['contrast'], 'difference': round(offer['price']-own['price'],2)})
+        if current is not None:current['comparisons']=[]
         import re
         currency=re.compile(r'(?:\$\s*|\bUSD\s*)[0-9]|[0-9][0-9,.]*\s*USD\b',re.I)
         rows=[r for r in rows if any(o['price'] is not None and o['price']>0 for o in r['offers']) or any(currency.search(str(r[k])) for k in ('mri','ct','other'))]
@@ -197,6 +184,13 @@ class DirectoryPricesView(OwnerView):
         rows.sort(key=lambda r: (not r['current'], r['name'].casefold(), r['id']))
         paginator = Pagination()
         page = paginator.paginate_queryset(rows, request)
+        for row in page:
+            row['comparisons'] = []
+            if row['current']: continue
+            for offer in row['offers']:
+                for own in current_offers:
+                    if offer['price'] is not None and own['price'] is not None and all(offer[k] == own[k] for k in ('exam','scope','contrast','type')):
+                        row['comparisons'].append({'exam': offer['exam'], 'scope': offer['scope'], 'contrast': offer['contrast'], 'difference': round(offer['price']-own['price'],2)})
         response = paginator.get_paginated_response(page)
         response.data['current_center'] = current
         return response

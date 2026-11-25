@@ -51,11 +51,16 @@ def sync_requests(center):
     import booking
     db=DomainConnection()
     rows=db.execute('SELECT b.* FROM booking_requests b JOIN center_request_routes r ON r.request_id=b.id WHERE r.clinic_id=? ORDER BY b.created DESC',(center.directory_key,)).fetchall()
+    existing=BookingRequest.objects.filter(center=center,legacy_id__in=[row['id'] for row in rows]).in_bulk(field_name='legacy_id')
     for row in rows:
         closed_status=row['status'] in ('cancelled','unable','expired')
         if (row['closed'] or row['link_expires'])+30*86400<=time.time():continue
         if not closed_status and row['status']!='scheduled' and row['link_expires']<=time.time():
             closed_status=True
+        status='closed' if closed_status else 'confirmed' if row['status']=='scheduled' else 'pending'
+        item=existing.get(row['id'])
+        # Unchanged imported requests need neither decryption nor per-row ORM reads.
+        if item and item.status==status and (row['status']!='scheduled' or item.slot_id):continue
         p=booking.unpack(row)
         if p.get('clinic_id')!=center.directory_key:continue
         amount=None
@@ -68,7 +73,8 @@ def sync_requests(center):
           'exam':' · '.join(filter(None,[p.get('service'),p.get('exam')]))[:180] or 'Contact patient',
           'preferred_windows':p.get('slots',[]),'source':'myselfpay','price_snapshot':amount,
           'status':'closed' if closed_status else 'confirmed' if row['status']=='scheduled' else 'pending'}
-        item,created=BookingRequest.objects.get_or_create(legacy_id=row['id'],defaults=defaults)
+        created=False
+        if item is None:item,created=BookingRequest.objects.get_or_create(legacy_id=row['id'],defaults=defaults)
         if created:
             BookingRequest.objects.filter(pk=item.pk).update(created_at=datetime.fromtimestamp(row['created'],utc.utc))
         elif item.status!=defaults['status']:

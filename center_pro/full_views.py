@@ -24,6 +24,7 @@ from .services import Conflict
 
 
 class StaffView(CenterView):
+    sync_booking_requests = True
     def staff(self,request,center_id):
         member=self.membership(request,center_id)
         if member.role!='staff':raise PermissionDenied('Staff access required.')
@@ -294,6 +295,7 @@ class SubscriptionView(OwnerView):
 
 
 class DigestView(OwnerView):
+    sync_booking_requests = True
     def get(self,request,center_id):
         member=self.owner(request,center_id)
         since=timezone.now()-timedelta(days=30)

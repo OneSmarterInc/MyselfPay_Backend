@@ -1,7 +1,7 @@
 import json
 from django.conf import settings
 from django.contrib.auth import login, logout, get_user_model
-from django.db.models import Q, Exists, OuterRef
+from django.db.models import Q, Exists, OuterRef, Count
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
@@ -62,6 +62,7 @@ def sign_out(request):
     return response
 
 class CenterView(APIView):
+    sync_booking_requests = False
     from .integration_auth import IntegratedAuthentication
     authentication_classes=[IntegratedAuthentication]
     def get_exception_handler(self):
@@ -74,7 +75,7 @@ class CenterView(APIView):
     def membership(self, request, center_id):
         member=get_object_or_404(Membership.objects.select_related('center'), user=request.user, center_id=center_id, center__directory_active=True)
         from .integration import sync_requests
-        sync_requests(member.center)
+        if self.sync_booking_requests:sync_requests(member.center)
         return member
     def finalize_response(self, request, response, *args, **kwargs):
         response = super().finalize_response(request, response, *args, **kwargs)
@@ -87,6 +88,7 @@ class Pagination(PageNumberPagination):
     max_page_size = 20
 
 class RequestsView(CenterView):
+    sync_booking_requests = True
     def get(self, request, center_id):
         self.membership(request, center_id)
         rows = BookingRequest.objects.filter(center_id=center_id).select_related('slot')
@@ -106,11 +108,13 @@ class RequestsView(CenterView):
         return page.get_paginated_response(BookingSerializer(page.paginate_queryset(rows, request), many=True).data)
 
 class RequestView(CenterView):
+    sync_booking_requests = True
     def get(self, request, center_id, booking_id):
         self.membership(request, center_id)
         return Response(BookingSerializer(get_object_or_404(BookingRequest.objects.select_related('slot'), pk=booking_id, center_id=center_id)).data)
 
 class SlotsView(CenterView):
+    sync_booking_requests = True
     def get(self, request, center_id):
         self.membership(request, center_id)
         booking_id = request.query_params.get('booking_id')
@@ -178,6 +182,7 @@ class SlotsView(CenterView):
         return Response(SlotSerializer(slots, many=True).data)
 
 class ConfirmView(CenterView):
+    sync_booking_requests = True
     def post(self, request, center_id, booking_id):
         self.membership(request, center_id)
         serializer = ConfirmationSerializer(data=request.data)
@@ -186,13 +191,15 @@ class ConfirmView(CenterView):
         return Response(BookingSerializer(booking).data)
 
 class OverviewView(CenterView):
+    sync_booking_requests = True
     def get(self, request, center_id):
         member = self.membership(request, center_id)
         rows = BookingRequest.objects.filter(center_id=center_id)
-        data = {'pending': rows.filter(status='pending').count(), 'confirmed': rows.filter(status='confirmed').count(), 'total': rows.count(), 'revenue': None}
+        totals=rows.aggregate(pending=Count('id',filter=Q(status='pending')),confirmed=Count('id',filter=Q(status='confirmed')),total=Count('id'),upcoming=Count('id',filter=Q(status='confirmed',slot__starts_at__gt=timezone.now())))
+        data = {key:totals[key] for key in ('pending','confirmed','total')}
+        data['revenue']=None
         if member.role == Membership.Role.OWNER:
-            from django.db.models import Count
-            data.update({'completed_scans': None, 'search_appearances': None, 'upcoming': rows.filter(status='confirmed',slot__starts_at__gt=timezone.now()).count(), 'request_sources': list(rows.values('source').annotate(count=Count('id')).order_by('-count','source')), 'reporting_period': 'all_time'})
+            data.update({'completed_scans': None, 'search_appearances': None, 'upcoming': totals['upcoming'], 'request_sources': list(rows.values('source').annotate(count=Count('id')).order_by('-count','source')), 'reporting_period': 'all_time'})
         return Response(data)
 
 class AuditView(CenterView):
@@ -205,6 +212,7 @@ class AuditView(CenterView):
 
 
 class AlternativeTimeView(CenterView):
+    sync_booking_requests = True
     def post(self,request,center_id,booking_id):
         from rest_framework import serializers
         from .services import confirm_alternative
