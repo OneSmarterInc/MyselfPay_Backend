@@ -104,17 +104,25 @@ def resolve_ohio_zip(db, query):
     return row['zip5'], basis
 
 
-def compare(query):
-    query = query.dict() if hasattr(query, 'dict') else dict(query)
-    missing_zip = not str(query.get('zip', '')).strip()
-    zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
-    zip_basis = 'Saved center ZIP'
+def database_url():
     target = os.getenv('CHR_DATABASE_URL', '')
     if not target:
         raise RuntimeError('CHR database is not configured')
     parsed = urlsplit(target)
     if parsed.scheme not in ('postgres', 'postgresql') or parsed.path.lstrip('/') != 'selfpay_hospital_compare_v10':
         raise RuntimeError('Unexpected CHR database configuration')
+    return target
+
+
+def compare(query):
+    query = query.dict() if hasattr(query, 'dict') else dict(query)
+    if str(query.get('state','')).strip().upper() in ('CA','CALIFORNIA'):
+        from chr_california import prices
+        return prices(query)
+    missing_zip = not str(query.get('zip', '')).strip()
+    zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
+    zip_basis = 'Saved center ZIP'
+    target = database_url()
     with psycopg.connect(target, connect_timeout=5, row_factory=dict_row,
                          options='-c default_transaction_read_only=on -c statement_timeout=8000') as db:
         if missing_zip:
