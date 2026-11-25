@@ -66,6 +66,9 @@ QUERY="""SELECT place_id,MAX(ccn) AS ccn,MAX(hospital) AS hospital_name,MAX(city
  GROUP BY place_id,modality ORDER BY place_id,modality"""
 
 def compare(query):
+    if query.get("view")=="hospitals":
+        from chr_delaware_six import prices
+        return prices(query)
     import chr_index
     from postgres_store import PostgresConnection
     _,thresholds=chr_index.parameters({**query,'zip':str(query.get('zip','')).strip() or '00000'})

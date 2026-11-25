@@ -19,3 +19,9 @@ The CHR API dispatches state DE/Delaware to this table. The display uses the exi
 Distances use bundled Census ZIP-area reference coordinates, not hospital building locations. A saved Delaware ZIP is preferred; saved coordinates or an exact Delaware city provide a clearly labeled fallback. CPT/contrast and source metadata remain in raw_values for traceability. Confirm campus applicability before relying on a shared health-system file.
 
 Deploy the updated frontend main build on Vercel as well as updating/restarting AWS. Git automatic deployments suffice when enabled; otherwise redeploy main manually. California and Ohio tables are unchanged.
+
+## Six-column import (current frontend)
+
+The six-column file uses `python manage.py import_chr_delaware_six FILE --dry-run`, then the same command without `--dry-run`. It creates `public.de_hospital_imaging_prices_six` in the same CHR database. It replaces only that table and grants runtime SELECT using the same writer URL procedure above. No migration is needed. The detailed table remains unchanged.
+
+The current Delaware frontend requests `state=DE&view=hospitals`, which groups these six-column source records into statewide hospital ranges. ZIP, modality and contrast are absent from this CSV, so no geographic distance or exam-specific comparison is claimed. Distance is shown as not supplied. Deploy the latest frontend after importing.
