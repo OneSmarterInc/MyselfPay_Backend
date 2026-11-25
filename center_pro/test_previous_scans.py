@@ -45,3 +45,12 @@ class PreviousScansTests(TestCase):
   with patch('center_pro.previous_scan_views.saved_center_zip',return_value='45432'):
    self.assertEqual([r['zip_code'] for r in fetch()],['45432','01002','99999',''])
   self.assertEqual([r['zip_code'] for r in fetch()],['01002','45432','99999',''])
+
+ def test_zip_totals_without_a_center_are_returned_for_saved_zip(self):
+  PreviousScanRecord.objects.create(source_id='zip-total-45123',center_name='ZIP-level total',zip_code='45123',scans_2023=15)
+  request=APIRequestFactory().get('/previous-scans',HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+  with patch('center_pro.integration.sync_requests'),patch('center_pro.previous_scan_views.saved_center_zip',return_value='45123'):
+   response=PreviousScansView.as_view()(request,center_id=self.center.pk)
+  self.assertEqual(response.data['center_zip_history']['scans_2023'],15)
+  self.assertIsNone(response.data['center_zip_history']['scans_2022'])
+  self.assertEqual(response.data['count'],0)
