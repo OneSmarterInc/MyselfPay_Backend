@@ -1,4 +1,5 @@
 from django.db.models import Q,Case,When,Value,IntegerField
+from django.db.models.functions import Abs,Cast,NullIf
 from rest_framework.exceptions import PermissionDenied
 from .views import CenterView,Pagination
 from .models import PreviousScanRecord
@@ -29,7 +30,7 @@ class PreviousScansView(CenterView):
   zip_code=saved_center_zip(member.center)
   rows=rows.annotate(zip_missing=Case(When(zip_code='',then=Value(1)),default=Value(0),output_field=IntegerField()))
   if zip_code:
-   rows=rows.annotate(zip_priority=Case(When(zip_code=zip_code,then=Value(0)),default=Value(1),output_field=IntegerField())).order_by('zip_priority','zip_missing','zip_code','center_name','id')
+   rows=rows.annotate(zip_gap=Abs(Cast(NullIf('zip_code',Value('')),IntegerField())-Value(int(zip_code)))).order_by('zip_missing','zip_gap','zip_code','center_name','id')
   else:
    rows=rows.order_by('zip_missing','zip_code','center_name','id')
   paginator=Pagination();page=paginator.paginate_queryset(rows,request)
