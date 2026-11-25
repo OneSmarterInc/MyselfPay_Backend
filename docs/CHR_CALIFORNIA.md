@@ -50,3 +50,9 @@ Expected: Rows: 99054 Hospitals: 79. No Django migration or new worker is requir
 The public CHR view and owner comparison view both route California listings to the new table through their existing authenticated endpoint, with state=CA, server-side hospital search, and page sizes 10/20/50. Only a page of rows is returned. Other unsupported states retain the existing unavailable message.
 
 Validation: original-file dry run, importer/precision/null/duplicate and bounded-query tests, existing CHR and center tests, frontend tests/build, desktop/mobile search and pagination checks. Tests do not import into production.
+
+## Shared CHR chart layout
+
+The California UI uses the shared CHR dialog, range chart, facility marker, modality reference buttons and hospital table. The Source column is omitted as requested. `view=hospitals` returns one row per hospital with cash, gross and insurer min/max values aggregated from the existing table. MRI/CT buttons select only the center's saved reference price: the imported hospital rows have no modality labels, so the UI does not claim MRI/CT-specific counts or quotes. Distances remain unavailable. The default raw paginated API remains available.
+
+No schema change or CSV re-import is required for this display update. Pull backend main and restart the service, then deploy frontend main. Hospital summary SQL was checked against PostgreSQL using synthetic VALUES in a read-only transaction; no production data was modified during testing.
