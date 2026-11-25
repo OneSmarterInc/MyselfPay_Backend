@@ -11,6 +11,7 @@ from .management.commands.prepare_previous_scans import FIELDS
 
 class PreviousScansTests(TestCase):
  def setUp(self):
+  lookup=patch('center_pro.previous_scan_views.saved_center_zip',return_value='');lookup.start();self.addCleanup(lookup.stop)
   self.user=get_user_model().objects.create_user(username='scan-owner')
   self.center=Center.objects.create(name='Scan center',directory_key='scan-center')
   self.member=Membership.objects.create(user=self.user,center=self.center,role='owner')
@@ -33,3 +34,14 @@ class PreviousScansTests(TestCase):
   with patch('center_pro.integration.sync_requests'):
    response=PreviousScansView.as_view()(request,center_id=self.center.pk)
   self.assertEqual(response.status_code,403)
+
+ def test_center_zip_first_then_ascending_with_unknown_last(self):
+  for i,(name,zipcode) in enumerate([('First alphabetically','99999'),('Matching center','45432'),('Lowest ZIP','01002'),('Unknown','')]):
+   PreviousScanRecord.objects.create(source_id=f'order-{i}',center_name=name,zip_code=zipcode)
+  def fetch():
+   request=APIRequestFactory().get('/previous-scans',HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+   with patch('center_pro.integration.sync_requests'):
+    return PreviousScansView.as_view()(request,center_id=self.center.pk).data['results']
+  with patch('center_pro.previous_scan_views.saved_center_zip',return_value='45432'):
+   self.assertEqual([r['zip_code'] for r in fetch()],['45432','01002','99999',''])
+  self.assertEqual([r['zip_code'] for r in fetch()],['01002','45432','99999',''])
