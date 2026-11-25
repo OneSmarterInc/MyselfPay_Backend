@@ -146,7 +146,7 @@ class ActivitiesView(OwnerView):
         target.status = activity.kind
         target.save(update_fields=['status', 'updated_at'])
         AuditEvent.objects.create(center_id=center_id, actor=request.user, action='outreach.'+activity.kind, reference=f'TARGET-{target.id}')
-        return Response(ActivitySerializer(activity).data, status=201)
+        return Response({**ActivitySerializer(activity).data,'target':TargetSerializer(target).data}, status=201)
 
 
 class DirectoryPricesView(OwnerView):

@@ -69,14 +69,18 @@ def listing(db, hashes):
 
 def pending(path, status='pending'):
     with core.connect(path) as db:
-        rows = db.execute('SELECT id,entry_key,field,value,old_value,submitted,status,decided,decided_by FROM center_profile_edits '
-                          'WHERE status=? ORDER BY submitted DESC LIMIT 200', (status,)).fetchall()
-        active = core.active_batch(db)
-        out = []
-        for r in rows:
-            e = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, r['entry_key'])).fetchone()
-            out.append({**dict(r), 'sent_text': __import__('admin_alerts').when(r['submitted']), 'decided_text': __import__('admin_alerts').when(r['decided']), 'center': json.loads(e['payload']).get('name', r['entry_key']) if e else r['entry_key'], 'label': FIELDS.get(r['field'], r['field'])})
+        active=core.active_batch(db)
+        rows=db.execute("SELECT p.*,e.payload AS entry_payload FROM center_profile_edits p LEFT JOIN entries e "
+                        "ON e.batch_id=? AND e.entry_key=p.entry_key WHERE p.status=? ORDER BY p.submitted DESC LIMIT 200",(active,status)).fetchall()
+        out=[]
+        for row in rows:
+            item=dict(row);payload=item.pop('entry_payload')
+            item.update(center=json.loads(payload).get('name',item['entry_key']) if payload else item['entry_key'],
+                        sent_text=__import__('admin_alerts').when(item['submitted']),decided_text=__import__('admin_alerts').when(item['decided']),
+                        label=FIELDS.get(item['field'],item['field']))
+            out.append(item)
         return out
+
 
 
 def reject(path, ident, by):

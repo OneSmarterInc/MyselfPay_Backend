@@ -30,16 +30,18 @@ class PriceError(ValueError):
 
 def pending(path, status='pending'):
     with core.connect(path) as db:
-        rows = db.execute('SELECT id,entry_key,exam,amount_cents,price_type,contrast,interpretation_included,note,submitted,status,decided,decided_by '
-                          'FROM center_price_submissions WHERE status=? ORDER BY submitted DESC LIMIT 200', (status,)).fetchall()
-        active = core.active_batch(db)
-        names = {}
-        for r in rows:
-            e = db.execute('SELECT payload FROM entries WHERE batch_id=? AND entry_key=?', (active, r['entry_key'])).fetchone()
-            names[r['entry_key']] = json.loads(e['payload']).get('name', r['entry_key']) if e else r['entry_key']
-        return [{**dict(r), 'center': names[r['entry_key']], 'amount': f"{r['amount_cents'] / 100:,.2f}",
-                 'type_text': 'Starting at' if r['price_type'] == 'from' else 'Fixed',
-                 'sent_text': __import__('admin_alerts').when(r['submitted']), 'decided_text': __import__('admin_alerts').when(r['decided'])} for r in rows]
+        active=core.active_batch(db)
+        rows=db.execute("SELECT p.*,e.payload AS entry_payload FROM center_price_submissions p LEFT JOIN entries e "
+                        "ON e.batch_id=? AND e.entry_key=p.entry_key WHERE p.status=? ORDER BY p.submitted DESC LIMIT 200",(active,status)).fetchall()
+        out=[]
+        for row in rows:
+            item=dict(row);payload=item.pop('entry_payload')
+            item.update(center=json.loads(payload).get('name',item['entry_key']) if payload else item['entry_key'],
+                        amount=f"{item['amount_cents']/100:,.2f}",type_text='Starting at' if item['price_type']=='from' else 'Fixed',
+                        sent_text=__import__('admin_alerts').when(item['submitted']),decided_text=__import__('admin_alerts').when(item['decided']))
+            out.append(item)
+        return out
+
 
 
 def reject(path, ident, by):
@@ -108,7 +110,7 @@ def approve(path, ident, by):
                        'SELECT ?,id,entry_key,amount_cents,max_cents,price_type,payload FROM offers WHERE batch_id=? AND id=?', (batch, active, oid))
         db.execute('INSERT INTO offers VALUES(?,?,?,?,?,?,?)', (batch, offer['id'], sub['entry_key'], sub['amount_cents'], None, offer['type'], core.canonical(offer)))
         import spatial
-        spatial.index_batch(db, batch)
+        spatial.clone_index(db, active, batch)
         count = db.execute('SELECT COUNT(*) AS n FROM offers WHERE batch_id=?', (batch,)).fetchone()['n']
         db.execute("UPDATE batches SET status='published',report=? WHERE id=?",
                    (core.canonical({'parent_batch': active, 'center_price': ident, 'approved_by': by.strip(), 'offer_count': count}), batch))

@@ -59,6 +59,26 @@ def index_batch(db, batch):
     return count
 
 
+def clone_index(db, source_batch, batch, changed_keys=()):
+    """Copy ready, unchanged map rows and rebuild only edited entries atomically.
+
+    Location IDs are opaque and unique to the destination batch. A source that
+    has not finished indexing uses the full backfill, never a partial index.
+    """
+    if not db.execute('SELECT value FROM settings WHERE key=?',('spatial-ready:'+source_batch,)).fetchone():
+        return index_batch(db,batch)
+    keys=sorted(set(changed_keys))
+    db.execute('DELETE FROM spatial_locations WHERE batch_id=?',(batch,))
+    exclusion=' AND entry_key NOT IN ('+','.join('?' for _ in keys)+')' if keys else ''
+    db.execute("INSERT INTO spatial_locations(id,batch_id,entry_key,ordinal,h3_res7,h3_res11,location) "
+               "SELECT 'spatial:' || ? || ':' || entry_key || ':' || CAST(ordinal AS TEXT),?,entry_key,ordinal,h3_res7,h3_res11,location "
+               'FROM spatial_locations WHERE batch_id=?'+exclusion,(batch,batch,source_batch,*keys))
+    if keys:
+        for row in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND entry_key IN ('+','.join('?' for _ in keys)+')',(batch,*keys)).fetchall():
+            index_entry(db,batch,row['entry_key'],json.loads(row['payload']))
+    db.execute("INSERT INTO settings(key,value) VALUES(?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",('spatial-ready:'+batch,'1'))
+
+
 def validate_cell(cell):
     if not isinstance(cell, str) or not re.fullmatch(r'[0-9a-f]{15}', cell) or not h3.is_valid_cell(cell) or h3.get_resolution(cell) != 7:
         raise ValueError('Enter a valid H3 Resolution 7 cell ID.')

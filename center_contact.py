@@ -80,7 +80,7 @@ def _clone_batch(db, ident, edits, report):
     db.execute('INSERT INTO offers(batch_id,id,entry_key,amount_cents,max_cents,price_type,payload) '
                'SELECT ?,id,entry_key,amount_cents,max_cents,price_type,payload FROM offers WHERE batch_id=?', (batch, active))
     import spatial
-    spatial.index_batch(db, batch)
+    spatial.clone_index(db, active, batch, edits)
     db.execute("UPDATE batches SET status='published',report=? WHERE id=?", (core.canonical({'parent_batch': active, **report}), batch))
     db.execute("INSERT INTO settings VALUES('active_batch',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value", (batch,))
     db.execute('INSERT INTO publish_events(batch_id,previous_batch,created,action) VALUES(?,?,?,?)', (batch, active, time.time(), 'publish'))
