@@ -80,3 +80,23 @@ def directory_owner_access(email):
         member,created=Membership.objects.get_or_create(center=center,user=user,defaults={'role':'owner'})
         if created:AuditEvent.objects.create(center=center,actor=user,action='access.directory_owner',reference=f'MEMBER-{member.pk}')
     return user
+
+
+def _owned_center(actor,center_id):
+    center=get_object_or_404(Center.objects.select_for_update(),pk=center_id,directory_active=True)
+    get_object_or_404(Membership,center=center,user=actor,role='owner')
+    return center
+
+
+@transaction.atomic
+def assign_staff(actor,center_id,data):
+    # Recheck ownership while holding the same center lock as access mutations.
+    _owned_center(actor,center_id)
+    return assign_access(actor,center_id,{**data,'role':'staff'})
+
+
+@transaction.atomic
+def revoke_staff(actor,center_id,member_id):
+    center=_owned_center(actor,center_id)
+    get_object_or_404(Membership,pk=member_id,center=center,role='staff')
+    revoke_access(actor,center_id,member_id)
