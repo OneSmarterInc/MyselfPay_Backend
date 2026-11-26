@@ -53,13 +53,13 @@ class CaliforniaCHRTests(unittest.TestCase):
   for query in ({'page':0},{'page_size':10000},{'page':'bad'}):
    with self.assertRaises(ValueError):prices(query)
 
- def test_hospital_summary_keeps_ranges_without_assigning_exam_types(self):
+ def test_hospital_summary_keeps_screened_ranges_without_assigning_exam_types(self):
   with patch('chr_index.database_url',return_value='postgresql://localhost/selfpay_hospital_compare_v10'),patch('postgres_store.PostgresConnection') as connection:
    db=connection.return_value.__enter__.return_value
-   db.execute.return_value.fetchall.return_value=[{'hospital_name':'Synthetic Hospital','source_rows':3,'cash_min':Decimal('1.234'),'cash_max':Decimal('500'),'gross_min':None,'gross_max':None,'insured_min':Decimal('10'),'insured_max':Decimal('30')}]
+   db.execute.return_value.fetchall.return_value=[{'hospital_name':'Synthetic Hospital','source_rows':3,'cash_min':Decimal('150'),'cash_max':Decimal('500'),'gross_min':Decimal('200'),'gross_max':Decimal('600'),'insured_min':Decimal('250'),'insured_max':Decimal('700')}]
    result=prices({'view':'hospitals'})
   self.assertEqual(result['hospital_count'],1);self.assertEqual(result['source_records'],3)
-  self.assertEqual(result['hospitals'][0]['cash_min'],'1.234')
-  self.assertIsNone(result['hospitals'][0]['gross_min'])
+  self.assertEqual(result['hospitals'][0]['cash_min'],'150')
+  self.assertEqual(result['hospitals'][0]['gross_min'],'200')
   self.assertNotIn('MRI',result['hospitals'][0]);self.assertNotIn('distance_miles',result['hospitals'][0])
   self.assertIn('GROUP BY hospital',db.execute.call_args.args[0])

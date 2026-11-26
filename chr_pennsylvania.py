@@ -41,20 +41,8 @@ def prices(query):
         db.execute('SET LOCAL transaction_read_only=on')
         db.execute("SET LOCAL statement_timeout='8s'")
         if query.get('view')=='hospitals':
-            pattern='^[0-9]+([.][0-9]+)?( to [0-9]+([.][0-9]+)?)?$'
-            rows=db.execute("""WITH source AS (
-                SELECT hospital,cash_price,gross_charge,
-                  CASE WHEN insurer_rates ~ %s THEN split_part(insurer_rates,' to ',1)::numeric END AS insurer_low,
-                  CASE WHEN insurer_rates ~ %s THEN
-                    CASE WHEN strpos(insurer_rates,' to ')>0 THEN split_part(insurer_rates,' to ',2)::numeric ELSE insurer_rates::numeric END END AS insurer_high
-                FROM public.pa_hospital_imaging_prices """+where+"""
-                ) SELECT hospital AS hospital_name,COUNT(*) AS source_rows,
-                  MIN(cash_price) AS cash_min,MAX(cash_price) AS cash_max,
-                  MIN(gross_charge) AS gross_min,MAX(gross_charge) AS gross_max,
-                  MIN(insurer_low) AS insured_min,MAX(insurer_high) AS insured_max
-                FROM source GROUP BY hospital ORDER BY hospital""",(pattern,pattern,*params)).fetchall()
-            hospitals=[{k:str(v) if isinstance(v,Decimal) else v for k,v in row.items()} for row in rows]
-            return {'dataset':'pennsylvania_hospital_summary','state':'PA','hospital_count':len(hospitals),'source_records':sum(row['source_rows'] for row in rows),'hospitals':hospitals}
+            from chr_ranges import hospital_summary
+            return hospital_summary(db,query,'public.pa_hospital_imaging_prices','PA','pennsylvania_hospital_summary')
         counts=db.execute('SELECT COUNT(*) AS count,COUNT(DISTINCT hospital) AS hospital_count FROM public.pa_hospital_imaging_prices '+where,params).fetchone()
         rows=db.execute('SELECT source_row AS id,state,hospital,distance_miles,cash_price,gross_charge,insurer_rates FROM public.pa_hospital_imaging_prices '+where+' ORDER BY hospital,source_row LIMIT %s OFFSET %s',(*params,size,(page-1)*size)).fetchall()
     return {'dataset':'pennsylvania_statewide','state':'PA',**counts,'page':page,'page_size':size,'results':[{k:str(v) if isinstance(v,Decimal) else v for k,v in row.items()} for row in rows]}

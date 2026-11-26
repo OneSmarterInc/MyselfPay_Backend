@@ -149,6 +149,11 @@ def compare(query):
     if str(query.get('state','')).strip().upper() in ('DE','DELAWARE'):
         from chr_delaware import compare as delaware_compare
         return delaware_compare(query)
+    filtered=query.get('view')=='filtered'
+    if filtered:
+        from chr_ranges import reference,OHIO_QUERY
+        threshold,basis=reference(query)
+        query={**query,'mri':str(threshold),'ct':str(threshold)}
     missing_zip = not str(query.get('zip', '')).strip()
     zip5, thresholds = parameters({**query, 'zip': '00000' if missing_zip else query.get('zip')})
     zip_basis = 'Saved center ZIP'
@@ -162,9 +167,10 @@ def compare(query):
         rows = []
         for exam, threshold in thresholds.items():
             if threshold is not None:
-                for row in db.execute(QUERY, (zip5, exam, threshold, 50)).fetchall():
+                for row in db.execute(OHIO_QUERY if filtered else QUERY, (zip5, exam, threshold, 50)).fetchall():
                     rows.append({**row, 'exam': exam, 'distance_miles': row.get('miles')})
     result = build_result(rows, zip5, thresholds, origin)
+    if filtered:result.update(threshold_basis=basis,range_screened=True)
     result['zip_basis'] = zip_basis
     result['zip_fallback'] = missing_zip
     return result
