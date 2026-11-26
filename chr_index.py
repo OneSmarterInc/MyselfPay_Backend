@@ -119,6 +119,9 @@ def compare(query):
     if str(query.get('state','')).strip().upper() in ('CA','CALIFORNIA'):
         from chr_california import prices
         return prices(query)
+    if str(query.get('state','')).strip().upper() in ('OK','OKLAHOMA'):
+        from chr_oklahoma import prices
+        return prices(query)
     if str(query.get('state','')).strip().upper() in ('SD','SOUTH DAKOTA'):
         from chr_south_dakota import prices
         return prices(query)
