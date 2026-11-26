@@ -56,3 +56,31 @@ class PreviousScansTests(TestCase):
   self.assertEqual(response.data['center_zip_history']['scans_2023'],15)
   self.assertIsNone(response.data['center_zip_history']['scans_2022'])
   self.assertEqual(response.data['count'],0)
+
+ def test_forecast_import_updates_zip_rows_and_preserves_history(self):
+  PreviousScanRecord.objects.create(source_id='scan-center-row',center=self.center,center_name='Scan center',zip_code='01002',scans_2022=0,scans_2024=399)
+  with tempfile.TemporaryDirectory() as folder:
+   path=Path(folder)/'forecast.csv'
+   path.write_text('zip_code,scans_2024,scans_2025,scans_2026\n01002,999,403,408\n01005,0,,0\n',encoding='utf-8')
+   call_command('import_scan_forecasts',str(path),dry_run=True)
+   self.assertEqual(PreviousScanRecord.objects.count(),1)
+   call_command('import_scan_forecasts',str(path));call_command('import_scan_forecasts',str(path))
+  row=PreviousScanRecord.objects.get(source_id='scan-center-row')
+  self.assertEqual((row.scans_2022,row.scans_2024,row.scans_2025,row.scans_2026),(0,399,403,408))
+  self.assertEqual(row.center,self.center)
+  self.assertEqual(PreviousScanRecord.objects.count(),3)
+  self.assertIsNone(PreviousScanRecord.objects.get(source_id='zip-total-01005').scans_2025)
+  with patch('center_pro.previous_scan_views.saved_center_zip',return_value='01002'),patch('center_pro.integration.sync_requests'):
+   request=APIRequestFactory().get('/previous-scans',HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+   response=PreviousScansView.as_view()(request,center_id=self.center.pk)
+  self.assertEqual(response.data['center_zip_history']['scans_2026'],408)
+  self.assertEqual(response.data['results'][0]['scans_2025'],403)
+  self.assertEqual(response.data['forecast_years'],[2025,2026])
+
+ def test_invalid_forecast_does_not_modify_data(self):
+  from django.core.management.base import CommandError
+  with tempfile.TemporaryDirectory() as folder:
+   path=Path(folder)/'forecast.csv'
+   path.write_text('zip_code,scans_2024,scans_2025,scans_2026\n01002,399,403,408\n01002,399,403,408\n',encoding='utf-8')
+   with self.assertRaises(CommandError):call_command('import_scan_forecasts',str(path))
+  self.assertEqual(PreviousScanRecord.objects.count(),0)

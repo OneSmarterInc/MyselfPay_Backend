@@ -187,5 +187,7 @@ class PreviousScanRecord(models.Model):
     scans_2022=models.PositiveBigIntegerField(null=True,blank=True)
     scans_2023=models.PositiveBigIntegerField(null=True,blank=True)
     scans_2024=models.PositiveBigIntegerField(null=True,blank=True)
+    scans_2025=models.PositiveBigIntegerField(null=True,blank=True)
+    scans_2026=models.PositiveBigIntegerField(null=True,blank=True)
     source_status=models.TextField(blank=True)
     source_note=models.TextField(blank=True)
