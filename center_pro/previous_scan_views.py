@@ -35,9 +35,18 @@ class PreviousScansView(CenterView):
    rows=rows.order_by('zip_missing','zip_code','center_name','id')
   paginator=Pagination();page=paginator.paginate_queryset(rows,request)
   response=paginator.get_paginated_response([{'id':r.pk,'center_name':r.center_name,'zip_code':r.zip_code,'scans_2022':r.scans_2022,'scans_2023':r.scans_2023,'scans_2024':r.scans_2024,'scans_2025':r.scans_2025,'scans_2026':r.scans_2026,'current':r.center_id==center_id} for r in page])
-  total=PreviousScanRecord.objects.filter(source_id='zip-total-'+zip_code).first() if zip_code else None
-  if not total and zip_code:total=PreviousScanRecord.objects.filter(zip_code=zip_code).first()
+  fields=[f'scans_{year}' for year in range(2022,2027)]
+  zip_rows=list(PreviousScanRecord.objects.filter(zip_code=zip_code).values('source_id',*fields)) if zip_code else []
+  total=next((r for r in zip_rows if r['source_id']=='zip-total-'+zip_code),{})
+  history={}
+  for field in fields:
+   value=total.get(field)
+   if value is None:
+    # Shared ZIP totals are repeated per center: select an agreed value, never sum.
+    values={r[field] for r in zip_rows if r[field] is not None}
+    value=next(iter(values)) if len(values)==1 else None
+   history[field]=value
   response.data['center_zip']=zip_code
-  response.data['center_zip_history']={'center_name':member.center.name,'zip_code':zip_code,'scans_2022':total.scans_2022,'scans_2023':total.scans_2023,'scans_2024':total.scans_2024,'scans_2025':total.scans_2025,'scans_2026':total.scans_2026} if total else None
+  response.data['center_zip_history']={'center_name':member.center.name,'zip_code':zip_code,**history} if zip_rows else None
   response.data['forecast_years']=[2025,2026]
   return response

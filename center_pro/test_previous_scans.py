@@ -84,3 +84,23 @@ class PreviousScansTests(TestCase):
    path.write_text('zip_code,scans_2024,scans_2025,scans_2026\n01002,399,403,408\n01002,399,403,408\n',encoding='utf-8')
    with self.assertRaises(CommandError):call_command('import_scan_forecasts',str(path))
   self.assertEqual(PreviousScanRecord.objects.count(),0)
+
+ def test_summary_fills_each_missing_year_from_same_zip_without_summing(self):
+  PreviousScanRecord.objects.create(source_id='zip-total-44122',center_name='ZIP total',zip_code='44122',scans_2024=15407,scans_2025=15785,scans_2026=16176)
+  for i in range(2):PreviousScanRecord.objects.create(source_id=f'center-44122-{i}',center_name='Center',zip_code='44122',scans_2022=18536,scans_2023=15727,scans_2024=15407)
+  PreviousScanRecord.objects.create(source_id='other-zip',center_name='Other ZIP',zip_code='44123',scans_2022=999)
+  request=APIRequestFactory().get('/previous-scans',{'search':'no matching center'},HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+  with patch('center_pro.integration.sync_requests'),patch('center_pro.previous_scan_views.saved_center_zip',return_value='44122'):
+   result=PreviousScansView.as_view()(request,center_id=self.center.pk).data
+  self.assertEqual(result['count'],0)
+  self.assertEqual([result['center_zip_history'][f'scans_{y}'] for y in range(2022,2027)],[18536,15727,15407,15785,16176])
+
+ def test_summary_keeps_zero_and_leaves_conflicting_fallback_unknown(self):
+  PreviousScanRecord.objects.create(source_id='zip-total-01002',center_name='ZIP total',zip_code='01002',scans_2022=0)
+  PreviousScanRecord.objects.create(source_id='center-a',center_name='A',zip_code='01002',scans_2022=9,scans_2023=10)
+  PreviousScanRecord.objects.create(source_id='center-b',center_name='B',zip_code='01002',scans_2023=11)
+  request=APIRequestFactory().get('/previous-scans',HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+  with patch('center_pro.integration.sync_requests'),patch('center_pro.previous_scan_views.saved_center_zip',return_value='01002'):
+   history=PreviousScansView.as_view()(request,center_id=self.center.pk).data['center_zip_history']
+  self.assertEqual(history['scans_2022'],0)
+  self.assertIsNone(history['scans_2023'])
