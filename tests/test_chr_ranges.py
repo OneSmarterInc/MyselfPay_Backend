@@ -20,7 +20,7 @@ class CHRRangeScreenTests(unittest.TestCase):
   self.assertEqual(result['threshold_basis'],'MRI')
  def test_all_state_summaries_share_screen(self):
   import importlib
-  for module in ('california','kentucky','alabama','indiana','illinois','new_mexico','arkansas','colorado','hawaii','michigan','louisiana','pennsylvania','alaska','vermont','delaware_six'):
+  for module in ('california','north_dakota','kentucky','alabama','indiana','illinois','new_mexico','arkansas','colorado','hawaii','michigan','louisiana','pennsylvania','alaska','vermont','delaware_six'):
    with patch('chr_ranges.hospital_summary',return_value={'screened':True}) as summary,patch('chr_index.database_url',return_value='postgresql://localhost/selfpay_hospital_compare_v10'),patch('postgres_store.PostgresConnection'):
     result=importlib.import_module('chr_'+module).prices({'view':'hospitals','mri':'500'})
     self.assertEqual(result,{'screened':True});summary.assert_called_once()
