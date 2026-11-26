@@ -10,7 +10,7 @@ def reference(query):
 
 def hospital_summary(db,query,table,state,dataset):
     # Identifiers come only from the module-owned allowlist, never request text.
-    allowed={'public.'+code+'_hospital_imaging_prices' for code in ('ca','al','in','il','nm','ar','co','hi','mi','la','pa','ak','vt')}
+    allowed={'public.'+code+'_hospital_imaging_prices' for code in ('ca','ky','al','in','il','nm','ar','co','hi','mi','la','pa','ak','vt')}
     allowed.add('public.de_hospital_imaging_prices_six')
     if table not in allowed:raise ValueError('Unsupported CHR table.')
     threshold,basis=reference(query)
