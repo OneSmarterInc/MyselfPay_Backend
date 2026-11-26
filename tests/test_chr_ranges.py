@@ -20,7 +20,7 @@ class CHRRangeScreenTests(unittest.TestCase):
   self.assertEqual(result['threshold_basis'],'MRI')
  def test_all_state_summaries_share_screen(self):
   import importlib
-  for module in ('california','wisconsin','montana','oklahoma','south_dakota','district_of_columbia','tennessee','rhode_island','north_dakota','kentucky','alabama','indiana','illinois','new_mexico','arkansas','colorado','hawaii','michigan','louisiana','pennsylvania','alaska','vermont','delaware_six'):
+  for module in ('california','iowa','wisconsin','montana','oklahoma','south_dakota','district_of_columbia','tennessee','rhode_island','north_dakota','kentucky','alabama','indiana','illinois','new_mexico','arkansas','colorado','hawaii','michigan','louisiana','pennsylvania','alaska','vermont','delaware_six'):
    with patch('chr_ranges.hospital_summary',return_value={'screened':True}) as summary,patch('chr_index.database_url',return_value='postgresql://localhost/selfpay_hospital_compare_v10'),patch('postgres_store.PostgresConnection'):
     result=importlib.import_module('chr_'+module).prices({'view':'hospitals','mri':'500'})
     self.assertEqual(result,{'screened':True});summary.assert_called_once()
@@ -42,7 +42,7 @@ class CHRRangeScreenTests(unittest.TestCase):
  def test_state_schema_tables_use_canonical_names(self):
   from pathlib import Path
   root=Path(__file__).resolve().parents[1]
-  for state,file in [('WI','wisconsin'),('MT','montana'),('OK','oklahoma'),('SD','south-dakota'),('DC','district-of-columbia'),('TN','tennessee'),('RI','rhode-island'),('ND','north-dakota'),('KY','kentucky')]:
+  for state,file in [('IA','iowa'),('WI','wisconsin'),('MT','montana'),('OK','oklahoma'),('SD','south-dakota'),('DC','district-of-columbia'),('TN','tennessee'),('RI','rhode-island'),('ND','north-dakota'),('KY','kentucky')]:
    table='public.'+state.lower()+'_hospital_imaging_prices'
    ddl=(root/'ops'/f'chr-{file}.sql').read_text()
    self.assertIn('CREATE TABLE IF NOT EXISTS '+table+' (',ddl)
