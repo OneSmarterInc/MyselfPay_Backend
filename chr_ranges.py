@@ -8,10 +8,20 @@ def reference(query):
         if value is not None and value>0:return value,key.upper()
     return Decimal('100'),'Default'
 
+
+LEGACY_TABLES={'ND':'public.ky_hospitnd_imaging_prices','KY':'public.ky_hospitky_imaging_prices'}
+
+def resolve_state_table(db,table,state):
+    legacy=LEGACY_TABLES.get(state)
+    if not legacy:return table
+    row=db.execute('SELECT to_regclass(%s) AS canonical,to_regclass(%s) AS legacy',(table,legacy)).fetchone()
+    return table if row['canonical'] else legacy if row['legacy'] else table
+
 def hospital_summary(db,query,table,state,dataset):
     # Identifiers come only from the module-owned allowlist, never request text.
     allowed={'public.'+code+'_hospital_imaging_prices' for code in ('ca','nd','ky','al','in','il','nm','ar','co','hi','mi','la','pa','ak','vt')}
     allowed.add('public.de_hospital_imaging_prices_six')
+    if state in LEGACY_TABLES:allowed.add(LEGACY_TABLES[state])
     if table not in allowed:raise ValueError('Unsupported CHR table.')
     threshold,basis=reference(query)
     search=str(query.get('search','')).strip()[:120]

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.ky_hospitnd_imaging_prices (
+CREATE TABLE IF NOT EXISTS public.nd_hospital_imaging_prices (
  source_row integer PRIMARY KEY CHECK (source_row >= 2),
  state text NOT NULL CHECK (state = 'ND'),
  hospital text NOT NULL,
@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS public.ky_hospitnd_imaging_prices (
  raw_values jsonb NOT NULL,
  source_sha256 char(64) NOT NULL
 );
-CREATE INDEX IF NOT EXISTS nd_imaging_hospital_row ON public.ky_hospitnd_imaging_prices(hospital,source_row);
+CREATE INDEX IF NOT EXISTS nd_imaging_hospital_row ON public.nd_hospital_imaging_prices(hospital,source_row);

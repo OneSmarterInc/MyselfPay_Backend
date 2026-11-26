@@ -11,7 +11,7 @@ sudo systemctl status myselfpay-backend.service --no-pager
 unset CHR_IMPORT_DATABASE_URL
 ```
 
-The importer creates and atomically replaces only public.ky_hospitky_imaging_prices, grants runtime SELECT, and preserves the original seven columns in raw_values, including CPT code. The supplied file has 19,404 records and 27 hospital names. No Django migration is required. Existing states are unchanged.
+The importer creates and atomically replaces only public.ky_hospital_imaging_prices, grants runtime SELECT, and preserves the original seven columns in raw_values, including CPT code. The supplied file has 19,404 records and 27 hospital names. No Django migration is required. Existing states are unchanged.
 
 Deploy frontend main on Vercel (automatic Git deployment or manual redeployment). Kentucky center CHR cards request state=KY&view=hospitals, showing statewide hospital ranges without Source. Distances were not supplied; the chart combines source exams and does not claim an exact MRI/CT quote.
 

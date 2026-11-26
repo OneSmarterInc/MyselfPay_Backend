@@ -24,3 +24,27 @@ class CHRRangeScreenTests(unittest.TestCase):
    with patch('chr_ranges.hospital_summary',return_value={'screened':True}) as summary,patch('chr_index.database_url',return_value='postgresql://localhost/selfpay_hospital_compare_v10'),patch('postgres_store.PostgresConnection'):
     result=importlib.import_module('chr_'+module).prices({'view':'hospitals','mri':'500'})
     self.assertEqual(result,{'screened':True});summary.assert_called_once()
+
+ def test_north_dakota_and_kentucky_read_existing_legacy_tables(self):
+  import importlib
+  from unittest.mock import patch
+  for module,canonical,legacy in [('north_dakota','public.nd_hospital_imaging_prices','public.ky_hospitnd_imaging_prices'),('kentucky','public.ky_hospital_imaging_prices','public.ky_hospitky_imaging_prices')]:
+   for canonical_exists in (True,False):
+    with patch('chr_index.database_url',return_value='postgresql://localhost/selfpay_hospital_compare_v10'),patch('postgres_store.PostgresConnection') as connection:
+     db=connection.return_value.__enter__.return_value
+     db.execute.return_value.fetchone.return_value={'canonical':canonical if canonical_exists else None,'legacy':legacy}
+     db.execute.return_value.fetchall.return_value=[]
+     result=importlib.import_module('chr_'+module).prices({'view':'hospitals','mri':'500'})
+     self.assertEqual(result['hospital_count'],0)
+     sql=db.execute.call_args.args[0]
+     self.assertIn('FROM '+(canonical if canonical_exists else legacy),sql)
+
+ def test_state_schema_tables_use_canonical_names(self):
+  from pathlib import Path
+  root=Path(__file__).resolve().parents[1]
+  for state,file in [('ND','north-dakota'),('KY','kentucky')]:
+   table='public.'+state.lower()+'_hospital_imaging_prices'
+   ddl=(root/'ops'/f'chr-{file}.sql').read_text()
+   self.assertIn('CREATE TABLE IF NOT EXISTS '+table+' (',ddl)
+   importer=(root/'api'/'management'/'commands'/('import_chr_'+file.replace('-','_')+'.py')).read_text()
+   self.assertIn('COPY '+table+'(',importer)

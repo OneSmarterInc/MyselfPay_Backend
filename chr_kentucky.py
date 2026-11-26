@@ -40,9 +40,11 @@ def prices(query):
     with PostgresConnection(chr_index.database_url()) as db:
         db.execute('SET LOCAL transaction_read_only=on')
         db.execute("SET LOCAL statement_timeout='8s'")
+        from chr_ranges import resolve_state_table
+        table=resolve_state_table(db,'public.ky_hospital_imaging_prices','KY')
         if query.get('view')=='hospitals':
             from chr_ranges import hospital_summary
-            return hospital_summary(db,query,'public.ky_hospitky_imaging_prices','KY','kentucky_hospital_summary')
-        counts=db.execute('SELECT COUNT(*) AS count,COUNT(DISTINCT hospital) AS hospital_count FROM public.ky_hospitky_imaging_prices '+where,params).fetchone()
-        rows=db.execute('SELECT source_row AS id,state,hospital,distance_miles,cash_price,gross_charge,insurer_rates FROM public.ky_hospitky_imaging_prices '+where+' ORDER BY hospital,source_row LIMIT %s OFFSET %s',(*params,size,(page-1)*size)).fetchall()
+            return hospital_summary(db,query,table,'KY','kentucky_hospital_summary')
+        counts=db.execute('SELECT COUNT(*) AS count,COUNT(DISTINCT hospital) AS hospital_count FROM '+table+' '+where,params).fetchone()
+        rows=db.execute('SELECT source_row AS id,state,hospital,distance_miles,cash_price,gross_charge,insurer_rates FROM '+table+' '+where+' ORDER BY hospital,source_row LIMIT %s OFFSET %s',(*params,size,(page-1)*size)).fetchall()
     return {'dataset':'kentucky_statewide','state':'KY',**counts,'page':page,'page_size':size,'results':[{k:str(v) if isinstance(v,Decimal) else v for k,v in row.items()} for row in rows]}
