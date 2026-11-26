@@ -19,7 +19,7 @@ def resolve_state_table(db,table,state):
 
 def hospital_summary(db,query,table,state,dataset):
     # Identifiers come only from the module-owned allowlist, never request text.
-    allowed={'public.'+code+'_hospital_imaging_prices' for code in ('ca','tn','ri','nd','ky','al','in','il','nm','ar','co','hi','mi','la','pa','ak','vt')}
+    allowed={'public.'+code+'_hospital_imaging_prices' for code in ('ca','dc','tn','ri','nd','ky','al','in','il','nm','ar','co','hi','mi','la','pa','ak','vt')}
     allowed.add('public.de_hospital_imaging_prices_six')
     if state in LEGACY_TABLES:allowed.add(LEGACY_TABLES[state])
     if table not in allowed:raise ValueError('Unsupported CHR table.')
