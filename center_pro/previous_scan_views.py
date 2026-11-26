@@ -25,6 +25,7 @@ class PreviousScansView(CenterView):
   member=self.membership(request,center_id)
   if member.role!='owner':raise PermissionDenied('Owner access is required.')
   rows=PreviousScanRecord.objects.exclude(source_id__startswith="zip-total-")
+  rows=rows.filter(**{f"scans_{year}__isnull":False for year in range(2022,2027)})
   query=request.query_params.get('search','').strip()[:120]
   if query:rows=rows.filter(Q(center_name__icontains=query)|Q(zip_code__icontains=query)|Q(center_location__icontains=query))
   zip_code=saved_center_zip(member.center)

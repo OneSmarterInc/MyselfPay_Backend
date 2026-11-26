@@ -24,7 +24,7 @@ class PreviousScansTests(TestCase):
    call_command('import_previous_scans',str(p));call_command('import_previous_scans',str(p))
    row=PreviousScanRecord.objects.get();self.assertEqual(row.zip_code,'01002');self.assertEqual(row.scans_2022,0);self.assertIsNone(row.scans_2023)
  def test_only_owner_can_read_zip_history(self):
-  PreviousScanRecord.objects.create(source_id='scan-1',center=self.center,center_name='Scan center',zip_code='01002',scans_2024=399)
+  PreviousScanRecord.objects.create(source_id='scan-1',center=self.center,center_name='Scan center',zip_code='01002',scans_2022=0,scans_2023=1,scans_2024=399,scans_2025=403,scans_2026=408)
   request=APIRequestFactory().get('/previous-scans',HTTP_HOST='localhost');force_authenticate(request,user=self.user)
   with patch('center_pro.integration.sync_requests'):
    response=PreviousScansView.as_view()(request,center_id=self.center.pk)
@@ -37,7 +37,7 @@ class PreviousScansTests(TestCase):
 
  def test_nearest_zip_numbers_first_even_without_exact_match(self):
   for i,zipcode in enumerate(['99999','45123','01002','','45124','45122','45130']):
-   PreviousScanRecord.objects.create(source_id=f'order-{i}',center_name=f'Center {i}',zip_code=zipcode)
+   PreviousScanRecord.objects.create(source_id=f'order-{i}',center_name=f'Center {i}',zip_code=zipcode,**{f'scans_{y}':0 for y in range(2022,2027)})
   def fetch():
    request=APIRequestFactory().get('/previous-scans',{'page_size':20},HTTP_HOST='localhost');force_authenticate(request,user=self.user)
    with patch('center_pro.integration.sync_requests'):
@@ -58,7 +58,7 @@ class PreviousScansTests(TestCase):
   self.assertEqual(response.data['count'],0)
 
  def test_forecast_import_updates_zip_rows_and_preserves_history(self):
-  PreviousScanRecord.objects.create(source_id='scan-center-row',center=self.center,center_name='Scan center',zip_code='01002',scans_2022=0,scans_2024=399)
+  PreviousScanRecord.objects.create(source_id='scan-center-row',center=self.center,center_name='Scan center',zip_code='01002',scans_2022=0,scans_2023=1,scans_2024=399)
   with tempfile.TemporaryDirectory() as folder:
    path=Path(folder)/'forecast.csv'
    path.write_text('zip_code,scans_2024,scans_2025,scans_2026\n01002,999,403,408\n01005,0,,0\n',encoding='utf-8')
@@ -104,3 +104,20 @@ class PreviousScansTests(TestCase):
    history=PreviousScansView.as_view()(request,center_id=self.center.pk).data['center_zip_history']
   self.assertEqual(history['scans_2022'],0)
   self.assertIsNone(history['scans_2023'])
+
+
+ def test_incomplete_year_rows_hidden_before_pagination_and_zero_retained(self):
+  complete={f'scans_{y}':0 for y in range(2022,2027)}
+  for year in range(2022,2027):
+   PreviousScanRecord.objects.create(source_id=f'missing-{year}',center_name=f'Missing {year}',zip_code='01002',**{**complete,f'scans_{year}':None})
+  for i in range(6):PreviousScanRecord.objects.create(source_id=f'complete-{i}',center_name=f'Complete {i}',zip_code='01002',**complete)
+  request=APIRequestFactory().get('/previous-scans',{'page_size':5},HTTP_HOST='localhost');force_authenticate(request,user=self.user)
+  with patch('center_pro.integration.sync_requests'):
+   response=PreviousScansView.as_view()(request,center_id=self.center.pk)
+  self.assertEqual(response.data['count'],6)
+  self.assertEqual(len(response.data['results']),5)
+  self.assertIsNotNone(response.data['next'])
+  for row in response.data['results']:
+   self.assertTrue(row['center_name'].startswith('Complete'))
+   self.assertTrue(all(row[f'scans_{y}']==0 for y in range(2022,2027)))
+  self.assertEqual(PreviousScanRecord.objects.count(),11)
