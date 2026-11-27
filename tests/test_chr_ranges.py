@@ -4,8 +4,8 @@ from unittest.mock import MagicMock,patch
 from chr_ranges import reference,hospital_summary,OHIO_QUERY
 
 class CHRRangeScreenTests(unittest.TestCase):
- def test_mri_then_ct_then_100(self):
-  for query,expected in [({'mri':'500','ct':'300'},('500','MRI')),({'mri':'0','ct':'300'},('300','CT')),({'mri':'','ct':''},('100','Default')),({'mri':'0','ct':'0'},('100','Default'))]:
+ def test_highest_listed_price_then_100(self):
+  for query,expected in [({'mri':'500','ct':'300'},('500','MRI')),({'mri':'0','ct':'300'},('300','CT')),({'mri':'300','ct':'575'},('575','CT')),({'mri':'575','ct':'325','threshold':'750'},('750','Facility')),({'mri':'','ct':''},('100','Default')),({'mri':'0','ct':'0'},('100','Default'))]:
    value,basis=reference(query);self.assertEqual((str(value),basis),expected)
   for value in ('NaN','-1','bad'):
    with self.assertRaises(ValueError):reference({'mri':value})

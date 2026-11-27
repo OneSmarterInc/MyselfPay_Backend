@@ -3,9 +3,11 @@ from decimal import Decimal
 
 def reference(query):
     from chr_index import money
-    for key in ('mri','ct'):
-        value=money(query.get(key))
-        if value is not None and value>0:return value,key.upper()
+    explicit=money(query.get('threshold'))
+    if explicit is not None and explicit>0:return explicit,'Facility'
+    prices=[(money(query.get(key)),key.upper()) for key in ('mri','ct')]
+    valid=[(value,basis) for value,basis in prices if value is not None and value>0]
+    if valid:return max(valid,key=lambda item:item[0])
     return Decimal('100'),'Default'
 
 
