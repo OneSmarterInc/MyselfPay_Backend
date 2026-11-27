@@ -125,7 +125,11 @@ def upsert(filename, path, dry_run=True, replace_existing=False):
         changed={};processed=set();added=updated=aliases=0
         for entry in incoming:
             ident=entry['source_record_id'];key=by_id.get(ident)
-            if key is None:
+            if replace_existing and key in processed:
+                # Earlier upserts merged this source ID into another record.
+                # Workbook-only mode restores one active entry per source ID.
+                key=None
+            if key is None and not replace_existing:
                 candidates=by_name.get((entry['name'].strip().casefold(),entry['states'].replace(' ','')),[])
                 candidates=[k for k in candidates if entries[k].get('zip_codes',entries[k].get('zip',''))==entry['zip_codes'] and entry['zip_codes']]
                 if len(candidates)>1:raise ValueError('Ambiguous center match: '+ident)
@@ -137,7 +141,7 @@ def upsert(filename, path, dry_run=True, replace_existing=False):
             if key in processed:
                 entry={**previous,'source_record_aliases':sorted(set(previous.get('source_record_aliases',[])+[ident])),'supporting_source_records':{**previous.get('supporting_source_records',{}),ident:entry['source_fields']}}
                 aliases+=1
-            else:
+            elif not replace_existing:
                 if previous.get('source_record_id') and previous['source_record_id']!=ident:
                     entry['source_record_id']=previous['source_record_id']
                     entry['source_record_aliases']=sorted(set(previous.get('source_record_aliases',[])+[ident]))
@@ -148,6 +152,7 @@ def upsert(filename, path, dry_run=True, replace_existing=False):
             if key not in by_name[(entry['name'].strip().casefold(),entry['states'].replace(' ',''))]:by_name[(entry['name'].strip().casefold(),entry['states'].replace(' ',''))].append(key)
         removed=set(old)-processed if replace_existing else set()
         if replace_existing:entries={k:e for k,e in entries.items() if k in processed}
+        if replace_existing and len(entries)!=len(incoming):raise ValueError('Replacement record count does not match the CSV')
         changed={k:e for k,e in entries.items() if old.get(k)!=e}
         report={'parent_batch':active,'incoming_records':len(incoming),'matched_centers':updated,'new_centers':added,'supporting_alias_records':aliases,'changed_entries':len(changed),'replace_existing':replace_existing,'removed_unmatched_centers':len(removed),'preserved_unmatched_centers':0 if replace_existing else len(set(old)-processed),'total_centers':len(entries),'dry_run':dry_run}
         if dry_run or (not changed and not removed):return report

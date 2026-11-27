@@ -63,6 +63,22 @@ class CombinedDirectoryTests(unittest.TestCase):
             self.assertEqual(len(core.catalog(dbfile)['entries']),2)
             self.assertEqual(upsert(csvfile,dbfile,False,replace_existing=True)['removed_unmatched_centers'],0)
             with core.connect(dbfile) as db:self.assertEqual(db.execute('SELECT COUNT(*) n FROM entries WHERE batch_id=?',(batch,)).fetchone()['n'],3)
+    def test_replacement_restores_merged_alias_as_separate_source_record(self):
+        with tempfile.TemporaryDirectory() as folder:
+            dbfile=Path(folder)/'test.sqlite';csvfile=Path(folder)/'input.csv';core.initialize(dbfile)
+            original=normalize(self.raw());original['source_record_aliases']=['L-1']
+            with core.connect(dbfile) as db:
+                db.execute('INSERT INTO batches VALUES(?,?,?,?,?,?)',('old','hash','test',1,'published','{}'))
+                db.execute("INSERT INTO settings VALUES('active_batch','old')")
+                db.execute('INSERT INTO entries VALUES(?,?,?,?)',('old','stable',core.digest(original),core.canonical(original)))
+            self.write_csv(csvfile,[self.raw(),self.raw('L-1',X='Additional candidate')])
+            report=upsert(csvfile,dbfile,False,replace_existing=True)
+            self.assertEqual(report['total_centers'],2);self.assertEqual(report['supporting_alias_records'],0)
+            entries=core.catalog(dbfile)['entries']
+            self.assertEqual({e['source_record_id'] for e in entries},{'D-1','L-1'})
+            self.assertTrue(any(e['booking_id']=='stable' and e['source_record_id']=='D-1' for e in entries))
+            self.assertEqual(upsert(csvfile,dbfile,False,replace_existing=True)['changed_entries'],0)
+
     def test_duplicate_id_rejected_before_publication(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'input.csv';self.write_csv(path,[self.raw(),self.raw()])
