@@ -9,7 +9,7 @@ from directory_policy import blocked, visible_sql
 from proximity import offer_locations
 
 
-ENTRY_FIELDS = ('name', 'area', 'states', 'entity', 'category', 'mri', 'ct', 'other', 'coverage', 'notes', 'source', 'additional', 'checked', 'is_test_center')
+ENTRY_FIELDS = ('name', 'area', 'states', 'entity', 'category', 'mri', 'ct', 'other', 'coverage', 'notes', 'source', 'additional', 'checked', 'is_test_center', 'address', 'zip', 'zip_codes', 'website', 'price_verification', 'workbook_prices')
 OFFER_FIELDS = ('id', 'mod', 'contrast', 'type', 'region', 'scope', 'included', 'order', 'exam_terms')
 BUNDLE_LIMIT = 500
 

@@ -231,7 +231,7 @@ def catalog(path=DB):
         batch=active_batch(db)
         def load():
             predicate, values = visible_sql()
-            entries={r['entry_key']:{**json.loads(r['payload']), 'booking_id': r['entry_key']} for r in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate,(batch,*values))}
+            entries={r['entry_key']:{**{k:v for k,v in json.loads(r['payload']).items() if k not in ('source_fields','supporting_source_records','location_review')}, 'booking_id': r['entry_key']} for r in db.execute('SELECT entry_key,payload FROM entries WHERE batch_id=? AND '+predicate,(batch,*values))}
             offers=[]
             for r in db.execute('SELECT entry_key,payload,amount_cents,max_cents FROM offers WHERE batch_id=? AND '+predicate,(batch,*values)):
                 if r['entry_key'] not in entries: continue
