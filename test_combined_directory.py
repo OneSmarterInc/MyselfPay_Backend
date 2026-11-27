@@ -55,6 +55,14 @@ class CombinedDirectoryTests(unittest.TestCase):
                 self.assertEqual(db.execute('SELECT COUNT(*) n FROM entries WHERE batch_id=?',('old',)).fetchone()['n'],2)
             self.assertEqual(upsert(csvfile,dbfile,False)['changed_entries'],0)
             self.assertNotIn('source_fields',core.catalog(dbfile)['entries'][0])
+            preview=upsert(csvfile,dbfile,True,replace_existing=True)
+            self.assertEqual(preview['removed_unmatched_centers'],1);self.assertEqual(preview['changed_entries'],0)
+            self.assertEqual(len(core.catalog(dbfile)['entries']),3)
+            replacement=upsert(csvfile,dbfile,False,replace_existing=True)
+            self.assertEqual(replacement['total_centers'],2);self.assertEqual(replacement['preserved_unmatched_centers'],0)
+            self.assertEqual(len(core.catalog(dbfile)['entries']),2)
+            self.assertEqual(upsert(csvfile,dbfile,False,replace_existing=True)['removed_unmatched_centers'],0)
+            with core.connect(dbfile) as db:self.assertEqual(db.execute('SELECT COUNT(*) n FROM entries WHERE batch_id=?',(batch,)).fetchone()['n'],3)
     def test_duplicate_id_rejected_before_publication(self):
         with tempfile.TemporaryDirectory() as folder:
             path=Path(folder)/'input.csv';self.write_csv(path,[self.raw(),self.raw()])

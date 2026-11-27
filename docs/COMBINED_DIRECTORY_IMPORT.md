@@ -1,3 +1,14 @@
+## Workbook-only publication (current requirement)
+
+Use --replace-existing for both preview and import. This publishes only the 5,643 importable records in the supplied CSV, unlists all older unmatched records, and does not carry over old mapped price offers. Matching booking/center IDs remain stable. Previous batches, accounts and bookings are preserved. Run sync_center_pro afterward and restart the backend. The CSV does not need to be uploaded again if imports/combined-imaging-directory.csv is already present. No Vercel deployment is required for this backend-only change.
+
+    python manage.py import_combined_directory imports/combined-imaging-directory.csv --replace-existing --dry-run
+    python manage.py import_combined_directory imports/combined-imaging-directory.csv --replace-existing
+    python manage.py sync_center_pro
+    sudo systemctl restart myselfpay-backend.service
+
+The older upsert mode described below remains available without --replace-existing, but does not meet the workbook-only requirement.
+
 # Combined imaging directory import
 
 Use the MAIN directory database configured by Django DOMAIN_DATABASE, not the CHR hospital database. No new database URL or migration is needed.

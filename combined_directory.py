@@ -104,8 +104,9 @@ def read_csv(filename):
             result.append(entry)
     return sorted(result,key=lambda e:e['record_category']!='Main')
 
-def upsert(filename, path, dry_run=True):
+def upsert(filename, path, dry_run=True, replace_existing=False):
     incoming=read_csv(filename)
+    if replace_existing and not incoming:raise ValueError('Cannot replace the directory with an empty import')
     with core.connect(path) as db:
         if not dry_run:
             # Serialize publication against other directory publications.
@@ -145,16 +146,18 @@ def upsert(filename, path, dry_run=True):
             entries[key]=entry;by_id[ident]=key;processed.add(key)
             by_name.setdefault((entry['name'].strip().casefold(),entry['states'].replace(' ','')),[])
             if key not in by_name[(entry['name'].strip().casefold(),entry['states'].replace(' ',''))]:by_name[(entry['name'].strip().casefold(),entry['states'].replace(' ',''))].append(key)
+        removed=set(old)-processed if replace_existing else set()
+        if replace_existing:entries={k:e for k,e in entries.items() if k in processed}
         changed={k:e for k,e in entries.items() if old.get(k)!=e}
-        report={'parent_batch':active,'incoming_records':len(incoming),'matched_centers':updated,'new_centers':added,'supporting_alias_records':aliases,'changed_entries':len(changed),'preserved_unmatched_centers':len(set(old)-processed),'total_centers':len(entries),'dry_run':dry_run}
-        if dry_run or not changed:return report
+        report={'parent_batch':active,'incoming_records':len(incoming),'matched_centers':updated,'new_centers':added,'supporting_alias_records':aliases,'changed_entries':len(changed),'replace_existing':replace_existing,'removed_unmatched_centers':len(removed),'preserved_unmatched_centers':0 if replace_existing else len(set(old)-processed),'total_centers':len(entries),'dry_run':dry_run}
+        if dry_run or (not changed and not removed):return report
         batch=str(uuid.uuid4())
         db.execute('INSERT INTO batches VALUES(?,?,?,?,?,?)',(batch,core.digest({'parent':active,'entries':entries}),Path(filename).name,time.time(),'staged','{}'))
         db.executemany('INSERT INTO entries VALUES(?,?,?,?)',[(batch,k,core.digest(e),core.canonical(e)) for k,e in entries.items()])
         # Keep mapped offers only for unchanged listings. Old prices must never
         # override the replacement workbook or gain an unreviewed branch scope.
         offers=db.execute('SELECT * FROM offers WHERE batch_id=?',(active,)).fetchall()
-        kept=[o for o in offers if o['entry_key'] not in changed]
+        kept=[] if replace_existing else [o for o in offers if o['entry_key'] not in changed]
         db.executemany('INSERT INTO offers VALUES(?,?,?,?,?,?,?)',[(batch,o['id'],o['entry_key'],o['amount_cents'],o['max_cents'],o['price_type'],o['payload']) for o in kept])
         report['old_mapped_offers_withheld']=len(offers)-len(kept)
         import spatial

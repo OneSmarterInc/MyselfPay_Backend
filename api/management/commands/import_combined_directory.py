@@ -8,7 +8,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('csv_file')
         parser.add_argument('--dry-run', action='store_true')
+        parser.add_argument('--replace-existing', action='store_true', help='Publish only CSV records; unlist older unmatched entries. Previous batches and bookings remain intact.')
     def handle(self, *args, **options):
-        try:result=upsert(options['csv_file'],settings.DOMAIN_DATABASE,options['dry_run'])
+        try:result=upsert(options['csv_file'],settings.DOMAIN_DATABASE,options['dry_run'],replace_existing=options['replace_existing'])
         except (ValueError,OSError) as exc:raise CommandError(str(exc)) from exc
         self.stdout.write(json.dumps(result,indent=2))
