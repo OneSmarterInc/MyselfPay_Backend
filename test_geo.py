@@ -23,6 +23,21 @@ class GeoTests(unittest.TestCase):
         self.assertEqual(geo.lookup('00000'),[])
         self.assertEqual(geo.lookup('4540'),[])
         self.assertEqual(geo.lookup('Cincinatti, OH')[0]['match'],'suggestion')
+    def test_all_states_dc_and_five_territories_are_searchable(self):
+        choices=geo.state_choices()
+        self.assertEqual(len(choices),56)
+        for name,code,zipcode in [('American Samoa','AS','96799'),('Guam','GU','96910'),('Northern Mariana Islands','MP','96950'),('US Virgin Islands','VI','00802'),('Puerto Rico','PR','00601')]:
+            self.assertIn(name,choices)
+            for query in [name,code,zipcode]:
+                resolved=geo.lookup(query)
+                self.assertEqual(resolved[0]['match'],'exact');self.assertEqual(resolved[0]['state'],code)
+        self.assertEqual(geo.lookup('U.S. Virgin Islands')[0]['state'],'VI')
+        entry={'name':'Territory test','booking_id':'territory','states':'AS','area':'Pago Pago','location_type':'unresolved','locations':[],'mri':'$400'}
+        with patch.object(core,'catalog',return_value={'version':'territory-test','entries':[entry],'offers':[]}):
+            result=core.search({'location':'American Samoa','scope':'state'})
+            self.assertEqual(result['resolved_location']['state'],'AS')
+            self.assertEqual([e['name'] for e in result['nearby_unpriced']],['Territory test'])
+
     def test_no_network(self):
         with patch('socket.socket',side_effect=AssertionError('Network forbidden')):
             geo._index.cache_clear();self.assertTrue(geo.lookup('Dayton, OH'))

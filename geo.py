@@ -34,6 +34,18 @@ def _index():
                 else:
                     aliases={('Boise City','ID'):['Boise'],('Lexington-Fayette urban county','KY'):['Lexington','Lexington-Fayette'],('Nashville-Davidson metropolitan government','TN'):['Nashville']}
                     for key in set([normalize(name),normalize(row['name'])]+[normalize(a) for a in aliases.get((name,row['state']),[])]):names.setdefault(key,[]).append(item)
+    # Territory ZIP areas are bundled, but the state gazetteer omits four
+    # territories. Use a documented ZIP reference point for state selection;
+    # statewide searches do not treat it as a facility or a measured distance.
+    territories = [('American Samoa','AS','96799'),('Guam','GU','96910'),
+                   ('Northern Mariana Islands','MP','96950'),('US Virgin Islands','VI','00802')]
+    for name,code,reference_zip in territories:
+        point=next((item for item in zips.get(reference_zip,[]) if item['state']==code),None)
+        if point is None:raise ValueError('Missing bundled territory ZIP reference: '+code)
+        item=dict(name=name,state=code,zip='',latitude=point['latitude'],longitude=point['longitude'],kind='state',label=name,reference_zip=reference_zip)
+        states[normalize(name)]=item;states[normalize(code)]=item
+    for alias in ('Virgin Islands','U.S. Virgin Islands','United States Virgin Islands'):
+        states[normalize(alias)]=states['vi']
     return names,zips,states
 
 def state_choices():
