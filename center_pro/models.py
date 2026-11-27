@@ -191,3 +191,12 @@ class PreviousScanRecord(models.Model):
     scans_2026=models.PositiveBigIntegerField(null=True,blank=True)
     source_status=models.TextField(blank=True)
     source_note=models.TextField(blank=True)
+
+
+class CenterLoginOTP(models.Model):
+    user=models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    challenge_digest=models.CharField(max_length=64,unique=True)
+    code_digest=models.CharField(max_length=256)
+    expires_at=models.DateTimeField()
+    used_at=models.DateTimeField(null=True,blank=True)
+    attempts=models.PositiveSmallIntegerField(default=0)

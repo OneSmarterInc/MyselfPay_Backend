@@ -34,7 +34,7 @@ def revoke_access(actor,center_id,member_id):
 def directory_owner_access(email):
     """Provision default owner access only for an exact active directory mailbox match.
 
-    Login still requires a single-use emailed link. Explicit assignments are never
+    Login still requires single-use email verification. Explicit assignments are never
     changed, inactive/ambiguous accounts are not reused, and admin revocations win.
     """
     import json

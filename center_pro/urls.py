@@ -1,7 +1,8 @@
 from django.urls import path
-from . import views, owner_views, auth_flows, full_views, employer_views, previous_scan_views, staff_views
+from . import views, owner_views, auth_flows, full_views, employer_views, previous_scan_views, staff_views, otp_auth
 
 urlpatterns = [
+    path('auth/otp/request',otp_auth.request_code),path('auth/otp/verify',otp_auth.verify_code),
     path('centers/<int:center_id>/staff',staff_views.StaffView.as_view()),
     path('centers/<int:center_id>/staff/<int:member_id>/revoke',staff_views.RevokeStaffView.as_view()),
     path("centers/<int:center_id>/chr-index", owner_views.CenterCHRComparisonView.as_view()),
