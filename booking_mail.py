@@ -110,14 +110,14 @@ def _deliver(message, recipient):
             raise MailUnavailable(detail) from None
 
 
-def send_message(message, recipient):
+def send_message(message, recipient, *, smtp_only=False):
     """Send one message and record the result in the audit log. Only hashes of the recipient and subject are kept."""
     import audit
     import hashlib
     fingerprint = {'to_sha256': hashlib.sha256(str(recipient).strip().lower().encode()).hexdigest(),
                    'subject_sha256': hashlib.sha256(str(message['Subject'] or '').encode()).hexdigest()}
     try:
-        if os.getenv('SECUREMAIL_MESSAGES_ENABLED','false').lower()=='true':
+        if not smtp_only and os.getenv('SECUREMAIL_MESSAGES_ENABLED','false').lower()=='true':
             try:
                 from securemail_api import send_message as protected_message
                 protected_message(message,recipient)

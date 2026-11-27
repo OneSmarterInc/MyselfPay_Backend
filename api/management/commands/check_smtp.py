@@ -28,7 +28,7 @@ class Command(BaseCommand):
         message['Subject'] = 'MySelfPay booking email configuration test'
         message.set_content('MySelfPay SMTP configuration test.\n\nThis email confirms that the sending server accepted a message addressed to your test center. It is not an appointment request.\n\nMySelfPay')
         try:
-            booking_mail.send_message(message, recipient)
+            booking_mail.send_message(message, recipient, smtp_only=True)
         except booking_mail.MailUnavailable as exc:
             raise CommandError(str(exc)) from None
         self.stdout.write(self.style.SUCCESS('SMTP server accepted the test email. Check the recipient inbox/spam folder.'))

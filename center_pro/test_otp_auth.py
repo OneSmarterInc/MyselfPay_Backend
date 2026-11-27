@@ -55,7 +55,7 @@ class CenterOTPTests(TestCase):
   with patch('booking_mail.send_message') as send:
    response=self.post('request',{'email':self.user.email});self.assertEqual(response.status_code,200)
    message,recipient=send.call_args.args
-   self.assertEqual(recipient,self.user.email);self.assertIn('sign-in code',message['Subject'])
+   self.assertEqual(recipient,self.user.email);self.assertIn('sign-in code',message['Subject']);self.assertTrue(send.call_args.kwargs['smtp_only'])
    self.assertNotIn('http',message.get_content());self.assertNotIn('development_code',response.json())
    unknown=self.post('request',{'email':'unknown@example.test'})
    self.assertEqual(set(response.json()),set(unknown.json()));self.assertEqual(response.json()['detail'],unknown.json()['detail'])
@@ -73,3 +73,12 @@ class CenterOTPTests(TestCase):
    self.assertEqual(self.post('request',{'email':self.user.email}).status_code,503)
   self.assertEqual(CenterLoginOTP.objects.count(),0)
 
+
+
+ @override_settings(CENTER_PRO_LOCAL_LINKS=False)
+ def test_otp_always_uses_smtp_even_when_securemail_is_enabled(self):
+  import os
+  with patch.dict(os.environ,{'SECUREMAIL_MESSAGES_ENABLED':'true'}),patch('booking_mail._deliver') as smtp,patch('securemail_api.send_message') as secure,patch('audit.log'):
+   response=self.post('request',{'email':self.user.email})
+   self.assertEqual(response.status_code,200);smtp.assert_called_once();secure.assert_not_called()
+   self.assertIn('sign-in code',smtp.call_args.args[0]['Subject'])
