@@ -43,6 +43,10 @@ def request_code(request):
         import booking_mail
         message=EmailMessage();message['Subject']='Your MySelfPay center sign-in code'
         message.set_content('Your MySelfPay center sign-in code is: '+code+'\n\nEnter this code on the center sign-in page. It expires in 10 minutes and can be used once. Do not share this code.')
+        message.add_alternative(booking_mail.otp_html(code, label='CENTER SIGN-IN',
+            title='Your center sign-in code',
+            instructions='Enter this code on the MySelfPay center sign-in page to access your workspace.',
+            note='Do not share this code. If you did not request it, you can safely ignore this email.'), subtype='html')
         try:booking_mail.send_message(message,email,smtp_only=True)
         except booking_mail.MailDeliveryUncertain:
             result['detail']='Sending could not be confirmed. Check your inbox and enter the code if it arrives, or request another code.'

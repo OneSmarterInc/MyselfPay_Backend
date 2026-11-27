@@ -56,7 +56,10 @@ class CenterOTPTests(TestCase):
    response=self.post('request',{'email':self.user.email});self.assertEqual(response.status_code,200)
    message,recipient=send.call_args.args
    self.assertEqual(recipient,self.user.email);self.assertIn('sign-in code',message['Subject']);self.assertTrue(send.call_args.kwargs['smtp_only'])
-   self.assertNotIn('http',message.get_content());self.assertNotIn('development_code',response.json())
+   self.assertNotIn('http',message.get_body(preferencelist=('plain',)).get_content());
+   html=message.get_body(preferencelist=('html',)).get_content()
+   self.assertIn('MySelf',html);self.assertIn('CENTER SIGN-IN',html);self.assertIn('10 minutes',html);self.assertIn('can be used once',html);self.assertEqual(message.get_content_type(),'multipart/alternative')
+   self.assertNotIn('development_code',response.json())
    unknown=self.post('request',{'email':'unknown@example.test'})
    self.assertEqual(set(response.json()),set(unknown.json()));self.assertEqual(response.json()['detail'],unknown.json()['detail'])
    self.assertEqual(send.call_count,1)
